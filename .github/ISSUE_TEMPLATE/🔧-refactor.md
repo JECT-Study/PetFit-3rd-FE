@@ -6,12 +6,6 @@ labels: ""
 assignees: ""
 ---
 
-name: 리팩터링(Refactor)
-about: 기능 변경 없이 구조 개선 또는 코드 정리를 위한 이슈
-title: '[Refactor] '
-labels: refactor
-assignees: ''
-
 ### ⚖️ 작업 내용
 
 <!-- 리팩터링할 대상이나 구조 변경 내용을 한 줄로 작성해 주세요 -->
