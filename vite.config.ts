@@ -5,7 +5,11 @@ import { VitePWA } from "vite-plugin-pwa";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: ["@emotion/babel-plugin"],
+      },
+    }),
     VitePWA({
       registerType: "autoUpdate",
       // PWA manifest 설정
