@@ -1,0 +1,12 @@
+# 공통
+node_modules/
+dist/
+build/
+coverage/
+.vscode/
+
+# 설정 파일
+vite.config.ts
+.eslintrc.js
+stylelint.config.js
+prettier.config.js
