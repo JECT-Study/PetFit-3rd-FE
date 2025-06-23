@@ -56,6 +56,7 @@ module.exports = {
         'newlines-between': 'always',
       },
     ],
+    'import/no-named-as-default': 'off', // default export한 모듈에서 named export도 함께 사용하는 경우(styled-components)
   },
   overrides: [
     {
