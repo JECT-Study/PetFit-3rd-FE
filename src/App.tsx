@@ -1,18 +1,9 @@
-import styled from 'styled-components';
+import { RouterProvider } from 'react-router-dom';
 
-const Style = styled.h1`
-  background-color: red;
-  color: white;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 1.5;
-`;
+import { router } from './routes/Router';
 
 const App = () => {
-  return <Style>Hello Stylelint</Style>;
+  return <RouterProvider router={router} />;
 };
 
 export default App;
