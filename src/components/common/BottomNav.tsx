@@ -68,6 +68,7 @@ const Inner = styled.div`
   min-width: 320px;
   margin: 0 auto;
   padding: 12px 16px 0;
+  height: 100%;
   background-color: white;
   border-top: 1px solid #e5e7eb;
 
