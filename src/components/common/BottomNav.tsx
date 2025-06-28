@@ -8,42 +8,67 @@ export const BottomNav = () => {
       <Inner>
         <StyledLink to="/" end>
           {({ isActive }) => (
-            <Item $active={isActive}>
-              <Home size={20} strokeWidth={2.5} color={isActive ? '#facc15' : '#6b7280'} />
-              <span>홈</span>
-            </Item>
+            <>
+              <Home
+                size={24}
+                strokeWidth={2}
+                color={isActive ? '#facc15' : '#6b7280'}
+                aria-hidden="true"
+              />
+              <Label $active={isActive}>홈</Label>
+            </>
           )}
         </StyledLink>
         <StyledLink to="/alarm">
           {({ isActive }) => (
-            <Item $active={isActive}>
-              <Clock size={20} strokeWidth={2.5} color={isActive ? '#facc15' : '#6b7280'} />
-              <span>알람</span>
-            </Item>
+            <>
+              <Clock
+                size={24}
+                strokeWidth={2}
+                color={isActive ? '#facc15' : '#6b7280'}
+                aria-hidden="true"
+              />
+              <Label $active={isActive}>알람</Label>
+            </>
           )}
         </StyledLink>
         <StyledLink to="/calendar">
           {({ isActive }) => (
-            <Item $active={isActive}>
-              <Calendar size={20} strokeWidth={2.5} color={isActive ? '#facc15' : '#6b7280'} />
-              <span>달력</span>
-            </Item>
+            <>
+              <Calendar
+                size={24}
+                strokeWidth={2}
+                color={isActive ? '#facc15' : '#6b7280'}
+                aria-hidden="true"
+              />
+              <Label $active={isActive}>달력</Label>
+            </>
           )}
         </StyledLink>
         <StyledLink to="/info">
           {({ isActive }) => (
-            <Item $active={isActive}>
-              <Play size={20} strokeWidth={2.5} color={isActive ? '#facc15' : '#6b7280'} />
-              <span>정보</span>
-            </Item>
+            <>
+              <Play
+                size={24}
+                strokeWidth={2}
+                color={isActive ? '#facc15' : '#6b7280'}
+                aria-hidden="true"
+              />
+              <Label $active={isActive}>정보</Label>
+            </>
           )}
         </StyledLink>
         <StyledLink to="/mypage">
           {({ isActive }) => (
-            <Item $active={isActive}>
-              <User size={20} strokeWidth={2.5} color={isActive ? '#facc15' : '#6b7280'} />
-              <span>마이페이지</span>
-            </Item>
+            <>
+              <User
+                size={24}
+                strokeWidth={2}
+                color={isActive ? '#facc15' : '#6b7280'}
+                aria-hidden="true"
+              />
+              <Label $active={isActive}>마이페이지</Label>
+            </>
           )}
         </StyledLink>
       </Inner>
@@ -62,12 +87,12 @@ const Wrapper = styled.nav`
 
 const Inner = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   max-width: 600px;
   min-width: 320px;
   margin: 0 auto;
-  padding: 12px 16px 0;
+  padding: 8px 20px;
   height: 100%;
   background-color: white;
   border-top: 1px solid #e5e7eb;
@@ -78,16 +103,17 @@ const Inner = styled.div`
 `;
 
 const StyledLink = styled(NavLink)`
-  text-decoration: none;
-  color: inherit;
   flex: 1;
-  text-align: center;
-`;
-
-const Item = styled.div<{ $active: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 60px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+`;
+
+const Label = styled.span<{ $active: boolean }>`
   font-size: 12px;
   color: ${({ $active }) => ($active ? '#facc15' : '#6b7280')};
 `;
