@@ -1,6 +1,6 @@
-const HomePage = () => {
+export const HomePage = () => {
   return (
-    <>
+    <div>
       <div>
         HomePage Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum animi aut dolore,
         facilis eius quod placeat. Vitae, illum! Aliquid aperiam facilis, labore numquam reiciendis
@@ -76,8 +76,9 @@ const HomePage = () => {
         facilis nulla recusandae cumque explicabo. Provident eligendi pariatur quia incidunt debitis
         dolores nisi, et assumenda distinctio amet!
       </div>
-    </>
+      <div style={{ width: 320, backgroundColor: 'red', overflowWrap: 'break-word' }}>
+        320320320320320320320320320320320320320320320320320320320320320320320320320
+      </div>
+    </div>
   );
 };
-
-export default HomePage;

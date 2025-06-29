@@ -16,3 +16,14 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+/* 모바일 뷰 가로 스크롤 해결*/
+html, body {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* 모바일 뷰 세로 스크롤 해결*/
+html{
+  height: max-content;
+}
