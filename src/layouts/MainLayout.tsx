@@ -5,7 +5,7 @@ import { ResponsiveContainer } from '@/components/common/ResponsiveContainer';
 
 export const MainLayout = () => {
   return (
-    <ResponsiveContainer>
+    <ResponsiveContainer withBottomNav>
       <Outlet />
       <BottomNav />
     </ResponsiveContainer>
