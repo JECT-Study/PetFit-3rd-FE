@@ -6,7 +6,7 @@ import AlarmPage from '@/pages/AlarmPage';
 import CalendarPage from '@/pages/CalendarPage';
 import HomePage from '@/pages/HomePage';
 import InfoPage from '@/pages/InfoPage';
-import LoginPage from '@/pages/LoginPage';
+import { LoginPage } from '@/pages/LoginPage';
 import MyPage from '@/pages/MyPage';
 
 export const router = createBrowserRouter([
