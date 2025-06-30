@@ -3,49 +3,14 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Dog, Cat, PawPrint } from 'lucide-react';
 import styled from 'styled-components';
 
+import { DAYS_OF_WEEK, LEGEND_ITEMS, LEGEND_ORDER } from '@/constants/calendar';
 import { MonthView } from '@/features/calendar/MonthView';
 import { NoteModal } from '@/features/calendar/NoteModal';
 import { WeekView } from '@/features/calendar/WeekView';
+import { MOCK_PETS } from '@/mocks/calendarData';
+import type { CalendarMode } from '@/types/calendar';
 import { formatDate } from '@/utils/formatDate';
 import { getDatesInMonth } from '@/utils/getDatesInMonth';
-
-// --- 타입 선언 ---
-type PetType = '강아지' | '고양이' | '햄스터' | '조류' | '어류' | '파충류';
-type CalendarMarkType = 'routine' | 'memo' | 'note';
-type CalendarMode = 'month' | 'week';
-
-// 상수 선언
-const DAYS_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
-
-// --- 목데이터 ---
-const mockingPets: { id: number; name: string; type: PetType }[] = [
-  { id: 1, name: '댕댕이', type: '강아지' },
-  { id: 2, name: '냥이', type: '고양이' },
-  { id: 3, name: '콩이', type: '햄스터' },
-];
-
-const LEGEND_ITEMS: Record<CalendarMarkType, { label: string; color: string }> = {
-  routine: { label: '루틴 체크', color: '#4285F4' },
-  memo: { label: '메모', color: '#EA4335' },
-  note: { label: '특이사항', color: '#FBBC05' },
-};
-
-const LEGEND_ORDER: CalendarMarkType[] = ['routine', 'memo', 'note'];
-
-const MOCK_CALENDAR_DATA: Record<string, CalendarMarkType[]> = {
-  '2025-04-28': ['routine'], // 이전 달 dot
-  '2025-05-01': ['routine', 'memo'],
-  '2025-05-04': ['note'],
-  '2025-05-15': ['routine'],
-  '2025-05-30': ['memo'],
-  '2025-06-01': ['note'], // 다음 달 dot
-  '2025-06-04': ['routine', 'note'],
-  '2025-06-08': ['memo'],
-  '2025-06-15': ['routine', 'memo'],
-  '2025-06-28': ['note'],
-  '2025-06-29': ['note'],
-  '2025-07-02': ['note'],
-};
 
 export const CalendarPage = () => {
   const [selectedPetId, setSelectedPetId] = useState<number>(1);
@@ -99,7 +64,7 @@ export const CalendarPage = () => {
       {/* 동물 종류 탭 */}
       {mode === 'month' && (
         <PetTabs>
-          {mockingPets.map(pet => {
+          {MOCK_PETS.map(pet => {
             const Icon = pet.type === '강아지' ? Dog : pet.type === '고양이' ? Cat : PawPrint;
 
             return (
@@ -142,8 +107,6 @@ export const CalendarPage = () => {
             month={month}
             selectedDate={selectedDate}
             onSelectDate={handleDateSelect}
-            calendarData={MOCK_CALENDAR_DATA}
-            legendItems={LEGEND_ITEMS}
             manuallySelected={manuallySelected}
           />
         )}
@@ -154,8 +117,6 @@ export const CalendarPage = () => {
             month={month}
             selectedDate={selectedDate}
             onSelectedDate={handleDateSelect}
-            calendarData={MOCK_CALENDAR_DATA}
-            legendItems={LEGEND_ITEMS}
           />
         )}
       </CalendarMonthWrapper>
@@ -172,17 +133,21 @@ export const CalendarPage = () => {
         </LegendRow>
       )}
 
-      <Divider />
+      {mode === 'week' && (
+        <>
+          <Divider />
 
-      <MarginTop>
-        <MarginBottom>
-          <SectionTitle>하루 루틴</SectionTitle>
-          <SectionAction onClick={() => setIsModalOpen(true)}>특이사항 추가</SectionAction>
-        </MarginBottom>
-        <div style={{ backgroundColor: 'red' }}>콘텐츠</div>
-      </MarginTop>
+          <MarginTop>
+            <MarginBottom>
+              <SectionTitle>하루 루틴</SectionTitle>
+              <SectionAction onClick={() => setIsModalOpen(true)}>특이사항 추가</SectionAction>
+            </MarginBottom>
+            <div style={{ backgroundColor: 'red' }}>콘텐츠</div>
+          </MarginTop>
 
-      {isModalOpen && <NoteModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />}
+          {isModalOpen && <NoteModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />}
+        </>
+      )}
     </Wrapper>
   );
 };

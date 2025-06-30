@@ -1,17 +1,15 @@
 import styled from 'styled-components';
 
+import { LEGEND_ITEMS } from '@/constants/calendar';
+import { MOCK_CALENDAR_MARKS } from '@/mocks/calendarData';
+import type { CalendarMarkType } from '@/types/calendar';
 import { formatDate } from '@/utils/formatDate';
-
-// 타입 정의
-type CalendarMarkType = 'routine' | 'memo' | 'note';
 
 interface Props {
   year: number;
   month: number;
   selectedDate: string;
   onSelectDate: (date: string) => void;
-  calendarData: Record<string, CalendarMarkType[]>;
-  legendItems: Record<CalendarMarkType, { label: string; color: string }>;
   manuallySelected: boolean;
 }
 
@@ -46,15 +44,7 @@ function getMonthsDates(year: number, month: number): string[] {
   return result;
 }
 
-export const MonthView = ({
-  year,
-  month,
-  selectedDate,
-  onSelectDate,
-  calendarData,
-  legendItems,
-  manuallySelected,
-}: Props) => {
+export const MonthView = ({ year, month, selectedDate, onSelectDate, manuallySelected }: Props) => {
   const dates = getMonthsDates(year, month);
 
   return (
@@ -65,9 +55,9 @@ export const MonthView = ({
         const isSelected = selectedDate === date;
         const isInCurrentView = dateObj.getFullYear() === year && dateObj.getMonth() + 1 === month;
 
-        const dots = calendarData[date] || [];
+        const dots = MOCK_CALENDAR_MARKS[date] || [];
         const dotColor = (type: CalendarMarkType) =>
-          isInCurrentView ? legendItems[type].color : '#BDBDBD';
+          isInCurrentView ? LEGEND_ITEMS[type].color : '#BDBDBD';
 
         return (
           <Cell

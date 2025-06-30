@@ -1,17 +1,15 @@
 import styled from 'styled-components';
 
+import { LEGEND_ITEMS } from '@/constants/calendar';
+import { MOCK_CALENDAR_MARKS } from '@/mocks/calendarData';
+import type { CalendarMarkType } from '@/types/calendar';
 import { formatDate } from '@/utils/formatDate';
-
-// 타입
-type CalendarMarkType = 'routine' | 'memo' | 'note';
 
 interface WeekViewProps {
   year: number;
   month: number;
   selectedDate: string;
   onSelectedDate: (date: string) => void;
-  calendarData: Record<string, CalendarMarkType[]>;
-  legendItems: Record<CalendarMarkType, { label: string; color: string }>;
 }
 
 // 주간 날짜 생성
@@ -30,14 +28,7 @@ function getWeekDates(date: Date): string[] {
   return result;
 }
 
-export const WeekView = ({
-  year,
-  month,
-  selectedDate,
-  onSelectedDate,
-  calendarData,
-  legendItems,
-}: WeekViewProps) => {
+export const WeekView = ({ year, month, selectedDate, onSelectedDate }: WeekViewProps) => {
   const currentDate = new Date(selectedDate);
   const dates = getWeekDates(currentDate);
 
@@ -49,9 +40,9 @@ export const WeekView = ({
         const isSelected = selectedDate === date;
         const isInCurrentView = dateObj.getFullYear() === year && dateObj.getMonth() + 1 === month;
 
-        const dots = calendarData[date] || [];
+        const dots = MOCK_CALENDAR_MARKS[date] || [];
         const dotColor = (type: CalendarMarkType) =>
-          isInCurrentView ? legendItems[type].color : '#BDBDBD';
+          isInCurrentView ? LEGEND_ITEMS[type].color : '#BDBDBD';
 
         return (
           <Cell key={date} $selected={isSelected} onClick={() => onSelectedDate(date)}>
