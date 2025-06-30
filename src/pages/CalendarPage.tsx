@@ -3,12 +3,16 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Dog, Cat, PawPrint } from 'lucide-react';
 import styled from 'styled-components';
 
+import { MonthView } from '@/features/calendar/MonthView';
+import { NoteModal } from '@/features/calendar/NoteModal';
+import { WeekView } from '@/features/calendar/WeekView';
 import { formatDate } from '@/utils/formatDate';
 import { getDatesInMonth } from '@/utils/getDatesInMonth';
 
 // --- 타입 선언 ---
 type PetType = '강아지' | '고양이' | '햄스터' | '조류' | '어류' | '파충류';
 type CalendarMarkType = 'routine' | 'memo' | 'note';
+type CalendarMode = 'month' | 'week';
 
 // 상수 선언
 const DAYS_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
@@ -39,49 +43,27 @@ const MOCK_CALENDAR_DATA: Record<string, CalendarMarkType[]> = {
   '2025-06-08': ['memo'],
   '2025-06-15': ['routine', 'memo'],
   '2025-06-28': ['note'],
+  '2025-06-29': ['note'],
+  '2025-07-02': ['note'],
 };
-
-function getCalendarDates(year: number, month: number): string[] {
-  const result: string[] = [];
-  const firstDayOfMonth = new Date(year, month - 1, 1);
-  const startDay = firstDayOfMonth.getDay(); // 0 (일) ~ 6 (토)
-  const prevMonthLastDate = new Date(year, month - 1, 0).getDate();
-  const currMonthLastDate = new Date(year, month, 0).getDate();
-
-  // 이전 달 날짜
-  for (let i = startDay - 1; i >= 0; i--) {
-    const date = new Date(year, month - 2, prevMonthLastDate - i);
-    result.push(formatDate(date));
-  }
-
-  // 현재 달 날짜
-  for (let i = 1; i <= currMonthLastDate; i++) {
-    result.push(formatDate(new Date(year, month - 1, i)));
-  }
-
-  // 다음 달 날짜 채우기
-  const totalCells = Math.ceil(result.length / 7) * 7; // 7의 배수 맞춤
-  const remaining = totalCells - result.length;
-
-  for (let i = 1; i <= remaining; i++) {
-    const nextDate = new Date(year, month, i); // 정확히 다음 달 날짜
-    result.push(formatDate(nextDate));
-  }
-
-  return result;
-}
 
 export const CalendarPage = () => {
   const [selectedPetId, setSelectedPetId] = useState<number>(1);
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
+  const [mode, setMode] = useState<CalendarMode>('month');
+  const [manuallySelected, setManuallySelected] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handlePrevMonth = () => {
     const newDate = new Date(viewDate);
     newDate.setMonth(newDate.getMonth() - 1);
     setViewDate(newDate);
     const lastDate = getDatesInMonth(newDate.getFullYear(), newDate.getMonth() + 1).pop();
-    if (lastDate) setSelectedDate(lastDate);
+    if (lastDate) {
+      setSelectedDate(lastDate);
+      setManuallySelected(false);
+    }
   };
 
   const handleNextMonth = () => {
@@ -90,35 +72,51 @@ export const CalendarPage = () => {
     setViewDate(newDate);
     const firstDate = getDatesInMonth(newDate.getFullYear(), newDate.getMonth() + 1)[0];
     setSelectedDate(firstDate);
+    setManuallySelected(false);
   };
 
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth() + 1;
-  const dates = getCalendarDates(year, month);
+
+  const handleDateSelect = (date: string) => {
+    // 주간 보기에서 동일 날짜를 다시 선택하면 월간 모드로 전환
+    if (mode === 'week' && selectedDate === date) {
+      setMode('month');
+      setManuallySelected(false);
+      return;
+    }
+
+    // 일반 날짜 선택
+    setSelectedDate(date);
+    setManuallySelected(true);
+    setMode('week');
+  };
 
   return (
     <Wrapper>
       <Header>달력</Header>
 
       {/* 동물 종류 탭 */}
-      <PetTabs>
-        {mockingPets.map(pet => {
-          const Icon = pet.type === '강아지' ? Dog : pet.type === '고양이' ? Cat : PawPrint;
+      {mode === 'month' && (
+        <PetTabs>
+          {mockingPets.map(pet => {
+            const Icon = pet.type === '강아지' ? Dog : pet.type === '고양이' ? Cat : PawPrint;
 
-          return (
-            <PetTab
-              key={pet.id}
-              $active={selectedPetId === pet.id}
-              onClick={() => setSelectedPetId(pet.id)}
-            >
-              <PetIconWrapper $active={selectedPetId === pet.id}>
-                <Icon size={20} />
-              </PetIconWrapper>
-              <span>{pet.name}</span>
-            </PetTab>
-          );
-        })}
-      </PetTabs>
+            return (
+              <PetTab
+                key={pet.id}
+                $active={selectedPetId === pet.id}
+                onClick={() => setSelectedPetId(pet.id)}
+              >
+                <PetIconWrapper $active={selectedPetId === pet.id}>
+                  <Icon size={20} />
+                </PetIconWrapper>
+                <span>{pet.name}</span>
+              </PetTab>
+            );
+          })}
+        </PetTabs>
+      )}
 
       {/* 달력 뷰 영역 */}
       <CalendarMonthWrapper>
@@ -132,46 +130,59 @@ export const CalendarPage = () => {
           </button>
         </MonthNav>
 
-        <DayHeaderRow>
+        <DayHeaderRow $mode={mode}>
           {DAYS_OF_WEEK.map(day => (
             <DayHeader key={day}>{day}</DayHeader>
           ))}
         </DayHeaderRow>
 
-        <Grid>
-          {dates.map(date => {
-            const day = new Date(date).getDate();
-            const isSelected = selectedDate === date;
-            const dots = MOCK_CALENDAR_DATA[date] || [];
+        {mode === 'month' && (
+          <MonthView
+            year={year}
+            month={month}
+            selectedDate={selectedDate}
+            onSelectDate={handleDateSelect}
+            calendarData={MOCK_CALENDAR_DATA}
+            legendItems={LEGEND_ITEMS}
+            manuallySelected={manuallySelected}
+          />
+        )}
 
-            const dateObj = new Date(date);
-            const isInViewMonth = dateObj.getMonth() + 1 === month;
-            const dotColor = (type: CalendarMarkType) =>
-              isInViewMonth ? LEGEND_ITEMS[type].color : '#BDBDBD';
-
-            return (
-              <Cell key={date} $selected={isSelected} onClick={() => setSelectedDate(date)}>
-                <DateNumber>{day}</DateNumber>
-                <DotRow hasDots={dots.length > 0}>
-                  {dots.map(type => (
-                    <Dot key={type} color={dotColor(type)} />
-                  ))}
-                </DotRow>
-              </Cell>
-            );
-          })}
-        </Grid>
+        {mode === 'week' && (
+          <WeekView
+            year={year}
+            month={month}
+            selectedDate={selectedDate}
+            onSelectedDate={handleDateSelect}
+            calendarData={MOCK_CALENDAR_DATA}
+            legendItems={LEGEND_ITEMS}
+          />
+        )}
       </CalendarMonthWrapper>
 
       {/* 범례 영역 */}
-      <LegendRow>
-        {LEGEND_ORDER.map(type => (
-          <LegendItem key={type}>
-            <Dot color={LEGEND_ITEMS[type].color} />
-            <LegendLabel>{LEGEND_ITEMS[type].label}</LegendLabel>
-          </LegendItem>
-        ))}
-      </LegendRow>
+      {mode === 'month' && (
+        <LegendRow>
+          {LEGEND_ORDER.map(type => (
+            <LegendItem key={type}>
+              <Dot color={LEGEND_ITEMS[type].color} />
+              <LegendLabel>{LEGEND_ITEMS[type].label}</LegendLabel>
+            </LegendItem>
+          ))}
+        </LegendRow>
+      )}
+
+      <Divider />
+
+      <MarginTop>
+        <MarginBottom>
+          <SectionTitle>하루 루틴</SectionTitle>
+          <SectionAction onClick={() => setIsModalOpen(true)}>특이사항 추가</SectionAction>
+        </MarginBottom>
+        <div style={{ backgroundColor: 'red' }}>콘텐츠</div>
+      </MarginTop>
+
+      {isModalOpen && <NoteModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />}
     </Wrapper>
   );
 };
@@ -231,10 +242,10 @@ const MonthLabel = styled.div`
   font-weight: bold;
 `;
 
-const DayHeaderRow = styled.div`
+const DayHeaderRow = styled.div<{ $mode: 'month' | 'week' }>`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 10px;
+  margin-bottom: ${({ $mode }) => ($mode === 'week' ? '0' : '10px')};
 `;
 
 const DayHeader = styled.div`
@@ -244,35 +255,6 @@ const DayHeader = styled.div`
   height: 48px;
   text-align: center;
   font-weight: bold;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  row-gap: 4px;
-`;
-
-const Cell = styled.div<{ $selected?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 48px;
-  border-radius: 6px;
-  border: ${({ $selected }) => ($selected ? '2px solid orange' : 'none')};
-  cursor: pointer;
-`;
-
-const DateNumber = styled.span`
-  font-size: 14px;
-  text-align: center;
-`;
-
-const DotRow = styled.div<{ hasDots: boolean }>`
-  display: flex;
-  justify-content: center;
-  gap: 2px;
-  min-height: 6px; // dot이 없는 날에도 영역 확보
-  margin-top: 4px;
 `;
 
 const Dot = styled.div<{ color: string }>`
@@ -297,4 +279,34 @@ const LegendItem = styled.div`
 
 const LegendLabel = styled.span`
   font-size: 14px;
+`;
+
+const Divider = styled.div`
+  height: 7px;
+  background-color: #e0e0e0;
+  margin: 20px 0 16px;
+`;
+
+const MarginTop = styled.div`
+  margin-top: 12px;
+`;
+
+const MarginBottom = styled.div`
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const SectionTitle = styled.span`
+  font-weight: bold;
+  font-size: 16px;
+  color: #212121;
+`;
+
+const SectionAction = styled.button`
+  font-size: 14px;
+  color: #757575;
+  text-decoration: none;
+  cursor: pointer;
 `;
