@@ -8,6 +8,7 @@ import { HomePage } from '@/pages/HomePage';
 import InfoPage from '@/pages/InfoPage';
 import { LoginPage } from '@/pages/LoginPage';
 import MyPage from '@/pages/MyPage';
+import { SlotSettingPage } from '@/pages/SlotSettingPage';
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
       { path: '/calendar', element: <CalendarPage /> },
       { path: '/info', element: <InfoPage /> },
       { path: '/mypage', element: <MyPage /> },
+      { path: '/slot', element: <SlotSettingPage /> },
     ],
   },
   {
