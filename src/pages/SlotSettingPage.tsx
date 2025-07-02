@@ -8,12 +8,12 @@ import { SlotInput } from '@/features/slot/SlotInput';
 export const SlotSettingPage = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const toggle = (id: string) =>
+  const handleToggle = (id: string) =>
     setSelectedIds(prev => (prev.includes(id) ? prev.filter(k => k !== id) : [...prev, id]));
 
   return (
     <Wrapper>
-      <SlotButton selectedIds={selectedIds} onToggle={toggle} />
+      <SlotButton selectedIds={selectedIds} onToggle={handleToggle} />
       <RoutineTitle>활성화된 루틴</RoutineTitle>
       <SlotInput selectedIds={selectedIds} />
     </Wrapper>
