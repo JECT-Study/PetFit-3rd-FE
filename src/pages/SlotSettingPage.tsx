@@ -15,7 +15,7 @@ export const SlotSettingPage = () => {
     <Wrapper>
       <SlotButton selectedIds={selectedIds} onToggle={toggle} />
       <RoutineTitle>활성화된 루틴</RoutineTitle>
-      <SlotInput />
+      <SlotInput selectedIds={selectedIds} />
     </Wrapper>
   );
 };

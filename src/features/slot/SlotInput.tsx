@@ -3,10 +3,13 @@ import styled from 'styled-components';
 
 import { SLOT_ITEMS } from '@/constants/slot';
 
-export const SlotInput = () => {
+interface Props {
+  selectedIds: string[];
+}
+export const SlotInput = ({ selectedIds }: Props) => {
   return (
     <div>
-      {SLOT_ITEMS.map(({ id, icon, label }) => (
+      {SLOT_ITEMS.filter(({ id }) => selectedIds.includes(id)).map(({ id, icon, label }) => (
         <InputContainer key={id}>
           <InputHeader>
             <img src={icon} alt={label} /> {label}
