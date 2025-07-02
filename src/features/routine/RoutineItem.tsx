@@ -1,43 +1,38 @@
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
-import meal from '@/assets/icons/meal.svg';
+import { SLOT_ITEMS } from '@/constants/slot';
+import { routineData } from '@/mocks/routineData';
 
 export const RoutineItem = () => {
-  const SLOT_ITEMS = [
-    {
-      id: 'meal',
-      label: '사료',
-      icon: meal,
-      unit: 'g',
-      placeholder: '정해진 하루 사료의 양을 입력해주세요.',
-    },
-  ];
   return (
     <div>
-      {SLOT_ITEMS.map(({ id, label, icon, unit }) => (
-        <Container key={id}>
-          <ItemContainer>
-            <Check />
+      {routineData.map(r => {
+        const slot = SLOT_ITEMS.find(s => s.id === r.id)!;
+        return (
+          <Container key={r.id}>
+            <ItemContainer>
+              <Check />
 
-            <MainInfoContainer>
-              <MainInfo>
-                <img src={icon} />
-                <TitleText>{label}</TitleText>
-                <AmountText>
-                  0 {unit} / 150 {unit}
-                </AmountText>
-              </MainInfo>
+              <MainInfoContainer>
+                <MainInfo>
+                  <img src={slot.icon} />
+                  <TitleText>{slot.label}</TitleText>
+                  <AmountText>
+                    0 {slot.unit} / 150 {slot.unit}
+                  </AmountText>
+                </MainInfo>
 
-              <MemoInfo>메모메모메모메모메모메모</MemoInfo>
-            </MainInfoContainer>
-          </ItemContainer>
+                <MemoInfo>메모메모메모메모메모메모</MemoInfo>
+              </MainInfoContainer>
+            </ItemContainer>
 
-          <NoteButton>
-            <Ellipsis />
-          </NoteButton>
-        </Container>
-      ))}
+            <NoteButton>
+              <Ellipsis />
+            </NoteButton>
+          </Container>
+        );
+      })}
     </div>
   );
 };

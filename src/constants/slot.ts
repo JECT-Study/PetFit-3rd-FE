@@ -27,7 +27,7 @@ export const SLOT_ITEMS = [
     unit: '회',
     placeholder: '정해진 하루 산책시간을 입력해주세요.',
   },
-  { id: 'walk', label: '산책', icon: walk, unit: null, placeholder: '이상 없음' },
+  { id: 'walk', label: '산책', icon: walk, unit: 'null', placeholder: '이상 없음' },
   { id: 'teeth', label: '치아', icon: teeth, unit: null, placeholder: '이상 없음' },
   { id: 'skin', label: '피부, 털', icon: skin, unit: null, placeholder: '이상 없음' },
 ] as const;
