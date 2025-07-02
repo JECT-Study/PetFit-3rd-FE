@@ -30,8 +30,8 @@ export const SlotInput = ({ selectedIds }: Props) => {
 };
 
 const InputContainer = styled.div`
-  border-bottom: 1px solid #e0e0e0;
   margin: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
 `;
 
 const InputHeader = styled.div`
@@ -44,9 +44,11 @@ const InputTitle = styled.div`
   display: flex;
   gap: 5px;
 `;
+
 const InputSubtitle = styled.div`
   color: gray;
 `;
+
 const InputContent = styled.div`
   display: flex;
   align-items: center;
@@ -56,11 +58,11 @@ const InputContent = styled.div`
 const Input = styled.input`
   width: calc(100%);
   height: 45px;
-  border-radius: 8px;
-  border-width: 1px;
-  padding: 12px 20px;
   margin: 12px 0px;
+  padding: 12px 20px;
+
+  font-size: 14px;
   background: #fff8e5;
   border: 1px solid #dddddd;
-  font-size: 14px;
+  border-radius: 8px;
 `;

@@ -30,11 +30,13 @@ const Button = styled.button<{ $isSelected: boolean }>`
   display: inline-flex;
   align-items: center;
   height: 40px;
-  border-radius: 50px;
   padding: 8px 12px;
   gap: 5px;
-  border: #ffc533 1px solid;
+
   background-color: ${({ $isSelected }) => ($isSelected ? '#FFC533' : '#ffffff')};
+  border: #ffc533 1px solid;
+  border-radius: 50px;
+
   transition:
     background-color 0.2s ease,
     color 0.15s ease;
