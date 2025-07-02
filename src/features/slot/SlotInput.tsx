@@ -9,17 +9,22 @@ interface Props {
 export const SlotInput = ({ selectedIds }: Props) => {
   return (
     <div>
-      {SLOT_ITEMS.filter(({ id }) => selectedIds.includes(id)).map(({ id, icon, label }) => (
-        <InputContainer key={id}>
-          <InputHeader>
-            <img src={icon} alt={label} /> {label}
-          </InputHeader>
-          <InputContent>
-            <Input />
-            <Menu color={'#A5A5A5'} />
-          </InputContent>
-        </InputContainer>
-      ))}
+      {SLOT_ITEMS.filter(({ id }) => selectedIds.includes(id)).map(
+        ({ id, icon, label, unit, placeholder }) => (
+          <InputContainer key={id}>
+            <InputHeader>
+              <InputTitle>
+                <img src={icon} alt={label} /> {label}
+              </InputTitle>
+              {unit ? <InputSubtitle>(단위: {unit})</InputSubtitle> : null}
+            </InputHeader>
+            <InputContent>
+              <Input placeholder={placeholder} />
+              <Menu color={'#A5A5A5'} />
+            </InputContent>
+          </InputContainer>
+        )
+      )}
     </div>
   );
 };
@@ -35,6 +40,13 @@ const InputHeader = styled.div`
   font-size: 12px;
 `;
 
+const InputTitle = styled.div`
+  display: flex;
+  gap: 5px;
+`;
+const InputSubtitle = styled.div`
+  color: gray;
+`;
 const InputContent = styled.div`
   display: flex;
   align-items: center;
