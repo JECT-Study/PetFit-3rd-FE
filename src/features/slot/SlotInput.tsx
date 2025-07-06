@@ -10,11 +10,11 @@ export const SlotInput = ({ selectedIds }: Props) => {
   return (
     <div>
       {SLOT_ITEMS.filter(({ id }) => selectedIds.includes(id)).map(
-        ({ id, icon, label, unit, placeholder }) => (
+        ({ id, Icon, label, unit, placeholder }) => (
           <InputContainer key={id}>
             <InputHeader>
               <InputTitle>
-                <img src={icon} alt={label} /> {label}
+                <Icon /> {label}
               </InputTitle>
               {unit ? <InputSubtitle>(단위: {unit})</InputSubtitle> : null}
             </InputHeader>
