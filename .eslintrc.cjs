@@ -36,6 +36,12 @@ module.exports = {
   rules: {
     'react/react-in-jsx-scope': 'off', // ✅ React 17+에서 불필요
     'react/prop-types': 'off', // ✅ PropTypes 사용 안함
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": ["\\.svg\\?react$"]
+      }
+    ],
     'import/order': [
       'error',
       {
@@ -61,6 +67,7 @@ module.exports = {
       },
     ],
     'import/no-named-as-default': 'off', // default export한 모듈에서 named export도 함께 사용하는 경우(styled-components)
+
   },
   overrides: [
     {
