@@ -5,18 +5,31 @@ import styled from 'styled-components';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import { CustomSelect } from '@/components/CustomSelect';
 import type { PetGender, PetType } from '@/types/common';
-
-const MAX_NAME_LENGTH = 20;
+import {
+  getPetNameValidationMessage,
+  isValidPetName,
+  MAX_NAME_LENGTH,
+} from '@/utils/petNameValidation';
 
 export const SignupPetRegisterPage = () => {
   const [name, setName] = useState('');
   const [species, setSpecies] = useState<PetType>('강아지');
   const [gender, setGender] = useState<PetGender>('남아');
   const [birthDate, setBirthDate] = useState('');
+  const [isNameTouched, setIsNameTouched] = useState(false);
 
-  // 유효성 조건 (예: 20자 제한)
-  const isNameInvalid = name.length > MAX_NAME_LENGTH;
-  const isFormValid = name && !isNameInvalid && species && gender && birthDate;
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setName(newValue);
+    if (!isNameTouched && newValue.length > 0) {
+      setIsNameTouched(true);
+    }
+  };
+
+  // 유효성 조건
+  const isNameInvalid = isNameTouched && !isValidPetName(name);
+  const nameErrorMessage = isNameTouched ? getPetNameValidationMessage(name) : null;
+  const isFormValid = !isNameInvalid && species && gender && birthDate;
 
   return (
     <Container>
@@ -27,14 +40,14 @@ export const SignupPetRegisterPage = () => {
           <Label $hasError={isNameInvalid}>이름</Label>
           <StyledInput
             $hasError={isNameInvalid}
-            placeholder="반려동물의 이름을 입력해주세요."
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={handleNameChange}
+            onBlur={() => setIsNameTouched(true)}
+            placeholder="반려동물의 이름을 입력해주세요."
+            maxLength={MAX_NAME_LENGTH + 10}
           />
           <HelperRow>
-            <ErrorMessage isVisible={isNameInvalid}>
-              {MAX_NAME_LENGTH}자(영문, 한글, 숫자, 특수문자 포함)로 제한됩니다.
-            </ErrorMessage>
+            <ErrorMessage isVisible={isNameInvalid}>{nameErrorMessage}</ErrorMessage>
             <CharCount $hasError={isNameInvalid}>
               {name.length}/{MAX_NAME_LENGTH}
             </CharCount>
