@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import styled from 'styled-components';
 
+import { CustomDatePicker } from '@/components/CustomDatePicker';
+import { CustomSelect } from '@/components/CustomSelect';
 import type { PetGender, PetType } from '@/types/common';
 
 const MAX_NAME_LENGTH = 20;
@@ -41,29 +43,51 @@ export const SignupPetRegisterPage = () => {
 
         <FieldGroup>
           <Label>종류</Label>
-          <StyledSelect value={species} onChange={e => setSpecies(e.target.value as PetType)}>
+          {/* <StyledSelect value={species} onChange={e => setSpecies(e.target.value as PetType)}>
             {(['강아지', '고양이', '햄스터', '조류', '어류', '파충류'] as PetType[]).map(type => (
               <option key={type} value={type}>
                 {type}
               </option>
             ))}
-          </StyledSelect>
+          </StyledSelect> */}
+          <CustomSelect
+            value={species ? { label: species, value: species } : null}
+            onChange={val => setSpecies(val as PetType)}
+            options={[
+              { label: '강아지', value: '강아지' },
+              { label: '고양이', value: '고양이' },
+              { label: '햄스터', value: '햄스터' },
+              { label: '조류', value: '조류' },
+              { label: '어류', value: '어류' },
+              { label: '파충류', value: '파충류' },
+            ]}
+          />
         </FieldGroup>
 
         <FieldGroup>
           <Label>성별</Label>
-          <StyledSelect value={gender} onChange={e => setGender(e.target.value as PetGender)}>
+          {/* <StyledSelect value={gender} onChange={e => setGender(e.target.value as PetGender)}>
             {(['남아', '여아', '중성'] as PetGender[]).map(g => (
               <option key={g} value={g}>
                 {g}
               </option>
             ))}
-          </StyledSelect>
+          </StyledSelect> */}
+          <CustomSelect
+            value={gender ? { label: gender, value: gender } : null}
+            onChange={val => setGender(val as PetGender)}
+            options={[
+              { label: '남아', value: '남아' },
+              { label: '여아', value: '여아' },
+              { label: '중성', value: '중성' },
+            ]}
+          />
         </FieldGroup>
 
         <FieldGroup>
           <Label>생일</Label>
-          <StyledInput type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} />
+          {/* <StyledInput type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} /> */}
+          <CustomDatePicker value={birthDate} onChange={setBirthDate} />
         </FieldGroup>
       </FormSection>
 
@@ -76,6 +100,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  padding: 0 20px;
 `;
 
 const Title = styled.h2`
@@ -130,15 +155,15 @@ const ErrorMessage = styled.p<{ isVisible?: boolean }>`
   visibility: ${({ isVisible }) => (isVisible ? 'visible' : 'hidden')};
 `;
 
-const StyledSelect = styled.select`
-  appearance: none;
-  padding: 14px 20px;
-  font-size: 16px;
-  background-color: #fff8e7;
-  border: 1.5px solid #facc15;
-  border-radius: 8px;
-  color: #333;
-`;
+// const StyledSelect = styled.select`
+//   appearance: none;
+//   padding: 14px 20px;
+//   font-size: 16px;
+//   background-color: #fff8e7;
+//   border: 1.5px solid #facc15;
+//   border-radius: 8px;
+//   color: #333;
+// `;
 
 const NextButton = styled.button<{ disabled?: boolean }>`
   margin-bottom: 24px;
