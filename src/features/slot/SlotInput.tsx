@@ -14,7 +14,7 @@ export const SlotInput = ({ selectedIds }: Props) => {
           <InputContainer key={id}>
             <InputHeader>
               <InputTitle>
-                <Icon /> {label}
+                <Icon width={16} color="#4D9DE0" /> {label}
               </InputTitle>
               {unit ? <InputSubtitle>(단위: {unit})</InputSubtitle> : null}
             </InputHeader>
