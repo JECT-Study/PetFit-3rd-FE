@@ -1,83 +1,17 @@
+import { BaseModal } from '@/components/common/BaseModal';
+import { useModal } from '@/hooks/useModal';
+
 export const HomePage = () => {
+  const { isOpen, openModal, closeModal } = useModal();
+
   return (
     <div>
+      홈화면
       <div>
-        HomePage Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum animi aut dolore,
-        facilis eius quod placeat. Vitae, illum! Aliquid aperiam facilis, labore numquam reiciendis
-        minus culpa a earum assumenda Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis,
-        blanditiis cumque incidunt ut quam velit doloremque eos obcaecati perferendis animi
-        excepturi quibusdam assumenda commodi accusantium illo, quidem mollitia deserunt accusamus?
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ipsam possimus corrupti
-        suscipit, dolorem error rerum porro nulla laborum saepe eius eaque temporibus. Autem, eos
-        facere eum tempora incidunt porro! Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-        Perferendis quas aperiam excepturi, ducimus consectetur odit reprehenderit voluptatem
-        asperiores tempore voluptate quos dolore ea quam, quaerat, modi quasi. Deserunt, animi aut!
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque illum ipsa quas dolores,
-        facilis nulla recusandae cumque explicabo. Provident eligendi pariatur quia incidunt debitis
-        dolores nisi, et assumenda distinctio amet!
-      </div>
-      <div>
-        HomePage Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum animi aut dolore,
-        facilis eius quod placeat. Vitae, illum! Aliquid aperiam facilis, labore numquam reiciendis
-        minus culpa a earum assumenda Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis,
-        blanditiis cumque incidunt ut quam velit doloremque eos obcaecati perferendis animi
-        excepturi quibusdam assumenda commodi accusantium illo, quidem mollitia deserunt accusamus?
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ipsam possimus corrupti
-        suscipit, dolorem error rerum porro nulla laborum saepe eius eaque temporibus. Autem, eos
-        facere eum tempora incidunt porro! Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-        Perferendis quas aperiam excepturi, ducimus consectetur odit reprehenderit voluptatem
-        asperiores tempore voluptate quos dolore ea quam, quaerat, modi quasi. Deserunt, animi aut!
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque illum ipsa quas dolores,
-        facilis nulla recusandae cumque explicabo. Provident eligendi pariatur quia incidunt debitis
-        dolores nisi, et assumenda distinctio amet!
-      </div>
-      <div>
-        HomePage Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum animi aut dolore,
-        facilis eius quod placeat. Vitae, illum! Aliquid aperiam facilis, labore numquam reiciendis
-        minus culpa a earum assumenda Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis,
-        blanditiis cumque incidunt ut quam velit doloremque eos obcaecati perferendis animi
-        excepturi quibusdam assumenda commodi accusantium illo, quidem mollitia deserunt accusamus?
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ipsam possimus corrupti
-        suscipit, dolorem error rerum porro nulla laborum saepe eius eaque temporibus. Autem, eos
-        facere eum tempora incidunt porro! Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-        Perferendis quas aperiam excepturi, ducimus consectetur odit reprehenderit voluptatem
-        asperiores tempore voluptate quos dolore ea quam, quaerat, modi quasi. Deserunt, animi aut!
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque illum ipsa quas dolores,
-        facilis nulla recusandae cumque explicabo. Provident eligendi pariatur quia incidunt debitis
-        dolores nisi, et assumenda distinctio amet!
-      </div>
-      <div>
-        HomePage Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum animi aut dolore,
-        facilis eius quod placeat. Vitae, illum! Aliquid aperiam facilis, labore numquam reiciendis
-        minus culpa a earum assumenda Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis,
-        blanditiis cumque incidunt ut quam velit doloremque eos obcaecati perferendis animi
-        excepturi quibusdam assumenda commodi accusantium illo, quidem mollitia deserunt accusamus?
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ipsam possimus corrupti
-        suscipit, dolorem error rerum porro nulla laborum saepe eius eaque temporibus. Autem, eos
-        facere eum tempora incidunt porro! Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-        Perferendis quas aperiam excepturi, ducimus consectetur odit reprehenderit voluptatem
-        asperiores tempore voluptate quos dolore ea quam, quaerat, modi quasi. Deserunt, animi aut!
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque illum ipsa quas dolores,
-        facilis nulla recusandae cumque explicabo. Provident eligendi pariatur quia incidunt debitis
-        dolores nisi, et assumenda distinctio amet!
-      </div>
-      <div>
-        HomePage Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum animi aut dolore,
-        facilis eius quod placeat. Vitae, illum! Aliquid aperiam facilis, labore numquam reiciendis
-        minus culpa a earum assumenda Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis,
-        blanditiis cumque incidunt ut quam velit doloremque eos obcaecati perferendis animi
-        excepturi quibusdam assumenda commodi accusantium illo, quidem mollitia deserunt accusamus?
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ipsam possimus corrupti
-        suscipit, dolorem error rerum porro nulla laborum saepe eius eaque temporibus. Autem, eos
-        facere eum tempora incidunt porro! Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-        Perferendis quas aperiam excepturi, ducimus consectetur odit reprehenderit voluptatem
-        asperiores tempore voluptate quos dolore ea quam, quaerat, modi quasi. Deserunt, animi aut!
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque illum ipsa quas dolores,
-        facilis nulla recusandae cumque explicabo. Provident eligendi pariatur quia incidunt debitis
-        dolores nisi, et assumenda distinctio amet!
-      </div>
-      <div style={{ width: 320, backgroundColor: 'red', overflowWrap: 'break-word' }}>
-        320320320320320320320320320320320320320320320320320320320320320320320320320
+        <button onClick={openModal}>모달 열기 버튼</button>
+        <BaseModal isOpen={isOpen} onClose={closeModal}>
+          <p>모달 내용</p>
+        </BaseModal>
       </div>
     </div>
   );
