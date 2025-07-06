@@ -42,6 +42,7 @@ const InputHeader = styled.div`
 
 const InputTitle = styled.div`
   display: flex;
+  align-items: center;
   gap: 5px;
 `;
 
