@@ -1,10 +1,29 @@
+import { useState } from 'react';
+
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
 import { SLOT_ITEMS } from '@/constants/slot';
+import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
 import { routineData } from '@/mocks/routineData';
+import type { SlotId } from '@/types/routine';
+
+import Notice from '@/assets/icons/notice.svg?react';
+
+interface ModalProps {
+  open: boolean;
+  slotId: SlotId | null;
+}
 
 export const RoutineItem = () => {
+  const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
+
+  const STATUS_ICON = {
+    todo: <Check width={24} color="#DDDDDD" />,
+    note: <Notice />,
+    done: <Check width={24} color="#4D9DE0" />,
+  } as const;
+
   return (
     <div>
       {routineData.map(rtn => {
@@ -12,14 +31,14 @@ export const RoutineItem = () => {
         return (
           <Container key={id}>
             <ItemContainer>
-              <Check width={24} color="#DDDDDD" />
+              {STATUS_ICON[rtn.status]}
 
               <MainInfoContainer>
                 <MainInfo>
                   <Icon width={16} color="#4D9DE0" />
                   <TitleText>{label}</TitleText>
                   <AmountText>
-                    {rtn.current !== undefined ? `${rtn.current} ${unit} / ` : null} {rtn.default}{' '}
+                    {rtn.current !== undefined ? `${rtn.current}${unit} / ` : null} {rtn.default}
                     {unit}
                   </AmountText>
                 </MainInfo>
@@ -28,12 +47,20 @@ export const RoutineItem = () => {
               </MainInfoContainer>
             </ItemContainer>
 
-            <NoteButton>
-              <Ellipsis width={24} />
+            <NoteButton onClick={() => setModal({ open: true, slotId: id })}>
+              <Ellipsis width={16} />
             </NoteButton>
           </Container>
         );
       })}
+
+      {modal.slotId && (
+        <RoutineDetailModal
+          slotId={modal.slotId}
+          isOpen={modal.open}
+          onClose={() => setModal({ open: false, slotId: null })}
+        />
+      )}
     </div>
   );
 };
@@ -80,4 +107,8 @@ const MemoInfo = styled.div`
   max-width: 220px;
 `;
 
-const NoteButton = styled.div``;
+const NoteButton = styled.div`
+  &:hover {
+    cursor: pointer;
+  }
+`;
