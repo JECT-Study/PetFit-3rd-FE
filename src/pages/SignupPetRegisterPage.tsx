@@ -2,107 +2,31 @@ import { useState } from 'react';
 
 import styled from 'styled-components';
 
-import { CustomDatePicker } from '@/components/CustomDatePicker';
-import { CustomSelect } from '@/components/CustomSelect';
+import { PetRegisterForm } from '@/components/PetRegisterForm';
 import type { PetGender, PetType } from '@/types/common';
-import {
-  getPetNameValidationMessage,
-  isValidPetName,
-  MAX_NAME_LENGTH,
-} from '@/utils/petNameValidation';
 
 export const SignupPetRegisterPage = () => {
   const [name, setName] = useState('');
   const [species, setSpecies] = useState<PetType>('강아지');
   const [gender, setGender] = useState<PetGender>('남아');
   const [birthDate, setBirthDate] = useState('');
-  const [isNameTouched, setIsNameTouched] = useState(false);
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setName(newValue);
-    if (!isNameTouched && newValue.length > 0) {
-      setIsNameTouched(true);
-    }
-  };
-
-  // 유효성 조건
-  const isNameInvalid = isNameTouched && !isValidPetName(name);
-  const nameErrorMessage = isNameTouched ? getPetNameValidationMessage(name) : null;
-  const isFormValid = !isNameInvalid && species && gender && birthDate;
+  const [isFormValid, setIsFormValid] = useState(false);
 
   return (
     <Container>
       <Title>반려동물 정보 입력</Title>
 
-      <FormSection>
-        <FieldGroup>
-          <Label $hasError={isNameInvalid}>이름</Label>
-          <StyledInput
-            $hasError={isNameInvalid}
-            value={name}
-            onChange={handleNameChange}
-            onBlur={() => setIsNameTouched(true)}
-            placeholder="반려동물의 이름을 입력해주세요."
-            maxLength={MAX_NAME_LENGTH + 10}
-          />
-          <HelperRow>
-            <ErrorMessage isVisible={isNameInvalid}>{nameErrorMessage}</ErrorMessage>
-            <CharCount $hasError={isNameInvalid}>
-              {name.length}/{MAX_NAME_LENGTH}
-            </CharCount>
-          </HelperRow>
-        </FieldGroup>
-
-        <FieldGroup>
-          <Label>종류</Label>
-          {/* <StyledSelect value={species} onChange={e => setSpecies(e.target.value as PetType)}>
-            {(['강아지', '고양이', '햄스터', '조류', '어류', '파충류'] as PetType[]).map(type => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </StyledSelect> */}
-          <CustomSelect
-            value={species ? { label: species, value: species } : null}
-            onChange={val => setSpecies(val as PetType)}
-            options={[
-              { label: '강아지', value: '강아지' },
-              { label: '고양이', value: '고양이' },
-              { label: '햄스터', value: '햄스터' },
-              { label: '조류', value: '조류' },
-              { label: '어류', value: '어류' },
-              { label: '파충류', value: '파충류' },
-            ]}
-          />
-        </FieldGroup>
-
-        <FieldGroup>
-          <Label>성별</Label>
-          {/* <StyledSelect value={gender} onChange={e => setGender(e.target.value as PetGender)}>
-            {(['남아', '여아', '중성'] as PetGender[]).map(g => (
-              <option key={g} value={g}>
-                {g}
-              </option>
-            ))}
-          </StyledSelect> */}
-          <CustomSelect
-            value={gender ? { label: gender, value: gender } : null}
-            onChange={val => setGender(val as PetGender)}
-            options={[
-              { label: '남아', value: '남아' },
-              { label: '여아', value: '여아' },
-              { label: '중성', value: '중성' },
-            ]}
-          />
-        </FieldGroup>
-
-        <FieldGroup>
-          <Label>생일</Label>
-          {/* <StyledInput type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} /> */}
-          <CustomDatePicker value={birthDate} onChange={setBirthDate} />
-        </FieldGroup>
-      </FormSection>
+      <PetRegisterForm
+        name={name}
+        setName={setName}
+        species={species}
+        setSpecies={setSpecies}
+        gender={gender}
+        setGender={setGender}
+        birthDate={birthDate}
+        setBirthDate={setBirthDate}
+        onValidationChange={setIsFormValid}
+      />
 
       <NextButton disabled={!isFormValid}>다음</NextButton>
     </Container>
@@ -120,63 +44,6 @@ const Title = styled.h2`
   text-align: center;
   padding: 18px 0;
 `;
-
-const FormSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-grow: 1;
-  margin-top: 42px;
-`;
-
-const FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const Label = styled.label<{ $hasError?: boolean }>`
-  padding-left: 8px;
-  font-size: 14px;
-  color: ${({ $hasError }) => ($hasError ? '#f87171' : '#333')};
-`;
-
-const StyledInput = styled.input<{ $hasError?: boolean }>`
-  width: 100%;
-  padding: 12px 20px;
-  font-size: 16px;
-  background-color: #fff8e7;
-  border: 1.5px solid ${({ $hasError }) => ($hasError ? '#f87171' : '#facc15')};
-  border-radius: 8px;
-`;
-
-const HelperRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 8px;
-`;
-
-const CharCount = styled.span<{ $hasError?: boolean }>`
-  font-size: 12px;
-  color: ${({ $hasError }) => ($hasError ? '#f87171' : '#999')};
-`;
-
-const ErrorMessage = styled.p<{ isVisible?: boolean }>`
-  color: #f87171;
-  font-size: 12px;
-  visibility: ${({ isVisible }) => (isVisible ? 'visible' : 'hidden')};
-`;
-
-// const StyledSelect = styled.select`
-//   appearance: none;
-//   padding: 14px 20px;
-//   font-size: 16px;
-//   background-color: #fff8e7;
-//   border: 1.5px solid #facc15;
-//   border-radius: 8px;
-//   color: #333;
-// `;
 
 const NextButton = styled.button<{ disabled?: boolean }>`
   margin-bottom: 24px;
