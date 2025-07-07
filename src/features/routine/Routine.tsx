@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 import { RoutineItem } from '@/features/routine/RoutineItem';
 
+import { RoutineProgress } from './RoutineProgress';
+
 export const Routine = () => {
   const navigate = useNavigate();
 
@@ -15,6 +17,8 @@ export const Routine = () => {
           <Plus />
         </button>
       </RoutineTitleContainer>
+      <RoutineProgress />
+
       <RoutineItem />
     </Container>
   );
