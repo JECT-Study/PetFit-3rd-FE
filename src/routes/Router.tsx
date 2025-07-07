@@ -8,6 +8,7 @@ import { HomePage } from '@/pages/HomePage';
 import InfoPage from '@/pages/InfoPage';
 import { LoginPage } from '@/pages/LoginPage';
 import MyPage from '@/pages/MyPage';
+import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
 
 export const router = createBrowserRouter([
@@ -24,6 +25,9 @@ export const router = createBrowserRouter([
   },
   {
     element: <PlainLayout />,
-    children: [{ path: '/login', element: <LoginPage /> }],
+    children: [
+      { path: '/login', element: <LoginPage /> },
+      { path: '/signup/pet', element: <SignupPetRegisterPage /> },
+    ],
   },
 ]);

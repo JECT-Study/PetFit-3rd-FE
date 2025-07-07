@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import kakaoLoginButton from '@/assets/images/kakao_login_medium_wide.png';
@@ -5,6 +6,14 @@ import kakaoLoginButton from '@/assets/images/kakao_login_medium_wide.png';
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+
+  const handleKakaoLogin = () => {
+    // 1. 카카오 로그인 로직 처리 (토큰 저장 등)
+    // 2. 이후 반려동물 정보 입력 페이지로 이동
+    navigate('/signup/pet');
+  };
+
   return (
     <Container>
       <Logo width={100} height={70} />
@@ -13,7 +22,7 @@ export const LoginPage = () => {
         <br />
         건강을 기록하고, 진단해보세요!
       </Description>
-      <KakaoButton>
+      <KakaoButton onClick={handleKakaoLogin}>
         <img src={kakaoLoginButton} alt="카카오로 시작하기" />
       </KakaoButton>
     </Container>
