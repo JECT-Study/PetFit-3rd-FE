@@ -10,9 +10,9 @@ interface Props {
 export const SlotButton = ({ selectedIds, onToggle }: Props) => {
   return (
     <SlotContainer>
-      {SLOT_ITEMS.map(({ id, icon, label }) => (
+      {SLOT_ITEMS.map(({ id, Icon, label }) => (
         <Button key={id} $isSelected={selectedIds.includes(id)} onClick={() => onToggle(id)}>
-          <img src={icon} alt={label} />
+          <Icon />
           {label}
         </Button>
       ))}
