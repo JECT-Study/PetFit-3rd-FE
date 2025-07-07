@@ -5,8 +5,8 @@ export type RoutineStatus = 'done' | 'note' | 'todo';
 
 export interface Routine {
   id: SlotId;
-  current: number | null;
-  goal: number | null;
-  memo: string;
+  current?: number | null;
+  default: number | string;
+  memo: string | null;
   status: RoutineStatus;
 }

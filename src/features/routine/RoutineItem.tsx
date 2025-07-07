@@ -7,28 +7,29 @@ import { routineData } from '@/mocks/routineData';
 export const RoutineItem = () => {
   return (
     <div>
-      {routineData.map(r => {
-        const slot = SLOT_ITEMS.find(s => s.id === r.id)!;
+      {routineData.map(rtn => {
+        const { id, Icon, label, unit } = SLOT_ITEMS.find(slot => slot.id === rtn.id)!;
         return (
-          <Container key={r.id}>
+          <Container key={id}>
             <ItemContainer>
-              <Check />
+              <Check width={24} color="#DDDDDD" />
 
               <MainInfoContainer>
                 <MainInfo>
-                  <img src={slot.icon} />
-                  <TitleText>{slot.label}</TitleText>
+                  <Icon width={16} color="#4D9DE0" />
+                  <TitleText>{label}</TitleText>
                   <AmountText>
-                    0 {slot.unit} / 150 {slot.unit}
+                    {rtn.current !== undefined ? `${rtn.current} ${unit} / ` : null} {rtn.default}{' '}
+                    {unit}
                   </AmountText>
                 </MainInfo>
 
-                <MemoInfo>메모메모메모메모메모메모</MemoInfo>
+                <MemoInfo>{rtn.memo}</MemoInfo>
               </MainInfoContainer>
             </ItemContainer>
 
             <NoteButton>
-              <Ellipsis />
+              <Ellipsis width={24} />
             </NoteButton>
           </Container>
         );
@@ -50,16 +51,21 @@ const ItemContainer = styled.div`
   gap: 20px;
   margin: 10px 0;
 `;
-const MainInfoContainer = styled.div`
-  gap: 5px;
-`;
+
+const MainInfoContainer = styled.div``;
 
 const TitleText = styled.div`
   font-weight: 500;
+  font-size: 16px;
 `;
-const AmountText = styled.div``;
+
+const AmountText = styled.div`
+  font-size: 14px;
+`;
+
 const MainInfo = styled.div`
   display: flex;
+  align-items: center;
   margin: 5px 0;
   gap: 6px;
   font-size: 14px;
@@ -68,5 +74,10 @@ const MainInfo = styled.div`
 const MemoInfo = styled.div`
   font-size: 14px;
   color: gray;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
 `;
+
 const NoteButton = styled.div``;
