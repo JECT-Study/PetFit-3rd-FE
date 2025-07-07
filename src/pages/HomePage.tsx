@@ -1,4 +1,5 @@
 import { BaseModal } from '@/components/common/BaseModal';
+import { Routine } from '@/features/routine/Routine';
 import { useModal } from '@/hooks/useModal';
 
 export const HomePage = () => {
@@ -13,6 +14,7 @@ export const HomePage = () => {
           <p>모달 내용</p>
         </BaseModal>
       </div>
+      <Routine />
     </div>
   );
 };
