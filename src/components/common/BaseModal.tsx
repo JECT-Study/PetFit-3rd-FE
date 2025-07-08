@@ -15,7 +15,7 @@ export const BaseModal: React.FC<ModalProps> = ({ isOpen, onClose, children }) =
       document.documentElement.style.overflow = 'hidden';
       setIsAnimating(true);
     } else if (isAnimating) {
-      // 모달 닫힐 때 애니메이션 완료이 끝나면 스크롤 복원
+      // 모달 닫힐 때 애니메이션이 끝나면 스크롤 복원
       const timer = setTimeout(() => {
         document.body.style.overflow = '';
         document.documentElement.style.overflow = '';
@@ -54,7 +54,7 @@ const fadeOut = keyframes`
 `;
 
 const fadeMotion = css<{ $isOpen: boolean }>`
-  animation: ${({ $isOpen }) => ($isOpen ? fadeIn : fadeOut)} 0.2s
+  animation: ${({ $isOpen }) => ($isOpen ? fadeIn : fadeOut)} 0.1s
     ${({ $isOpen }) => ($isOpen ? 'ease-out' : 'ease-in')} forwards;
 `;
 
@@ -79,9 +79,9 @@ const ModalContent = styled.div<{ $isOpen: boolean }>`
   position: relative;
 
   width: auto;
-  min-width: 300px;
+  min-width: 335px;
   max-width: 90%;
-  padding: 22px;
+  padding: 16px;
 
   background-color: #ffffff;
   border-radius: 0.5rem;

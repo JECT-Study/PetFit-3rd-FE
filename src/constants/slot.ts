@@ -20,14 +20,15 @@ export const SLOT_ITEMS = [
     unit: 'ml',
     placeholder: '정해진 하루 음수량을 입력해주세요.',
   },
+
   {
-    id: 'poop',
-    label: '배변',
-    Icon: Poop,
+    id: 'walk',
+    label: '산책',
+    Icon: Walk,
     unit: '회',
     placeholder: '정해진 하루 산책시간을 입력해주세요.',
   },
-  { id: 'walk', label: '산책', Icon: Walk, unit: null, placeholder: '이상 없음' },
+  { id: 'poop', label: '배변', Icon: Poop, unit: null, placeholder: '이상 없음' },
   { id: 'teeth', label: '치아', Icon: Teeth, unit: null, placeholder: '이상 없음' },
   { id: 'skin', label: '피부, 털', Icon: Skin, unit: null, placeholder: '이상 없음' },
 ] as const;
