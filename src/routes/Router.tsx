@@ -7,7 +7,7 @@ import { CalendarPage } from '@/pages/CalendarPage';
 import { HomePage } from '@/pages/HomePage';
 import InfoPage from '@/pages/InfoPage';
 import { LoginPage } from '@/pages/LoginPage';
-import MyPage from '@/pages/MyPage';
+import { MyPage } from '@/pages/MyPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
 
