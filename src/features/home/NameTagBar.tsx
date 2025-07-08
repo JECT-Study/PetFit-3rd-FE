@@ -12,19 +12,53 @@ interface NameTagBarProps {
 export const NameTagBar = ({ names }: NameTagBarProps) => {
   return (
     <Wrapper>
-      {names.map(({ name, isMain }, idx) => (
-        <Tag key={idx} $isMain={isMain}>
-          {name}
-        </Tag>
-      ))}
+      <Inner>
+        {names.map(({ name, isMain }, idx) => (
+          <Tag key={idx} $isMain={isMain}>
+            {name}
+          </Tag>
+        ))}
+      </Inner>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
+  overflow-x: auto;
+  padding: 0 20px;
+
+  /* 스크롤바 감추기 (선택사항) */
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    height: 0; /* Chrome, Safari */
+  }
+
+  /* hover 시 스크롤바 나타남 */
+  &:hover {
+    scrollbar-width: thin;
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #999;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  }
+
+  /* 모바일에서 스크롤 가능하게 설정 */
+  -webkit-overflow-scrolling: touch;
+
+  cursor: grab;
+`;
+
+const Inner = styled.div`
   display: flex;
   gap: 12px;
-  padding: 0 20px;
+  white-space: nowrap;
 `;
 
 const Tag = styled.div<{ $isMain?: boolean }>`
