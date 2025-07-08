@@ -1,18 +1,15 @@
 import { Backpack } from 'lucide-react';
 import styled from 'styled-components';
 
-import { BaseModal } from '@/components/common/BaseModal';
 import { BriefCard } from '@/features/home/BriefCard';
 import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
-import { useModal } from '@/hooks/useModal';
+import { Routine } from '@/features/routine/Routine';
 import { nameListMock, noticeMock, scheduleMock } from '@/mocks/homeData';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const HomePage = () => {
-  const { isOpen, openModal, closeModal } = useModal();
-
   return (
     <Container>
       <Header>
@@ -34,10 +31,7 @@ export const HomePage = () => {
       </BriefingSection>
 
       <div>
-        <button onClick={openModal}>모달 열기 버튼</button>
-        <BaseModal isOpen={isOpen} onClose={closeModal}>
-          <p>모달 내용</p>
-        </BaseModal>
+        <Routine />
       </div>
     </Container>
   );
