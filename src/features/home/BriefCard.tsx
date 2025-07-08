@@ -52,16 +52,16 @@ const Header = styled.div`
 `;
 
 const ColorBar = styled.div`
-  margin-right: 8px;
-  width: 4px;
+  margin-right: 10px;
+  width: 3px;
   height: 24px;
-  border-radius: 2px;
 `;
 
 const Title = styled.span`
   flex: 1;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: -0.4px;
 `;
 
 const AddButton = styled.button`

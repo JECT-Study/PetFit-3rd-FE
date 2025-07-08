@@ -28,8 +28,8 @@ export const HomePage = () => {
       <BriefingSection>
         <SectionTitle>오늘의 브리핑</SectionTitle>
         <CardRow>
-          <BriefCard title="일정" color="#3B82F6" items={scheduleMock} />
-          <BriefCard title="특이사항" color="#EF4444" items={noticeMock} />
+          <BriefCard title="일정" color="#4D9DE0" items={scheduleMock} />
+          <BriefCard title="특이사항" color="#FF5C33" items={noticeMock} />
         </CardRow>
       </BriefingSection>
 
