@@ -1,10 +1,14 @@
+import { useState } from 'react';
+
 import { ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
 import { Header } from '@/components/common/Header';
+import { LogoutModal } from '@/features/mypage/LogoutModal';
 import { Profile } from '@/features/mypage/Profile';
 
 export const MyPage = () => {
+  const [logoutModal, setLogoutModal] = useState(false);
   return (
     <div>
       <Header title="마이페이지" />
@@ -17,7 +21,7 @@ export const MyPage = () => {
 
         <MenuTitle>기타</MenuTitle>
         <Menu>버전 정보</Menu>
-        <Menu>
+        <Menu onClick={() => setLogoutModal(true)}>
           로그아웃 <ChevronRight size={20} />
         </Menu>
         <Menu>
@@ -25,6 +29,9 @@ export const MyPage = () => {
           <ChevronRight size={20} />
         </Menu>
       </MenuContainer>
+
+      {/* 로그아웃 모달 */}
+      <LogoutModal isOpen={logoutModal} onClose={() => setLogoutModal(false)} />
     </div>
   );
 };
@@ -32,6 +39,7 @@ export const MyPage = () => {
 const MenuContainer = styled.div`
   margin-top: 20px;
 `;
+
 const MenuTitle = styled.div`
   padding: 12px 16px;
   font-size: 12px;
