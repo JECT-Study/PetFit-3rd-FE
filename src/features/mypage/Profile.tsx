@@ -18,7 +18,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  margin: 20px 0;
 `;
 
 const ProfilePicture = styled.div`
@@ -31,6 +32,7 @@ const ProfilePicture = styled.div`
 const UserName = styled.div`
   font-size: 16px;
 `;
+
 const EditButton = styled.button`
   display: flex;
   align-items: center;
