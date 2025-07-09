@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Header } from '@/components/common/Header';
@@ -9,6 +10,7 @@ import { Profile } from '@/features/mypage/Profile';
 
 export const MyPage = () => {
   const [logoutModal, setLogoutModal] = useState(false);
+  const navigate = useNavigate();
   return (
     <div>
       <Header title="마이페이지" />
@@ -24,7 +26,7 @@ export const MyPage = () => {
         <Menu onClick={() => setLogoutModal(true)}>
           로그아웃 <ChevronRight size={20} />
         </Menu>
-        <Menu>
+        <Menu onClick={() => navigate('/withdraw')}>
           <DeleteButton>탈퇴하기</DeleteButton>
           <ChevronRight size={20} />
         </Menu>
@@ -55,6 +57,9 @@ const Menu = styled.div`
   font-size: 13px;
   font-weight: 500;
   border-bottom: 1px #f0f0f0 solid;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const DeleteButton = styled.div`

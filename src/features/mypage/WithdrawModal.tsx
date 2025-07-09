@@ -7,17 +7,17 @@ interface Props {
   onClose: () => void;
 }
 
-export const LogoutModal = ({ isOpen, onClose }: Props) => {
-  // api 연결 시 로그아웃 구현 예정
+export const WithdrawModal = ({ isOpen, onClose }: Props) => {
+  // api 연결 시 탈퇴 구현 예정
   const onConfirm = () => {};
 
   return (
     <div>
       <BaseModal isOpen={isOpen} onClose={onClose}>
-        <Message>정말 로그아웃하시겠어요?</Message>
+        <Message>정말 탈퇴하시겠어요?</Message>
         <ButtonRow>
           <CancelButton onClick={onClose}>취소</CancelButton>
-          <ConfirmButton onClick={onConfirm}>로그아웃</ConfirmButton>
+          <ConfirmButton onClick={onConfirm}>탈퇴하기</ConfirmButton>
         </ButtonRow>
       </BaseModal>
     </div>
@@ -51,7 +51,7 @@ const ConfirmButton = styled.button`
   padding: 8px 12px;
   font-size: 14px;
 
-  color: #373737;
-  background: #ffc533;
+  color: #ffffff;
+  background: #ff5c33;
   border-radius: 6px;
 `;

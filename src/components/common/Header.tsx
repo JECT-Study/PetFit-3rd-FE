@@ -45,9 +45,12 @@ const HeaderBar = styled.header`
   align-items: center;
   justify-content: space-between;
 
+  max-width: 600px;
+  min-width: 320px;
+  margin: 0 auto;
   padding: 0 16px;
   background: #ffffff;
-  z-index: 100; /* 페이지 최상단 */
+  z-index: 100;
 `;
 
 const Title = styled.h1`
