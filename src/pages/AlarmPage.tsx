@@ -7,11 +7,10 @@ import { ScheduleAlarmItem } from '@/features/alarm/ScheduleAlarmItem';
 import { ScheduleRegisterModal } from '@/features/alarm/ScheduleRegisterModal';
 import { useModal } from '@/hooks/useModal';
 import type { Alarm } from '@/types/alarm';
-import { addOrUpdateAlarmList } from '@/utils/alarm';
 
 import EmptyDog from '@/assets/icons/empty-dog.svg?react';
 
-const initialEmptyAlarm = (): Alarm => ({
+const createEmptyAlarm = (): Alarm => ({
   id: Date.now(),
   startDate: new Date().toISOString().slice(0, 10),
   title: '',
@@ -22,18 +21,21 @@ export const AlarmPage = () => {
   const { isOpen, openModal, closeModal } = useModal();
 
   const [alarmList, setAlarmList] = useState<Alarm[]>([]);
-  const [editingAlarm, setEditingAlarm] = useState<Alarm>(initialEmptyAlarm());
-
+  const [editingAlarm, setEditingAlarm] = useState<Alarm>(createEmptyAlarm());
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
+  const isEditing = (list: Alarm[], target: Alarm) => list.some(alarm => alarm.id === target.id);
+
+  const addOrUpdateAlarmList = (list: Alarm[], target: Alarm): Alarm[] =>
+    isEditing(list, target)
+      ? list.map(alarm => (alarm.id === target.id ? target : alarm))
+      : [...list, target];
+
+  const deleteAlarmById = (list: Alarm[], targetId: number): Alarm[] =>
+    list.filter(alarm => alarm.id !== targetId);
+
   const handleAddAlarm = () => {
-    const newAlarm: Alarm = {
-      id: Date.now(),
-      startDate: new Date().toISOString().slice(0, 10),
-      title: '',
-      description: '',
-    };
-    setEditingAlarm(newAlarm);
+    setEditingAlarm(createEmptyAlarm());
     openModal();
   };
 
@@ -44,16 +46,12 @@ export const AlarmPage = () => {
 
   const handleSubmit = (submittedAlarm: Alarm) => {
     setAlarmList(prev => addOrUpdateAlarmList(prev, submittedAlarm));
-    cleanupAndCloseModal();
-  };
-
-  const cleanupAndCloseModal = () => {
-    closeModal(); // 모달 닫기
+    closeModal();
   };
 
   const confirmDelete = () => {
     if (deleteTargetId !== null) {
-      setAlarmList(prev => prev.filter(alarm => alarm.id !== deleteTargetId));
+      setAlarmList(prev => deleteAlarmById(prev, deleteTargetId));
       setDeleteTargetId(null);
     }
   };
@@ -90,7 +88,7 @@ export const AlarmPage = () => {
 
       <ScheduleRegisterModal
         isOpen={isOpen}
-        onClose={cleanupAndCloseModal}
+        onClose={closeModal}
         initialAlarm={editingAlarm} // 추가 시엔 빈 객체, 수정 시엔 기존 알람
         onSubmit={handleSubmit}
       />
