@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { MainLayout } from '@/layouts/MainLayout';
 import { PlainLayout } from '@/layouts/PlainLayout';
-import AlarmPage from '@/pages/AlarmPage';
+import { AlarmPage } from '@/pages/AlarmPage';
 import { CalendarPage } from '@/pages/CalendarPage';
 import { HomePage } from '@/pages/HomePage';
 import InfoPage from '@/pages/InfoPage';
