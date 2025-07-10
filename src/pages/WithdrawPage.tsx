@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { SquareCheckBig } from 'lucide-react';
 import styled from 'styled-components';
 
-import { Header } from '@/components/common/Header';
+import { TitleHeader } from '@/components/common/TitleHeader';
 import { WithdrawModal } from '@/features/mypage/WithdrawModal';
 
 import WithdrawDog from '@/assets/icons/withdraw-dog.svg?react';
@@ -25,7 +25,7 @@ export const WithdrawPage = () => {
   };
   return (
     <>
-      <Header title="탈퇴하기" showBack={true} />
+      <TitleHeader title="탈퇴하기" showBack={true} />
       <Container>
         <Content>
           <WithdrawDog />

@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Header } from '@/components/common/Header';
+import { TitleHeader } from '@/components/common/TitleHeader';
 import { LogoutModal } from '@/features/mypage/LogoutModal';
 import { Profile } from '@/features/mypage/Profile';
 
@@ -13,7 +13,7 @@ export const MyPage = () => {
   const navigate = useNavigate();
   return (
     <div>
-      <Header title="마이페이지" />
+      <TitleHeader title="마이페이지" />
       <Profile />
       <MenuContainer>
         <MenuTitle>반려동물 설정</MenuTitle>

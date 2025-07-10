@@ -10,7 +10,7 @@ interface HeaderProps {
   right?: ReactNode;
 }
 
-export const Header = ({ title, showBack, right }: HeaderProps) => {
+export const TitleHeader = ({ title, showBack, right }: HeaderProps) => {
   const navigate = useNavigate();
 
   return (
