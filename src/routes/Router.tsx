@@ -7,9 +7,10 @@ import { CalendarPage } from '@/pages/CalendarPage';
 import { HomePage } from '@/pages/HomePage';
 import InfoPage from '@/pages/InfoPage';
 import { LoginPage } from '@/pages/LoginPage';
-import MyPage from '@/pages/MyPage';
+import { MyPage } from '@/pages/MyPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
+import { WithdrawPage } from '@/pages/WithdrawPage';
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
       { path: '/info', element: <InfoPage /> },
       { path: '/mypage', element: <MyPage /> },
       { path: '/slot', element: <SlotSettingPage /> },
+      { path: '/withdraw', element: <WithdrawPage /> },
     ],
   },
   {
