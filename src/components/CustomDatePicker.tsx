@@ -1,54 +1,100 @@
-import { ko } from 'date-fns/locale';
-import ReactDatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { useState } from 'react';
+
+import { Calendar } from 'lucide-react';
 import styled from 'styled-components';
 
-type CustomDatePickerProps = {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-};
+import type { BaseFieldProps } from '@/types/form';
 
-export const CustomDatePicker = ({ value, onChange, placeholder }: CustomDatePickerProps) => {
-  const dateValue = value ? new Date(value) : null;
+interface CustomDatePickerProps extends BaseFieldProps {
+  value: string;
+  onChange: (date: string) => void;
+}
+
+export const CustomDatePicker = ({ label, value, onChange }: CustomDatePickerProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleDateClick = (date: string) => {
+    onChange(date);
+    setIsOpen(false);
+  };
 
   return (
-    <StyledDatePicker
-      locale={ko}
-      selected={dateValue}
-      onChange={(date: Date | null) => date && onChange(date.toISOString().slice(0, 10))}
-      dateFormat="yyyy년 MM월 dd일"
-      placeholderText={placeholder ?? '날짜를 선택하세요'}
-      popperPlacement="bottom-start"
-    />
+    <FieldGroup>
+      {label && <Label>{label}</Label>}
+      <SelectBox onClick={() => setIsOpen(!isOpen)}>
+        <span>{value}</span>
+        <Calendar size={18} />
+      </SelectBox>
+      {isOpen && (
+        <CalendarDropdown>
+          <SimpleCalendar>
+            {[...Array(30)].map((_, i) => {
+              const day = i + 1;
+              const formatted = `2025-06-${day.toString().padStart(2, '0')}`;
+              return (
+                <CalendarDay key={day} onClick={() => handleDateClick(formatted)}>
+                  {day}
+                </CalendarDay>
+              );
+            })}
+          </SimpleCalendar>
+        </CalendarDropdown>
+      )}
+    </FieldGroup>
   );
 };
 
-// Forware Ref 패턴?
-const BaseDatePicker = (props: React.ComponentProps<typeof ReactDatePicker>) => (
-  <ReactDatePicker {...props} />
-);
+const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+`;
 
-const StyledDatePicker = styled(BaseDatePicker)`
-  width: 100%;
-  padding: 14px 20px;
-  font-size: 16px;
+const Label = styled.label`
+  padding-left: 8px;
+  font-size: 14px;
+  color: #333;
+`;
+
+const SelectBox = styled.div`
+  padding: 12px 16px;
   background-color: #fff8e7;
   border: 1.5px solid #facc15;
   border-radius: 8px;
-  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+`;
 
-  .react-datepicker__day--selected {
-    background-color: #f59e0b;
-    color: white;
-  }
+const Dropdown = styled.div`
+  position: absolute;
+  bottom: 60px;
+  width: 100%;
+  background-color: #fff8e7;
+  border: 1.5px solid #facc15;
+  border-radius: 8px;
+  padding: 8px 0;
+  z-index: 100;
+`;
 
-  .react-datepicker__day--keyboard-selected {
-    background-color: #facc15;
-  }
+const CalendarDropdown = styled(Dropdown)`
+  padding: 16px;
+`;
 
-  .react-datepicker__header {
-    background-color: #fff8e7;
-    border-bottom: none;
+const SimpleCalendar = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+`;
+
+const CalendarDay = styled.div`
+  text-align: center;
+  padding: 6px 0;
+  cursor: pointer;
+  border-radius: 6px;
+  &:hover {
+    background-color: #fde68a;
   }
 `;
