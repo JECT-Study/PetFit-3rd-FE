@@ -5,28 +5,29 @@ import styled from 'styled-components';
 import { PetRegisterForm } from '@/components/PetRegisterForm';
 import type { PetGender, PetType } from '@/types/common';
 
+interface PetForm {
+  name: string;
+  species: PetType;
+  gender: PetGender;
+  birthDate: string;
+}
+
 export const SignupPetRegisterPage = () => {
-  const [name, setName] = useState('');
-  const [species, setSpecies] = useState<PetType>('강아지');
-  const [gender, setGender] = useState<PetGender>('남아');
-  const [birthDate, setBirthDate] = useState('');
+  const today = new Date().toISOString().split('T')[0];
+
+  const [form, setForm] = useState<PetForm>({
+    name: '',
+    species: '강아지',
+    gender: '남아',
+    birthDate: today,
+  });
   const [isFormValid, setIsFormValid] = useState(false);
 
   return (
     <Container>
       <Title>반려동물 정보 입력</Title>
 
-      <PetRegisterForm
-        name={name}
-        setName={setName}
-        species={species}
-        setSpecies={setSpecies}
-        gender={gender}
-        setGender={setGender}
-        birthDate={birthDate}
-        setBirthDate={setBirthDate}
-        onValidationChange={setIsFormValid}
-      />
+      <PetRegisterForm form={form} setForm={setForm} onValidationChange={setIsFormValid} />
 
       <NextButton disabled={!isFormValid}>다음</NextButton>
     </Container>

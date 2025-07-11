@@ -11,17 +11,23 @@ import type { Alarm } from '@/types/alarm';
 import {
   getTitleValidationMessage,
   isValidAlarmTitle,
+  MAX_DESCRIPTION_LENGTH,
   MAX_TITLE_LENGTH,
 } from '@/utils/alarmValidation';
 
-interface Props {
+interface ScheduleRegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialAlarm: Alarm;
   onSubmit: (alarm: Alarm) => void;
 }
 
-export const ScheduleRegisterModal = ({ isOpen, onClose, initialAlarm, onSubmit }: Props) => {
+export const ScheduleRegisterModal = ({
+  isOpen,
+  onClose,
+  initialAlarm,
+  onSubmit,
+}: ScheduleRegisterModalProps) => {
   const [alarm, setAlarm] = useState<Alarm>(initialAlarm);
   const [isTitleTouched, setIsTitleTouched] = useState(false);
 
@@ -72,15 +78,15 @@ export const ScheduleRegisterModal = ({ isOpen, onClose, initialAlarm, onSubmit 
             onBlur={() => setIsTitleTouched(true)}
             hasError={isTitleInvalid}
             errorMessage={titleErrorMessage}
-            placeholder="할 일의 제목을 입력해주세요."
             maxLength={MAX_TITLE_LENGTH}
+            placeholder="할 일의 제목을 입력해주세요."
           />
 
           <FormTextarea
             value={alarm.description}
             onChange={e => setAlarm({ ...alarm, description: e.target.value })}
+            maxLength={MAX_DESCRIPTION_LENGTH}
             placeholder="내용을 입력해주세요."
-            maxLength={200}
           />
 
           <SubmitButton onClick={handleSubmit} disabled={!alarm.startDate || !alarm.title}>
