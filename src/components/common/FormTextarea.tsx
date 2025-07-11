@@ -1,14 +1,15 @@
 import styled from 'styled-components';
 
-interface FormTextareaProps {
-  label?: string;
+import type { BaseFieldProps } from '@/types/form';
+
+interface FormTextareaProps extends BaseFieldProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onBlur?: () => void;
-  maxLength?: number;
   hasError?: boolean;
   errorMessage?: string;
   showCount?: boolean;
+  maxLength?: number;
   placeholder?: string;
 }
 
@@ -17,10 +18,10 @@ export const FormTextarea = ({
   value,
   onChange,
   onBlur,
-  maxLength = 300,
   hasError = false,
   errorMessage,
   showCount = true,
+  maxLength = 300,
   placeholder,
 }: FormTextareaProps) => {
   return (

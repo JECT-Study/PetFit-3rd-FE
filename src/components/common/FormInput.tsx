@@ -1,15 +1,16 @@
 import styled from 'styled-components';
 
-interface FormInputProps {
-  label?: string;
+import type { BaseFieldProps } from '@/types/form';
+
+interface FormInputProps extends BaseFieldProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: () => void;
   hasError?: boolean;
   errorMessage?: string | null;
   showCount?: boolean;
-  placeholder?: string;
   maxLength?: number;
+  placeholder?: string;
 }
 
 export const FormInput = ({
@@ -17,10 +18,10 @@ export const FormInput = ({
   value,
   onChange,
   onBlur,
-  maxLength = 100,
   hasError = false,
   errorMessage,
   showCount = true,
+  maxLength = 100,
   placeholder,
 }: FormInputProps) => {
   return (
@@ -35,7 +36,7 @@ export const FormInput = ({
         placeholder={placeholder}
       />
       <HelperRow>
-        <ErrorMessage isVisible={hasError}>{errorMessage}</ErrorMessage>
+        <ErrorMessage $isVisible={hasError}>{errorMessage}</ErrorMessage>
         {showCount && (
           <CharCount $hasError={hasError}>
             {value.length}/{maxLength}
@@ -79,8 +80,8 @@ const CharCount = styled.span<{ $hasError?: boolean }>`
   color: ${({ $hasError }) => ($hasError ? '#f87171' : '#999')};
 `;
 
-const ErrorMessage = styled.p<{ isVisible?: boolean }>`
+const ErrorMessage = styled.p<{ $isVisible?: boolean }>`
   color: #f87171;
   font-size: 12px;
-  visibility: ${({ isVisible }) => (isVisible ? 'visible' : 'hidden')};
+  visibility: ${({ $isVisible }) => ($isVisible ? 'visible' : 'hidden')};
 `;
