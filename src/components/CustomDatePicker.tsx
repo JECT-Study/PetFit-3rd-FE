@@ -1,22 +1,70 @@
 import { useState } from 'react';
 
-import { Calendar } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
+import { DAYS_OF_WEEK } from '@/constants/calendar';
 import type { BaseFieldProps } from '@/types/form';
+import { formatDate } from '@/utils/formatDate';
 
 interface CustomDatePickerProps extends BaseFieldProps {
   value: string;
   onChange: (date: string) => void;
 }
 
+function getCalendarDates(year: number, month: number): string[] {
+  const result: string[] = [];
+
+  const firstDay = new Date(year, month, 1);
+  const startDay = firstDay.getDay(); // 0 (일) ~ 6 (토)
+
+  const prevMonthLastDate = new Date(year, month, 0).getDate();
+  for (let i = startDay - 1; i >= 0; i--) {
+    const date = new Date(year, month - 1, prevMonthLastDate - i);
+    result.push(formatDate(date));
+  }
+
+  const currMonthLastDate = new Date(year, month + 1, 0).getDate();
+  for (let i = 1; i <= currMonthLastDate; i++) {
+    result.push(formatDate(new Date(year, month, i)));
+  }
+
+  const totalCells = Math.ceil(result.length / 7) * 7;
+  const remaining = totalCells - result.length;
+
+  for (let i = 1; i <= remaining; i++) {
+    const date = new Date(year, month + 1, i);
+    result.push(formatDate(date));
+  }
+
+  return result;
+}
+
 export const CustomDatePicker = ({ label, value, onChange }: CustomDatePickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [viewDate, setViewDate] = useState(new Date(value));
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth(); // 0-based
 
   const handleDateClick = (date: string) => {
     onChange(date);
     setIsOpen(false);
   };
+
+  const handlePrevMonth = () => {
+    const prev = new Date(viewDate);
+    prev.setMonth(prev.getMonth() - 1);
+    setViewDate(prev);
+  };
+
+  const handleNextMonth = () => {
+    const next = new Date(viewDate);
+    next.setMonth(next.getMonth() + 1);
+    setViewDate(next);
+  };
+
+  const calendarDates = getCalendarDates(year, month);
 
   return (
     <FieldGroup>
@@ -27,12 +75,37 @@ export const CustomDatePicker = ({ label, value, onChange }: CustomDatePickerPro
       </SelectBox>
       {isOpen && (
         <CalendarDropdown>
+          <CalendarHeader>
+            <button onClick={handlePrevMonth}>
+              <ChevronLeft size={18} />
+            </button>
+            <span>
+              {year}년 {month + 1}월
+            </span>
+            <button onClick={handleNextMonth}>
+              <ChevronRight size={18} />
+            </button>
+          </CalendarHeader>
+
           <SimpleCalendar>
-            {[...Array(30)].map((_, i) => {
-              const day = i + 1;
-              const formatted = `2025-06-${day.toString().padStart(2, '0')}`;
+            {DAYS_OF_WEEK.map(day => (
+              <CalendarDay key={day} $isHeader>
+                {day}
+              </CalendarDay>
+            ))}
+            {calendarDates.map(date => {
+              const dateObj = new Date(date);
+              const day = dateObj.getDate();
+              const isCurrentMonth = dateObj.getMonth() === month;
+              const isSelected = date === value;
+
               return (
-                <CalendarDay key={day} onClick={() => handleDateClick(formatted)}>
+                <CalendarDay
+                  key={date}
+                  $dimmed={!isCurrentMonth}
+                  $isSelected={isSelected}
+                  onClick={() => handleDateClick(date)}
+                >
                   {day}
                 </CalendarDay>
               );
@@ -48,7 +121,6 @@ const FieldGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  position: relative;
 `;
 
 const Label = styled.label`
@@ -68,33 +140,43 @@ const SelectBox = styled.div`
   cursor: pointer;
 `;
 
-const Dropdown = styled.div`
-  position: absolute;
-  bottom: 60px;
-  width: 100%;
+const CalendarDropdown = styled.div`
+  margin-top: -4px;
+  padding: 16px;
   background-color: #fff8e7;
   border: 1.5px solid #facc15;
   border-radius: 8px;
-  padding: 8px 0;
-  z-index: 100;
 `;
 
-const CalendarDropdown = styled(Dropdown)`
-  padding: 16px;
+const CalendarHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  padding-bottom: 10px;
 `;
 
 const SimpleCalendar = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
 `;
 
-const CalendarDay = styled.div`
+const CalendarDay = styled.div<{
+  $dimmed?: boolean;
+  $isSelected?: boolean;
+  $isHeader?: boolean;
+}>`
+  max-width: 38px;
+  padding: 10px 8px;
   text-align: center;
-  padding: 6px 0;
-  cursor: pointer;
-  border-radius: 6px;
+  font-weight: ${({ $isHeader }) => ($isHeader ? 'bold' : 'normal')};
+  color: ${({ $isHeader, $dimmed }) => ($isHeader ? '#373737' : $dimmed ? '#ccc' : '#000')};
+  background-color: ${({ $dimmed, $isSelected, $isHeader }) =>
+    $isHeader ? 'transparent' : $isSelected ? '#FFE299' : $dimmed ? '#fff' : 'transparent'};
+  border: ${({ $isHeader }) => ($isHeader ? 'none' : '2px solid #fff')};
+  cursor: ${({ $isHeader }) => ($isHeader ? 'default' : 'pointer')};
+
   &:hover {
-    background-color: #fde68a;
+    background-color: ${({ $isHeader }) => ($isHeader ? 'transparent' : '#fde68a')};
   }
 `;

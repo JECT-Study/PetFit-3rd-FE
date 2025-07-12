@@ -66,8 +66,8 @@ export const ScheduleRegisterModal = ({
         </CloseButton>
 
         <Form>
-          <Label>시작 날짜</Label>
           <CustomDatePicker
+            label="시작 날짜"
             value={alarm.startDate}
             onChange={startDate => setAlarm({ ...alarm, startDate })}
           />
@@ -120,11 +120,6 @@ const Form = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
-
-const Label = styled.label`
-  font-size: 14px;
-  font-weight: 600;
 `;
 
 const SubmitButton = styled.button<{ disabled: boolean }>`
