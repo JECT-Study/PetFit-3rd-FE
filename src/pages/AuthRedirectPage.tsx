@@ -1,31 +1,35 @@
 import { useEffect } from 'react';
 
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { kakaoLoginDev } from '@/apis/auth';
 
 export const AuthRedirectPage = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const code = searchParams.get('code');
-    if (!code) {
-      navigate('/login');
-      return;
-    }
+    const code = new URL(window.location.href).searchParams.get('code');
+    if (!code) return;
 
-    const doLogin = async () => {
+    const getToken = async () => {
       try {
-        await kakaoLoginDev(code);
+        const response = await kakaoLoginDev(code);
+
+        const accessToken = response.data.content.accessToken;
+        const refreshToken = response.data.content.refreshToken;
+
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+
         navigate('/');
       } catch (err) {
-        console.log(err);
+        console.error('로그인 실패', err);
         navigate('/login');
       }
     };
 
-    doLogin();
+    getToken();
   }, []);
-  return <div></div>;
+
+  return <div>로그인 중</div>;
 };
