@@ -98,5 +98,5 @@ const FormSection = styled.div`
   flex-direction: column;
   gap: 8px;
   flex-grow: 1;
-  margin-top: 42px;
+  margin: 42px 0 20px;
 `;

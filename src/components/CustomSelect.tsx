@@ -43,7 +43,6 @@ const FieldGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  position: relative;
 `;
 
 const Label = styled.label`
@@ -53,29 +52,29 @@ const Label = styled.label`
 `;
 
 const SelectBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 12px 16px;
   background-color: #fff8e7;
   border: 1.5px solid #facc15;
   border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   cursor: pointer;
 `;
 
-const Dropdown = styled.div`
-  position: absolute;
-  top: 70px;
-  width: 100%;
+const Dropdown = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: -4px;
+  padding: 10px 20px;
   background-color: #fff8e7;
   border: 1.5px solid #facc15;
   border-radius: 8px;
-  padding: 8px 0;
-  z-index: 100;
 `;
 
-const Option = styled.div`
-  padding: 8px 16px;
+const Option = styled.li`
+  color: #666666;
   cursor: pointer;
   &:hover {
     background-color: #fef3c7;
