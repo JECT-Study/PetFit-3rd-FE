@@ -12,28 +12,28 @@ interface CustomSelectProps extends BaseFieldProps {
 }
 
 export const CustomSelect = ({ label, value, onChange, options }: CustomSelectProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleSelect = (val: string) => {
+  const handleSelectOption = (val: string) => {
     onChange(val);
-    setIsOpen(false);
+    setIsDropdownOpen(false);
   };
 
   return (
     <FieldGroup>
       {label && <Label>{label}</Label>}
-      <SelectBox onClick={() => setIsOpen(!isOpen)}>
+      <SelectTrigger onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
         <span>{value}</span>
         <ChevronDown size={18} />
-      </SelectBox>
-      {isOpen && (
-        <Dropdown>
+      </SelectTrigger>
+      {isDropdownOpen && (
+        <SelectDropdown>
           {options.map(opt => (
-            <Option key={opt.value} onClick={() => handleSelect(opt.value)}>
+            <SelectOption key={opt.value} onClick={() => handleSelectOption(opt.value)}>
               {opt.label}
-            </Option>
+            </SelectOption>
           ))}
-        </Dropdown>
+        </SelectDropdown>
       )}
     </FieldGroup>
   );
@@ -51,7 +51,7 @@ const Label = styled.label`
   color: #333;
 `;
 
-const SelectBox = styled.div`
+const SelectTrigger = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -62,7 +62,7 @@ const SelectBox = styled.div`
   cursor: pointer;
 `;
 
-const Dropdown = styled.ul`
+const SelectDropdown = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -73,7 +73,7 @@ const Dropdown = styled.ul`
   border-radius: 8px;
 `;
 
-const Option = styled.li`
+const SelectOption = styled.li`
   color: #666666;
   cursor: pointer;
   &:hover {

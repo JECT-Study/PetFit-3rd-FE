@@ -5,113 +5,96 @@ import styled from 'styled-components';
 
 import { DAYS_OF_WEEK } from '@/constants/calendar';
 import type { BaseFieldProps } from '@/types/form';
-import { formatDate } from '@/utils/formatDate';
+import { getMonthDates, isSameMonth } from '@/utils/calendar';
 
 interface CustomDatePickerProps extends BaseFieldProps {
   value: string;
   onChange: (date: string) => void;
 }
 
-function getCalendarDates(year: number, month: number): string[] {
-  const result: string[] = [];
+export const CustomDatePicker = ({
+  label,
+  value: selectedDate,
+  onChange,
+}: CustomDatePickerProps) => {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [visibleDate, setVisibleDate] = useState(new Date(selectedDate));
 
-  const firstDay = new Date(year, month, 1);
-  const startDay = firstDay.getDay(); // 0 (일) ~ 6 (토)
+  const visibleYear = visibleDate.getFullYear();
+  const visibleMonth = visibleDate.getMonth() + 1;
+  const calendarDates = getMonthDates(visibleYear, visibleMonth);
 
-  const prevMonthLastDate = new Date(year, month, 0).getDate();
-  for (let i = startDay - 1; i >= 0; i--) {
-    const date = new Date(year, month - 1, prevMonthLastDate - i);
-    result.push(formatDate(date));
-  }
-
-  const currMonthLastDate = new Date(year, month + 1, 0).getDate();
-  for (let i = 1; i <= currMonthLastDate; i++) {
-    result.push(formatDate(new Date(year, month, i)));
-  }
-
-  const totalCells = Math.ceil(result.length / 7) * 7;
-  const remaining = totalCells - result.length;
-
-  for (let i = 1; i <= remaining; i++) {
-    const date = new Date(year, month + 1, i);
-    result.push(formatDate(date));
-  }
-
-  return result;
-}
-
-export const CustomDatePicker = ({ label, value, onChange }: CustomDatePickerProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [viewDate, setViewDate] = useState(new Date(value));
-
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth(); // 0-based
-
-  const handleDateClick = (date: string) => {
-    onChange(date);
-    setIsOpen(false);
+  const handleToggleCalendar = () => {
+    if (!isCalendarOpen) {
+      setVisibleDate(new Date(selectedDate));
+    }
+    setIsCalendarOpen(prev => !prev);
   };
 
   const handlePrevMonth = () => {
-    const prev = new Date(viewDate);
+    const prev = new Date(visibleDate);
     prev.setMonth(prev.getMonth() - 1);
-    setViewDate(prev);
+    setVisibleDate(prev);
   };
 
   const handleNextMonth = () => {
-    const next = new Date(viewDate);
+    const next = new Date(visibleDate);
     next.setMonth(next.getMonth() + 1);
-    setViewDate(next);
+    setVisibleDate(next);
   };
 
-  const calendarDates = getCalendarDates(year, month);
+  const handleSelectDate = (date: string) => {
+    onChange(date);
+    setIsCalendarOpen(false);
+  };
 
   return (
     <FieldGroup>
       {label && <Label>{label}</Label>}
-      <SelectBox onClick={() => setIsOpen(!isOpen)}>
-        <span>{value}</span>
+      <TriggerButton onClick={handleToggleCalendar}>
+        <span>{selectedDate}</span>
         <Calendar size={18} />
-      </SelectBox>
-      {isOpen && (
-        <CalendarDropdown>
-          <CalendarHeader>
+      </TriggerButton>
+      {isCalendarOpen && (
+        <CalendarPanel>
+          <CalendarHeaderRow>
             <button onClick={handlePrevMonth}>
               <ChevronLeft size={18} />
             </button>
             <span>
-              {year}년 {month + 1}월
+              {visibleYear}년 {visibleMonth}월
             </span>
             <button onClick={handleNextMonth}>
               <ChevronRight size={18} />
             </button>
-          </CalendarHeader>
+          </CalendarHeaderRow>
 
-          <SimpleCalendar>
+          <DayOfWeekRow>
             {DAYS_OF_WEEK.map(day => (
-              <CalendarDay key={day} $isHeader>
-                {day}
-              </CalendarDay>
+              <CalendarHeaderCell key={day}>{day}</CalendarHeaderCell>
             ))}
+          </DayOfWeekRow>
+
+          <CalendarGrid>
             {calendarDates.map(date => {
               const dateObj = new Date(date);
               const day = dateObj.getDate();
-              const isCurrentMonth = dateObj.getMonth() === month;
-              const isSelected = date === value;
+              const isCurrentMonth = isSameMonth(dateObj, visibleYear, visibleMonth);
+              const isSelected = date === selectedDate;
 
               return (
-                <CalendarDay
+                <DateCell
                   key={date}
                   $dimmed={!isCurrentMonth}
                   $isSelected={isSelected}
-                  onClick={() => handleDateClick(date)}
+                  onClick={() => handleSelectDate(date)}
                 >
                   {day}
-                </CalendarDay>
+                </DateCell>
               );
             })}
-          </SimpleCalendar>
-        </CalendarDropdown>
+          </CalendarGrid>
+        </CalendarPanel>
       )}
     </FieldGroup>
   );
@@ -129,7 +112,7 @@ const Label = styled.label`
   color: #333;
 `;
 
-const SelectBox = styled.div`
+const TriggerButton = styled.div`
   padding: 12px 16px;
   background-color: #fff8e7;
   border: 1.5px solid #facc15;
@@ -140,7 +123,7 @@ const SelectBox = styled.div`
   cursor: pointer;
 `;
 
-const CalendarDropdown = styled.div`
+const CalendarPanel = styled.div`
   margin-top: -4px;
   padding: 16px;
   background-color: #fff8e7;
@@ -148,35 +131,51 @@ const CalendarDropdown = styled.div`
   border-radius: 8px;
 `;
 
-const CalendarHeader = styled.div`
+const CalendarHeaderRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
 `;
 
-const SimpleCalendar = styled.div`
+const CalendarHeaderCell = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  font-weight: bold;
+  color: #373737;
+`;
+
+const DayOfWeekRow = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 `;
 
-const CalendarDay = styled.div<{
+const CalendarGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #fff;
+`;
+
+const DateCell = styled.div<{
   $dimmed?: boolean;
   $isSelected?: boolean;
   $isHeader?: boolean;
 }>`
-  max-width: 38px;
-  padding: 10px 8px;
-  text-align: center;
-  font-weight: ${({ $isHeader }) => ($isHeader ? 'bold' : 'normal')};
-  color: ${({ $isHeader, $dimmed }) => ($isHeader ? '#373737' : $dimmed ? '#ccc' : '#000')};
-  background-color: ${({ $dimmed, $isSelected, $isHeader }) =>
-    $isHeader ? 'transparent' : $isSelected ? '#FFE299' : $dimmed ? '#fff' : 'transparent'};
-  border: ${({ $isHeader }) => ($isHeader ? 'none' : '2px solid #fff')};
-  cursor: ${({ $isHeader }) => ($isHeader ? 'default' : 'pointer')};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  font-weight: normal;
+  color: ${({ $dimmed }) => ($dimmed ? '#ccc' : '#000')};
+  background-color: ${({ $dimmed, $isSelected }) =>
+    $isSelected ? '#FFE299' : $dimmed ? '#fff' : 'transparent'};
+  border: 2px solid #fff;
+  cursor: pointer;
 
   &:hover {
-    background-color: ${({ $isHeader }) => ($isHeader ? 'transparent' : '#fde68a')};
+    background-color: #fde68a;
   }
 `;
