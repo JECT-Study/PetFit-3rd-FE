@@ -15,7 +15,7 @@ export const kakaoLogin = async (code: string) => {
 
 export const kakaoLoginDev = async (code: string) => {
   try {
-    const response = await axios.get(`https://petfit-ject.duckdns.org/api/auth/kakao/login/dev`, {
+    const response = await axios.get(`auth/kakao/login/dev`, {
       params: { code },
     });
     return response;
