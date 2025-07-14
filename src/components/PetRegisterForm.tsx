@@ -1,62 +1,53 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import styled from 'styled-components';
 
 import { CustomDatePicker } from '@/components/CustomDatePicker';
-import type { PetGender, PetType } from '@/types/common';
-import {
-  getPetNameValidationMessage,
-  isValidPetName,
-  MAX_NAME_LENGTH,
-} from '@/utils/petNameValidation';
+import type { PetForm, PetGender, PetType } from '@/types/form';
 
 import { FormInput } from './common/FormInput';
 import { CustomSelect } from './CustomSelect';
 
-interface PetForm {
-  name: string;
-  species: PetType;
-  gender: PetGender;
-  birthDate: string;
-}
-
 interface PetRegisterFormProps {
   form: PetForm;
   setForm: (val: PetForm) => void;
-  onValidationChange: (isValid: boolean) => void;
+  onFormValidChange: (isValid: boolean) => void;
 }
 
-export const PetRegisterForm = ({ form, setForm, onValidationChange }: PetRegisterFormProps) => {
-  const [isNameTouched, setIsNameTouched] = useState(false);
+export const PetRegisterForm = ({ form, setForm, onFormValidChange }: PetRegisterFormProps) => {
+  const [formValidity, setFormValidity] = useState({
+    name: false,
+    species: true,
+    gender: true,
+    birthDate: true,
+  });
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
-    setForm({ ...form, name });
-    if (!isNameTouched && name.length > 0) {
-      setIsNameTouched(true);
-    }
-  };
-
-  const isNameInvalid = isNameTouched && !isValidPetName(form.name);
-  const nameErrorMessage = isNameTouched ? getPetNameValidationMessage(form.name) : null;
-
-  // ✅ 유효성 계산 → 부모에게 전달
   useEffect(() => {
-    const isValid = !isNameInvalid && form.species && form.gender && form.birthDate;
-    onValidationChange?.(!!isValid);
-  }, [form, isNameInvalid, onValidationChange]);
+    const isValid = Object.values(formValidity).every(Boolean);
+    onFormValidChange(isValid);
+  }, [formValidity, onFormValidChange]);
+
+  // 렌더링마다 함수 재생성 방지
+  const fieldValidHandlers = useMemo(
+    () => ({
+      name: (isValid: boolean) => {
+        setFormValidity(prev => ({ ...prev, name: isValid }));
+      },
+      // 필요 시 다른 필드도 정의 가능
+      // species: ...
+    }),
+    []
+  );
 
   return (
     <FormSection>
       <FormInput
         label="이름"
         value={form.name}
-        onChange={handleNameChange}
-        onBlur={() => setIsNameTouched(true)}
-        hasError={isNameInvalid}
-        errorMessage={nameErrorMessage}
-        maxLength={MAX_NAME_LENGTH}
+        onChange={e => setForm({ ...form, name: e.target.value })}
+        validationType="petName"
         placeholder="반려동물의 이름을 입력해주세요."
+        onFieldValidChange={fieldValidHandlers.name}
       />
 
       <CustomSelect
