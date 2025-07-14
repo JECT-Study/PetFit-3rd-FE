@@ -1,28 +1,44 @@
+import { useEffect, useState } from 'react';
+
 import styled from 'styled-components';
 
-interface FormTextareaProps {
-  label?: string;
+import type { BaseFieldProps } from '@/types/form';
+import { MAX_LENGTH, validators, type ValidationType } from '@/utils/validators';
+
+interface FormTextareaProps extends BaseFieldProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onBlur?: () => void;
-  maxLength?: number;
-  hasError?: boolean;
-  errorMessage?: string;
-  showCount?: boolean;
+  validationType: ValidationType;
   placeholder?: string;
+  onFieldValidChange: (isValid: boolean) => void;
 }
 
 export const FormTextarea = ({
   label,
   value,
   onChange,
-  onBlur,
-  maxLength = 300,
-  hasError = false,
-  errorMessage,
-  showCount = true,
+  validationType,
   placeholder,
+  onFieldValidChange,
 }: FormTextareaProps) => {
+  const [isTouched, setIsTouched] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const hasError = !!errorMessage;
+  const maxLength = MAX_LENGTH[validationType];
+
+  useEffect(() => {
+    if (!isTouched) return;
+
+    const { isValid, message } = validators[validationType](value);
+    setErrorMessage(!isValid ? message : null);
+    onFieldValidChange(isValid);
+  }, [value, validationType, isTouched, onFieldValidChange]);
+
+  const handleBlur = () => {
+    setIsTouched(true);
+  };
+
   return (
     <FieldGroup>
       {label && <Label $hasError={hasError}>{label}</Label>}
@@ -30,17 +46,15 @@ export const FormTextarea = ({
         $hasError={hasError}
         value={value}
         onChange={onChange}
-        onBlur={onBlur}
+        onBlur={handleBlur}
         maxLength={maxLength + 10}
         placeholder={placeholder}
       />
       <HelperRow>
         <ErrorMessage isVisible={hasError}>{errorMessage}</ErrorMessage>
-        {showCount && (
-          <CharCount $hasError={hasError}>
-            {value.length}/{maxLength}
-          </CharCount>
-        )}
+        <CharCount $hasError={hasError}>
+          {value.length}/{maxLength}
+        </CharCount>
       </HelperRow>
     </FieldGroup>
   );

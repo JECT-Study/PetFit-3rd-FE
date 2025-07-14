@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { X } from 'lucide-react';
 import styled from 'styled-components';
@@ -8,46 +8,53 @@ import { FormInput } from '@/components/common/FormInput';
 import { FormTextarea } from '@/components/common/FormTextarea';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import type { Alarm } from '@/types/alarm';
-import {
-  getTitleValidationMessage,
-  isValidAlarmTitle,
-  MAX_TITLE_LENGTH,
-} from '@/utils/alarmValidation';
 
-interface Props {
+interface ScheduleRegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialAlarm: Alarm;
   onSubmit: (alarm: Alarm) => void;
 }
 
-export const ScheduleRegisterModal = ({ isOpen, onClose, initialAlarm, onSubmit }: Props) => {
+export const ScheduleRegisterModal = ({
+  isOpen,
+  onClose,
+  initialAlarm,
+  onSubmit,
+}: ScheduleRegisterModalProps) => {
   const [alarm, setAlarm] = useState<Alarm>(initialAlarm);
-  const [isTitleTouched, setIsTitleTouched] = useState(false);
+
+  const [formValidity, setFormValidity] = useState({
+    startDate: true,
+    title: false,
+    content: false,
+  });
 
   // 모달 열릴 때 초기 상태 설정 (부모의 initialAlarm 상태와 동기화)
   useEffect(() => {
     if (isOpen) {
       setAlarm(initialAlarm);
-      setIsTitleTouched(false);
+      setFormValidity({ startDate: true, title: false, content: false });
     }
   }, [isOpen, initialAlarm]);
 
-  const isTitleInvalid = isTitleTouched && !isValidAlarmTitle(alarm.title);
-  const titleErrorMessage = isTitleTouched ? getTitleValidationMessage(alarm.title) : undefined;
+  const fieldValidHandlers = useMemo(
+    () => ({
+      title: (isValid: boolean) => setFormValidity(prev => ({ ...prev, title: isValid })),
+      content: (isValid: boolean) => setFormValidity(prev => ({ ...prev, content: isValid })),
+    }),
+    []
+  );
+
+  // 유효성 상태 → 전체 폼 유효 여부 판단
+  const isFormValid = useMemo(() => Object.values(formValidity).every(Boolean), [formValidity]);
 
   const handleClose = () => {
-    setIsTitleTouched(false); // 1. 입력 검증 상태 초기화
-    onClose(); // 2. 외부에서 넘겨준 닫기 콜백 실행 (부모 상태 초기화 및 모달 닫기)
-  };
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsTitleTouched(true);
-    setAlarm({ ...alarm, title: e.target.value });
+    onClose(); // 1. 외부에서 넘겨준 닫기 콜백 실행 (부모 상태 초기화 및 모달 닫기)
   };
 
   const handleSubmit = () => {
-    if (!alarm.title || !alarm.startDate) return;
+    if (!isFormValid) return;
     onSubmit(alarm);
     handleClose();
   };
@@ -60,30 +67,29 @@ export const ScheduleRegisterModal = ({ isOpen, onClose, initialAlarm, onSubmit 
         </CloseButton>
 
         <Form>
-          <Label>시작 날짜</Label>
           <CustomDatePicker
+            label="시작 날짜"
             value={alarm.startDate}
             onChange={startDate => setAlarm({ ...alarm, startDate })}
           />
 
           <FormInput
             value={alarm.title}
-            onChange={handleTitleChange}
-            onBlur={() => setIsTitleTouched(true)}
-            hasError={isTitleInvalid}
-            errorMessage={titleErrorMessage}
+            onChange={e => setAlarm(prev => ({ ...prev, title: e.target.value }))}
+            validationType="title"
             placeholder="할 일의 제목을 입력해주세요."
-            maxLength={MAX_TITLE_LENGTH}
+            onFieldValidChange={fieldValidHandlers.title}
           />
 
           <FormTextarea
             value={alarm.description}
-            onChange={e => setAlarm({ ...alarm, description: e.target.value })}
+            onChange={e => setAlarm(prev => ({ ...prev, description: e.target.value }))}
+            validationType="content"
             placeholder="내용을 입력해주세요."
-            maxLength={200}
+            onFieldValidChange={fieldValidHandlers.content}
           />
 
-          <SubmitButton onClick={handleSubmit} disabled={!alarm.startDate || !alarm.title}>
+          <SubmitButton onClick={handleSubmit} disabled={!isFormValid}>
             저장
           </SubmitButton>
         </Form>
@@ -114,11 +120,6 @@ const Form = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
-
-const Label = styled.label`
-  font-size: 14px;
-  font-weight: 600;
 `;
 
 const SubmitButton = styled.button<{ disabled: boolean }>`
