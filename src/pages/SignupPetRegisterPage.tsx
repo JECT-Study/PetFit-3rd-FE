@@ -3,14 +3,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 import { PetRegisterForm } from '@/components/PetRegisterForm';
-import type { PetGender, PetType } from '@/types/common';
-
-interface PetForm {
-  name: string;
-  species: PetType;
-  gender: PetGender;
-  birthDate: string;
-}
+import type { PetForm } from '@/types/form';
 
 export const SignupPetRegisterPage = () => {
   const today = new Date().toISOString().split('T')[0];
@@ -21,15 +14,15 @@ export const SignupPetRegisterPage = () => {
     gender: '남아',
     birthDate: today,
   });
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [isPetFormValid, setIsPetFormValid] = useState(false);
 
   return (
     <Container>
       <Title>반려동물 정보 입력</Title>
 
-      <PetRegisterForm form={form} setForm={setForm} onValidationChange={setIsFormValid} />
+      <PetRegisterForm form={form} setForm={setForm} onFormValidChange={setIsPetFormValid} />
 
-      <NextButton disabled={!isFormValid}>다음</NextButton>
+      <NextButton disabled={!isPetFormValid}>다음</NextButton>
     </Container>
   );
 };
