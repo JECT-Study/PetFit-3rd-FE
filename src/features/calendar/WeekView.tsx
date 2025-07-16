@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { LEGEND_ITEMS } from '@/constants/calendar';
 import { MOCK_CALENDAR_MARKS } from '@/mocks/calendarData';
 import type { CalendarMarkType } from '@/types/calendar';
-import { formatDate } from '@/utils/formatDate';
+import { formatDate } from '@/utils/calendar';
 
 interface WeekViewProps {
   year: number;

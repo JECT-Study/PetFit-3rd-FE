@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { LEGEND_ITEMS } from '@/constants/calendar';
 import { MOCK_CALENDAR_MARKS } from '@/mocks/calendarData';
 import type { CalendarMarkType } from '@/types/calendar';
-import { formatDate } from '@/utils/formatDate';
+import { getMonthDates, isSameMonth } from '@/utils/calendar';
 
 interface Props {
   year: number;
@@ -13,51 +13,20 @@ interface Props {
   manuallySelected: boolean;
 }
 
-// 월간 날짜 생성
-function getMonthsDates(year: number, month: number): string[] {
-  const result: string[] = [];
-  const firstDayOfMonth = new Date(year, month - 1, 1);
-  const startDay = firstDayOfMonth.getDay(); // 0 (일) ~ 6 (토)
-  const prevMonthLastDate = new Date(year, month - 1, 0).getDate();
-  const currMonthLastDate = new Date(year, month, 0).getDate();
-
-  // 이전 달 날짜
-  for (let i = startDay - 1; i >= 0; i--) {
-    const date = new Date(year, month - 2, prevMonthLastDate - i);
-    result.push(formatDate(date));
-  }
-
-  // 현재 달 날짜
-  for (let i = 1; i <= currMonthLastDate; i++) {
-    result.push(formatDate(new Date(year, month - 1, i)));
-  }
-
-  // 다음 달 날짜 채우기
-  const totalCells = Math.ceil(result.length / 7) * 7; // 7의 배수 맞춤
-  const remaining = totalCells - result.length;
-
-  for (let i = 1; i <= remaining; i++) {
-    const nextDate = new Date(year, month, i); // 정확히 다음 달 날짜
-    result.push(formatDate(nextDate));
-  }
-
-  return result;
-}
-
 export const MonthView = ({ year, month, selectedDate, onSelectDate, manuallySelected }: Props) => {
-  const dates = getMonthsDates(year, month);
+  const dates = getMonthDates(year, month); // 월간 날짜 생성
 
   return (
     <Grid>
       {dates.map(date => {
         const dateObj = new Date(date);
         const day = dateObj.getDate();
+        const isInCurrentMonth = isSameMonth(dateObj, year, month);
         const isSelected = selectedDate === date;
-        const isInCurrentView = dateObj.getFullYear() === year && dateObj.getMonth() + 1 === month;
 
         const dots = MOCK_CALENDAR_MARKS[date] || [];
         const dotColor = (type: CalendarMarkType) =>
-          isInCurrentView ? LEGEND_ITEMS[type].color : '#BDBDBD';
+          isInCurrentMonth ? LEGEND_ITEMS[type].color : '#BDBDBD';
 
         return (
           <Cell

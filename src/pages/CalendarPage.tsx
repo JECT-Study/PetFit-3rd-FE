@@ -9,8 +9,7 @@ import { NoteModal } from '@/features/calendar/NoteModal';
 import { WeekView } from '@/features/calendar/WeekView';
 import { MOCK_PETS } from '@/mocks/calendarData';
 import type { CalendarMode } from '@/types/calendar';
-import { formatDate } from '@/utils/formatDate';
-import { getDatesInMonth } from '@/utils/getDatesInMonth';
+import { formatDate } from '@/utils/calendar';
 
 export const CalendarPage = () => {
   const [selectedPetId, setSelectedPetId] = useState<number>(1);
@@ -20,22 +19,30 @@ export const CalendarPage = () => {
   const [manuallySelected, setManuallySelected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const getFirstDateOfMonth = (year: number, month: number): string => {
+    return formatDate(new Date(year, month - 1, 1));
+  };
+
+  const getLastDateOfMonth = (year: number, month: number): string => {
+    return formatDate(new Date(year, month, 0));
+  };
+
   const handlePrevMonth = () => {
     const newDate = new Date(viewDate);
     newDate.setMonth(newDate.getMonth() - 1);
     setViewDate(newDate);
-    const lastDate = getDatesInMonth(newDate.getFullYear(), newDate.getMonth() + 1).pop();
-    if (lastDate) {
-      setSelectedDate(lastDate);
-      setManuallySelected(false);
-    }
+
+    const lastDate = getLastDateOfMonth(newDate.getFullYear(), newDate.getMonth() + 1);
+    setSelectedDate(lastDate);
+    setManuallySelected(false);
   };
 
   const handleNextMonth = () => {
     const newDate = new Date(viewDate);
     newDate.setMonth(newDate.getMonth() + 1);
     setViewDate(newDate);
-    const firstDate = getDatesInMonth(newDate.getFullYear(), newDate.getMonth() + 1)[0];
+
+    const firstDate = getFirstDateOfMonth(newDate.getFullYear(), newDate.getMonth() + 1);
     setSelectedDate(firstDate);
     setManuallySelected(false);
   };
@@ -162,7 +169,7 @@ const Header = styled.h2`
 const PetTabs = styled.div`
   display: flex;
   gap: 8px;
-  margin: 12px 0;
+  margin-top: 12px;
   padding-left: 20px;
 `;
 

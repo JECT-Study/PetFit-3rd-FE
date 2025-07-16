@@ -1,54 +1,181 @@
-import { ko } from 'date-fns/locale';
-import ReactDatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { useState } from 'react';
+
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
-type CustomDatePickerProps = {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-};
+import { DAYS_OF_WEEK } from '@/constants/calendar';
+import type { BaseFieldProps } from '@/types/form';
+import { getMonthDates, isSameMonth } from '@/utils/calendar';
 
-export const CustomDatePicker = ({ value, onChange, placeholder }: CustomDatePickerProps) => {
-  const dateValue = value ? new Date(value) : null;
+interface CustomDatePickerProps extends BaseFieldProps {
+  value: string;
+  onChange: (date: string) => void;
+}
+
+export const CustomDatePicker = ({
+  label,
+  value: selectedDate,
+  onChange,
+}: CustomDatePickerProps) => {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [visibleDate, setVisibleDate] = useState(new Date(selectedDate));
+
+  const visibleYear = visibleDate.getFullYear();
+  const visibleMonth = visibleDate.getMonth() + 1;
+  const calendarDates = getMonthDates(visibleYear, visibleMonth);
+
+  const handleToggleCalendar = () => {
+    if (!isCalendarOpen) {
+      setVisibleDate(new Date(selectedDate));
+    }
+    setIsCalendarOpen(prev => !prev);
+  };
+
+  const handlePrevMonth = () => {
+    const prev = new Date(visibleDate);
+    prev.setMonth(prev.getMonth() - 1);
+    setVisibleDate(prev);
+  };
+
+  const handleNextMonth = () => {
+    const next = new Date(visibleDate);
+    next.setMonth(next.getMonth() + 1);
+    setVisibleDate(next);
+  };
+
+  const handleSelectDate = (date: string) => {
+    onChange(date);
+    setIsCalendarOpen(false);
+  };
 
   return (
-    <StyledDatePicker
-      locale={ko}
-      selected={dateValue}
-      onChange={(date: Date | null) => date && onChange(date.toISOString().slice(0, 10))}
-      dateFormat="yyyy년 MM월 dd일"
-      placeholderText={placeholder ?? '날짜를 선택하세요'}
-      popperPlacement="bottom-start"
-    />
+    <FieldGroup>
+      {label && <Label>{label}</Label>}
+      <TriggerButton onClick={handleToggleCalendar}>
+        <span>{selectedDate}</span>
+        <Calendar size={18} />
+      </TriggerButton>
+      {isCalendarOpen && (
+        <CalendarPanel>
+          <CalendarHeaderRow>
+            <button onClick={handlePrevMonth}>
+              <ChevronLeft size={18} />
+            </button>
+            <span>
+              {visibleYear}년 {visibleMonth}월
+            </span>
+            <button onClick={handleNextMonth}>
+              <ChevronRight size={18} />
+            </button>
+          </CalendarHeaderRow>
+
+          <DayOfWeekRow>
+            {DAYS_OF_WEEK.map(day => (
+              <CalendarHeaderCell key={day}>{day}</CalendarHeaderCell>
+            ))}
+          </DayOfWeekRow>
+
+          <CalendarGrid>
+            {calendarDates.map(date => {
+              const dateObj = new Date(date);
+              const day = dateObj.getDate();
+              const isCurrentMonth = isSameMonth(dateObj, visibleYear, visibleMonth);
+              const isSelected = date === selectedDate;
+
+              return (
+                <DateCell
+                  key={date}
+                  $dimmed={!isCurrentMonth}
+                  $isSelected={isSelected}
+                  onClick={() => handleSelectDate(date)}
+                >
+                  {day}
+                </DateCell>
+              );
+            })}
+          </CalendarGrid>
+        </CalendarPanel>
+      )}
+    </FieldGroup>
   );
 };
 
-// Forware Ref 패턴?
-const BaseDatePicker = (props: React.ComponentProps<typeof ReactDatePicker>) => (
-  <ReactDatePicker {...props} />
-);
+const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
 
-const StyledDatePicker = styled(BaseDatePicker)`
-  width: 100%;
-  padding: 14px 20px;
-  font-size: 16px;
+const Label = styled.label`
+  padding-left: 8px;
+  font-size: 14px;
+  color: #333;
+`;
+
+const TriggerButton = styled.div`
+  padding: 12px 16px;
   background-color: #fff8e7;
   border: 1.5px solid #facc15;
   border-radius: 8px;
-  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+`;
 
-  .react-datepicker__day--selected {
-    background-color: #f59e0b;
-    color: white;
-  }
+const CalendarPanel = styled.div`
+  margin-top: -4px;
+  padding: 16px;
+  background-color: #fff8e7;
+  border: 1.5px solid #facc15;
+  border-radius: 8px;
+`;
 
-  .react-datepicker__day--keyboard-selected {
-    background-color: #facc15;
-  }
+const CalendarHeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+`;
 
-  .react-datepicker__header {
-    background-color: #fff8e7;
-    border-bottom: none;
+const CalendarHeaderCell = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  font-weight: bold;
+  color: #373737;
+`;
+
+const DayOfWeekRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+`;
+
+const CalendarGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #fff;
+`;
+
+const DateCell = styled.div<{
+  $dimmed?: boolean;
+  $isSelected?: boolean;
+  $isHeader?: boolean;
+}>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  font-weight: normal;
+  color: ${({ $dimmed }) => ($dimmed ? '#ccc' : '#000')};
+  background-color: ${({ $dimmed, $isSelected }) =>
+    $isSelected ? '#FFE299' : $dimmed ? '#fff' : 'transparent'};
+  border: 2px solid #fff;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #fde68a;
   }
 `;
