@@ -1,9 +1,6 @@
-import { useEffect } from 'react';
-
 import { Backpack } from 'lucide-react';
 import styled from 'styled-components';
 
-import { getPets } from '@/apis/pets';
 import { BriefCard } from '@/features/home/BriefCard';
 import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
@@ -13,18 +10,6 @@ import { nameListMock, noticeMock, scheduleMock } from '@/mocks/homeData';
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const HomePage = () => {
-  useEffect(() => {
-    const fetchPets = async () => {
-      try {
-        const data = await getPets();
-        console.log('🐾 pets:', data);
-      } catch (err) {
-        console.error('펫 데이터 불러오기 실패:', err);
-      }
-    };
-
-    fetchPets();
-  }, []);
   return (
     <Container>
       <Header>
