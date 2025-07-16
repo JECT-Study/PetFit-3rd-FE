@@ -12,24 +12,34 @@ import MyPage from '@/pages/MyPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
 
+import { PrivateRouter } from './PrivateRouter';
+
 export const router = createBrowserRouter([
-  {
-    element: <MainLayout />,
-    children: [
-      { path: '/', element: <HomePage /> },
-      { path: '/alarm', element: <AlarmPage /> },
-      { path: '/calendar', element: <CalendarPage /> },
-      { path: '/info', element: <InfoPage /> },
-      { path: '/mypage', element: <MyPage /> },
-      { path: '/slot', element: <SlotSettingPage /> },
-    ],
-  },
   {
     element: <PlainLayout />,
     children: [
       { path: '/login', element: <LoginPage /> },
-      { path: '/signup/pet', element: <SignupPetRegisterPage /> },
       { path: '/api/auth/kakao/login/dev', element: <AuthRedirectPage /> },
+    ],
+  },
+  {
+    element: <PrivateRouter />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          { path: '/', element: <HomePage /> },
+          { path: '/alarm', element: <AlarmPage /> },
+          { path: '/calendar', element: <CalendarPage /> },
+          { path: '/info', element: <InfoPage /> },
+          { path: '/mypage', element: <MyPage /> },
+          { path: '/slot', element: <SlotSettingPage /> },
+        ],
+      },
+      {
+        element: <PlainLayout />,
+        children: [{ path: '/signup/pet', element: <SignupPetRegisterPage /> }],
+      },
     ],
   },
 ]);
