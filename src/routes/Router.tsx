@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { MainLayout } from '@/layouts/MainLayout';
 import { PlainLayout } from '@/layouts/PlainLayout';
+import { AuthRedirectPage } from '@/pages/AuthRedirectPage';
 import { AlarmPage } from '@/pages/AlarmPage';
 import { CalendarPage } from '@/pages/CalendarPage';
 import { HomePage } from '@/pages/HomePage';
@@ -12,24 +13,35 @@ import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
 import { WithdrawPage } from '@/pages/WithdrawPage';
 
+import { PrivateRouter } from './PrivateRouter';
+
 export const router = createBrowserRouter([
-  {
-    element: <MainLayout />,
-    children: [
-      { path: '/', element: <HomePage /> },
-      { path: '/alarm', element: <AlarmPage /> },
-      { path: '/calendar', element: <CalendarPage /> },
-      { path: '/info', element: <InfoPage /> },
-      { path: '/mypage', element: <MyPage /> },
-      { path: '/slot', element: <SlotSettingPage /> },
-      { path: '/withdraw', element: <WithdrawPage /> },
-    ],
-  },
   {
     element: <PlainLayout />,
     children: [
       { path: '/login', element: <LoginPage /> },
-      { path: '/signup/pet', element: <SignupPetRegisterPage /> },
+      { path: '/api/auth/kakao/login/dev', element: <AuthRedirectPage /> },
+    ],
+  },
+  {
+    element: <PrivateRouter />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          { path: '/', element: <HomePage /> },
+          { path: '/alarm', element: <AlarmPage /> },
+          { path: '/calendar', element: <CalendarPage /> },
+          { path: '/info', element: <InfoPage /> },
+          { path: '/mypage', element: <MyPage /> },
+          { path: '/slot', element: <SlotSettingPage /> },
+          { path: '/withdraw', element: <WithdrawPage /> },
+        ],
+      },
+      {
+        element: <PlainLayout />,
+        children: [{ path: '/signup/pet', element: <SignupPetRegisterPage /> }],
+      },
     ],
   },
 ]);
