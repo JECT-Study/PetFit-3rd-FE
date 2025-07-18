@@ -1,2 +1,6 @@
+import type { LEGEND } from '@/constants/calendar';
+
 export type CalendarMode = 'month' | 'week';
-export type CalendarMarkType = 'routine' | 'memo' | 'note';
+
+// 키 타입 추론
+export type CalendarMarkType = (typeof LEGEND)[number]['key'];
