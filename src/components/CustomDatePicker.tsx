@@ -5,11 +5,18 @@ import styled from 'styled-components';
 
 import { DAYS_OF_WEEK } from '@/constants/calendar';
 import type { BaseFieldProps } from '@/types/form';
-import { getMonthDates, isSameMonth } from '@/utils/calendar';
+import {
+  formatDate,
+  getMonthDates,
+  getMonthNumber,
+  getYear,
+  isSameDay,
+  isSameMonth,
+} from '@/utils/calendar';
 
 interface CustomDatePickerProps extends BaseFieldProps {
-  value: string;
-  onChange: (date: string) => void;
+  value: Date;
+  onChange: (date: Date) => void;
 }
 
 export const CustomDatePicker = ({
@@ -20,9 +27,7 @@ export const CustomDatePicker = ({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [visibleDate, setVisibleDate] = useState(new Date(selectedDate));
 
-  const visibleYear = visibleDate.getFullYear();
-  const visibleMonth = visibleDate.getMonth() + 1;
-  const calendarDates = getMonthDates(visibleYear, visibleMonth);
+  const calendarDates = getMonthDates(visibleDate);
 
   const handleToggleCalendar = () => {
     if (!isCalendarOpen) {
@@ -43,7 +48,7 @@ export const CustomDatePicker = ({
     setVisibleDate(next);
   };
 
-  const handleSelectDate = (date: string) => {
+  const handleSelectDate = (date: Date) => {
     onChange(date);
     setIsCalendarOpen(false);
   };
@@ -52,7 +57,7 @@ export const CustomDatePicker = ({
     <FieldGroup>
       {label && <Label>{label}</Label>}
       <TriggerButton onClick={handleToggleCalendar}>
-        <span>{selectedDate}</span>
+        <span>{formatDate(selectedDate)}</span>
         <Calendar size={18} />
       </TriggerButton>
       {isCalendarOpen && (
@@ -62,7 +67,7 @@ export const CustomDatePicker = ({
               <ChevronLeft size={18} />
             </button>
             <span>
-              {visibleYear}년 {visibleMonth}월
+              {getYear(visibleDate)}년 {getMonthNumber(visibleDate)}월
             </span>
             <button onClick={handleNextMonth}>
               <ChevronRight size={18} />
@@ -77,14 +82,13 @@ export const CustomDatePicker = ({
 
           <CalendarGrid>
             {calendarDates.map(date => {
-              const dateObj = new Date(date);
-              const day = dateObj.getDate();
-              const isCurrentMonth = isSameMonth(dateObj, visibleYear, visibleMonth);
-              const isSelected = date === selectedDate;
+              const day = date.getDate();
+              const isCurrentMonth = isSameMonth(date, visibleDate);
+              const isSelected = isSameDay(date, selectedDate);
 
               return (
                 <DateCell
-                  key={date}
+                  key={date.toISOString()}
                   $dimmed={!isCurrentMonth}
                   $isSelected={isSelected}
                   onClick={() => handleSelectDate(date)}
