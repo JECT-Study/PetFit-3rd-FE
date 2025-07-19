@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import kakaoLoginButton from '@/assets/images/kakao_login_medium_wide.png';
@@ -6,12 +5,9 @@ import kakaoLoginButton from '@/assets/images/kakao_login_medium_wide.png';
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const LoginPage = () => {
-  const navigate = useNavigate();
-
   const handleKakaoLogin = () => {
-    // 1. 카카오 로그인 로직 처리 (토큰 저장 등)
-    // 2. 이후 반려동물 정보 입력 페이지로 이동
-    navigate('/signup/pet');
+    const kakaoAuthURI = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_APP_KAKAO_APP_KEY}&redirect_uri=${import.meta.env.VITE_APP_KAKAO_REDIRECT_URI}&response_type=code`;
+    window.location.href = kakaoAuthURI;
   };
 
   return (
