@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { X } from 'lucide-react';
 import styled from 'styled-components';
@@ -34,9 +34,20 @@ export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalP
 
   const isFormValid = useMemo(() => Object.values(formValidity).every(Boolean), [formValidity]);
 
-  const handleFieldValidChange = (field: 'title' | 'content') => (isValid: boolean) => {
+  // ✅ useCallback으로 고정
+  const handleFieldValidChange = useCallback((field: 'title' | 'content', isValid: boolean) => {
     setFormValidity(prev => ({ ...prev, [field]: isValid }));
-  };
+  }, []);
+
+  // ✅ 필드별 핸들러 useCallback으로 고정
+  const titleValidHandler = useCallback(
+    (isValid: boolean) => handleFieldValidChange('title', isValid),
+    [handleFieldValidChange]
+  );
+  const contentValidHandler = useCallback(
+    (isValid: boolean) => handleFieldValidChange('content', isValid),
+    [handleFieldValidChange]
+  );
 
   const handleSubmit = () => {
     if (!isFormValid) return;
@@ -57,7 +68,7 @@ export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalP
           onChange={e => setNote(prev => ({ ...prev, title: e.target.value }))}
           validationType="title"
           placeholder="특이사항 제목을 입력해주세요."
-          onFieldValidChange={handleFieldValidChange('title')}
+          onFieldValidChange={titleValidHandler}
         />
 
         <FormTextarea
@@ -66,10 +77,10 @@ export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalP
           onChange={e => setNote(prev => ({ ...prev, content: e.target.value }))}
           validationType="content"
           placeholder="내용을 입력해주세요."
-          onFieldValidChange={handleFieldValidChange('content')}
+          onFieldValidChange={contentValidHandler}
         />
 
-        <SaveButton onClick={handleSubmit} disabled={!isFormValid}>
+        <SaveButton onClick={handleSubmit} $disabled={!isFormValid}>
           저장
         </SaveButton>
       </ModalContainer>
@@ -93,15 +104,15 @@ const CloseButton = styled.button`
   }
 `;
 
-const SaveButton = styled.button`
+const SaveButton = styled.button<{ $disabled: boolean }>`
   width: 100%;
   margin-top: 16px;
   padding: 12px 0;
-  background-color: #e0e0e0;
+  background-color: ${({ $disabled }) => ($disabled ? '#eee' : '#facc15')};
   border-radius: 10px;
-  color: #999;
+  border: none;
+  color: ${({ $disabled }) => ($disabled ? '#999' : '#222')};
   font-size: 16px;
   font-weight: bold;
-  border: none;
-  cursor: default;
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 `;
