@@ -62,7 +62,7 @@ const Dropdown = styled.ul`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   list-style: none;
   padding: 4px 0;
-  z-index: 10;
+  z-index: 11;
 `;
 
 const DropdownItem = styled.li`

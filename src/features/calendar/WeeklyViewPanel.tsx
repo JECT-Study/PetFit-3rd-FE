@@ -1,12 +1,9 @@
-import { useState } from 'react';
-
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
 import { DAYS_OF_WEEK } from '@/constants/calendar';
-import { WeeklyDetailsPanel } from '@/features/calendar/WeeklyDetailsPanel';
+import { WeeklyDetailsSection } from '@/features/calendar/WeeklyDetailsSection';
 import { WeekView } from '@/features/calendar/WeekView';
-import type { Note } from '@/types/note';
 import { getMonthNumber } from '@/utils/calendar';
 
 interface WeeklyViewPanelProps {
@@ -22,10 +19,6 @@ export const WeeklyViewPanel = ({
   onChangeViewDate,
   onDateClick,
 }: WeeklyViewPanelProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingNoteIndex, setEditingNoteIndex] = useState<number | null>(null);
-  const [notes, setNotes] = useState<Note[]>([]);
-
   const isSameWeek = (date1: Date, date2: Date) => {
     const startOfWeek = (date: Date) => {
       const d = new Date(date);
@@ -71,25 +64,6 @@ export const WeeklyViewPanel = ({
     }
   };
 
-  const handleSubmitNote = (note: Note) => {
-    if (editingNoteIndex !== null) {
-      setNotes(prev => prev.map((n, i) => (i === editingNoteIndex ? note : n)));
-      setEditingNoteIndex(null);
-    } else {
-      setNotes(prev => [...prev, note]);
-    }
-    setIsModalOpen(false);
-  };
-
-  const handleEditNote = (index: number) => {
-    setEditingNoteIndex(index);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteNote = (index: number) => {
-    setNotes(prev => prev.filter((_, i) => i !== index));
-  };
-
   return (
     <>
       <CalendarMonthWrapper>
@@ -112,18 +86,7 @@ export const WeeklyViewPanel = ({
         <WeekView viewDate={viewDate} selectedDate={selectedDate} onDateClick={onDateClick} />
       </CalendarMonthWrapper>
 
-      <WeeklyDetailsPanel
-        notes={notes}
-        onEdit={handleEditNote}
-        onDelete={handleDeleteNote}
-        onAdd={() => setIsModalOpen(true)}
-        onSubmit={handleSubmitNote}
-        onClose={() => setIsModalOpen(false)}
-        isModalOpen={isModalOpen}
-        initialNote={
-          editingNoteIndex !== null ? notes[editingNoteIndex] : { title: '', content: '' }
-        }
-      />
+      <WeeklyDetailsSection selectedDate={selectedDate} />
     </>
   );
 };
