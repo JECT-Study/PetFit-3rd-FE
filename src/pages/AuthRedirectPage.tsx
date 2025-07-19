@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
 
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { kakaoLoginDev } from '@/apis/auth';
+import type { AppDispatch } from '@/store';
 
 export const AuthRedirectPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const code = new URL(window.location.href).searchParams.get('code');
@@ -13,7 +16,7 @@ export const AuthRedirectPage = () => {
 
     const getToken = async () => {
       try {
-        const response = await kakaoLoginDev(code);
+        const response = await kakaoLoginDev(code, dispatch);
 
         const accessToken = response.data.content.accessToken;
         const refreshToken = response.data.content.refreshToken;

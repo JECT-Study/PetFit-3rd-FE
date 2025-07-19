@@ -1,11 +1,16 @@
 import { Pencil } from 'lucide-react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import type { RootState } from '@/store';
+
 export const Profile = () => {
+  const nickname = useSelector((state: RootState) => state.user.nickname);
+
   return (
     <Container>
       <ProfilePicture></ProfilePicture>
-      <UserName>산책이 좋아</UserName>
+      <UserName>{nickname}</UserName>
       <EditButton>
         <Pencil size={16} />
         프로필 편집

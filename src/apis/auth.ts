@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+import type { AppDispatch } from '@/store';
+import { setUser } from '@/store/userSlice';
+
 import { axiosInstance } from './axiosInstance';
 
 export const kakaoLogin = async (code: string) => {
@@ -13,11 +16,18 @@ export const kakaoLogin = async (code: string) => {
   }
 };
 
-export const kakaoLoginDev = async (code: string) => {
+export const kakaoLoginDev = async (code: string, dispatch: AppDispatch) => {
   try {
     const response = await axios.get(`auth/kakao/login/dev`, {
       params: { code },
     });
+    dispatch(
+      setUser({
+        email: response.data.content.email,
+        nickname: response.data.content.nickname,
+        userId: response.data.content.userId,
+      })
+    );
     return response;
   } catch (error) {
     console.error('kakao Login failed:', error);
