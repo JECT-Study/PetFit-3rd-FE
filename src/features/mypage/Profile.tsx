@@ -1,17 +1,20 @@
 import { Pencil } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import type { RootState } from '@/store';
-
 export const Profile = () => {
   const nickname = useSelector((state: RootState) => state.user.nickname);
-
+  const navigate = useNavigate();
+  const handleEditClick = () => {
+    navigate('/edit-nickname');
+  };
   return (
     <Container>
       <ProfilePicture></ProfilePicture>
       <UserName>{nickname}</UserName>
-      <EditButton>
+      <EditButton onClick={handleEditClick}>
         <Pencil size={16} />
         프로필 편집
       </EditButton>

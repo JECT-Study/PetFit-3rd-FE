@@ -61,3 +61,25 @@ export const kakaoWithdraw = async () => {
     throw error;
   }
 };
+
+// 삭제될듯
+// export const getNickname = async (memberId: number) => {
+//   try {
+//     const response = await axiosInstance.get(`members/${memberId}`);
+//     console.log(response);
+//     return response;
+//   } catch (error) {
+//     console.log(error);
+//     throw error;
+//   }
+// };
+
+export const editNickname = async (memberId: number, nickname: string) => {
+  try {
+    const response = await axiosInstance.put(`members/${memberId}`, { nickname });
+    console.log(response);
+  } catch (error) {
+    console.error('edit nickname failed: ', error);
+    throw error;
+  }
+};
