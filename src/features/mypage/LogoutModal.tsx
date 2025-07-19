@@ -9,7 +9,9 @@ interface Props {
 
 export const LogoutModal = ({ isOpen, onClose }: Props) => {
   // api 연결 시 로그아웃 구현 예정
-  const onConfirm = () => {};
+  const onConfirm = async () => {
+    window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${import.meta.env.VITE_APP_KAKAO_APP_KEY}&logout_redirect_uri=${import.meta.env.VITE_KAKAO_LOGOUT_REDIRECT_URI}`;
+  };
 
   return (
     <div>

@@ -2,8 +2,9 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { MainLayout } from '@/layouts/MainLayout';
 import { PlainLayout } from '@/layouts/PlainLayout';
-import { AuthRedirectPage } from '@/pages/AuthRedirectPage';
 import { AlarmPage } from '@/pages/AlarmPage';
+import { AuthLogoutRedirectPage } from '@/pages/AuthLogoutRedirectPage';
+import { AuthRedirectPage } from '@/pages/AuthRedirectPage';
 import { CalendarPage } from '@/pages/CalendarPage';
 import { HomePage } from '@/pages/HomePage';
 import InfoPage from '@/pages/InfoPage';
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
     children: [
       { path: '/login', element: <LoginPage /> },
       { path: '/api/auth/kakao/login/dev', element: <AuthRedirectPage /> },
+      { path: '/api/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
     ],
   },
   {

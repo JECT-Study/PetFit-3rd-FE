@@ -36,7 +36,10 @@ export const kakaoLogout = async () => {
 
 export const kakaoLogoutDev = async () => {
   try {
-    await axiosInstance.post('auth/kakao/logout/dev', '');
+    await axiosInstance.post('auth/kakao/logout/dev');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    // redux 초기화 나중에 추가해줘야 함
   } catch (error) {
     console.error('logout failed: ', error);
     throw error;
