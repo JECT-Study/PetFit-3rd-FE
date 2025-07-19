@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { kakaoLoginDev } from '@/apis/auth';
 
-export const AuthRedirectPage = () => {
+export const AuthLoginRedirectPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
