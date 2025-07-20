@@ -18,30 +18,41 @@ export const SlotSettingPage = () => {
   return (
     <Wrapper>
       <TitleHeader title="하루 루틴 설정" showBack={true} />
-      <SlotButton selectedIds={selectedIds} onToggle={handleToggle} />
+      <ContentArea>
+        <SlotButton selectedIds={selectedIds} onToggle={handleToggle} />
 
-      {!hasSelection && (
-        <>
-          <Notice>기록할 루틴을 선택해주세요</Notice>
-          <EmptyState>
-            <EmptyRoutine />
-            <EmptyText>활성화 된 루틴이 없습니다</EmptyText>
-          </EmptyState>
-        </>
-      )}
+        {!hasSelection && (
+          <>
+            <Notice>기록할 루틴을 선택해주세요</Notice>
+            <EmptyState>
+              <EmptyRoutine />
+              <EmptyText>활성화 된 루틴이 없습니다</EmptyText>
+            </EmptyState>
+          </>
+        )}
 
-      {hasSelection && (
-        <>
-          <RoutineTitle>활성화된 루틴</RoutineTitle>
-          <SlotInput selectedIds={selectedIds} />
-        </>
-      )}
+        {hasSelection && (
+          <>
+            <RoutineTitle>활성화된 루틴</RoutineTitle>
+            <SlotInput selectedIds={selectedIds} />
+          </>
+        )}
+      </ContentArea>
+      <CompleteButton disabled={!hasSelection}>완료</CompleteButton>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+`;
+
+const ContentArea = styled.div`
+  flex: 1;
   padding: 24px 16px;
+  overflow-y: auto;
 `;
 
 const Notice = styled.div`
@@ -84,4 +95,19 @@ const EmptyState = styled.div`
 const EmptyText = styled.div`
   font-size: 16px;
   color: #a5a5a5;
+`;
+
+const CompleteButton = styled.button<{ disabled?: boolean }>`
+  height: 56px;
+  margin: 16px;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  background-color: ${({ disabled }) => (disabled ? '#F0F0F0' : '#FFC533')};
+  color: ${({ disabled }) => (disabled ? '#A5A5A5' : '#373737')};
+  border-radius: 12px;
+
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  transition: background-color 0.2s ease;
 `;
