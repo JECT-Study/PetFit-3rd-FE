@@ -1,20 +1,19 @@
 import styled from 'styled-components';
 
-import { LEGEND_ITEMS } from '@/constants/calendar';
+import { LEGEND_MAP } from '@/constants/calendar';
 import { MOCK_CALENDAR_MARKS } from '@/mocks/calendarData';
 import type { CalendarMarkType } from '@/types/calendar';
-import { formatDate } from '@/utils/calendar';
+import { formatDate, isSameDay, isSameMonth } from '@/utils/calendar';
 
 interface WeekViewProps {
-  year: number;
-  month: number;
-  selectedDate: string;
-  onSelectedDate: (date: string) => void;
+  viewDate: Date;
+  selectedDate: Date;
+  onDateClick: (date: Date) => void;
 }
 
 // 주간 날짜 생성
-function getWeekDates(date: Date): string[] {
-  const result: string[] = [];
+function getWeekDates(date: Date): Date[] {
+  const result: Date[] = [];
   const dayOfWeek = date.getDay();
   const sunday = new Date(date);
   sunday.setDate(date.getDate() - dayOfWeek);
@@ -22,34 +21,39 @@ function getWeekDates(date: Date): string[] {
   for (let i = 0; i < 7; i++) {
     const d = new Date(sunday);
     d.setDate(sunday.getDate() + i);
-    result.push(formatDate(d));
+    result.push(d);
   }
 
   return result;
 }
 
-export const WeekView = ({ year, month, selectedDate, onSelectedDate }: WeekViewProps) => {
-  const currentDate = new Date(selectedDate);
-  const dates = getWeekDates(currentDate);
+export const WeekView = ({ viewDate, selectedDate, onDateClick }: WeekViewProps) => {
+  const dates = getWeekDates(viewDate);
 
   return (
     <Grid>
       {dates.map(date => {
-        const dateObj = new Date(date);
-        const day = dateObj.getDate();
-        const isSelected = selectedDate === date;
-        const isInCurrentView = dateObj.getFullYear() === year && dateObj.getMonth() + 1 === month;
+        const day = date.getDate();
+        const isInCurrentView = isSameMonth(date, viewDate);
 
-        const dots = MOCK_CALENDAR_MARKS[date] || [];
+        const isSelected = isSameDay(selectedDate, date);
+        const isViewMatched = isSameDay(selectedDate, viewDate);
+
+        const formatted = formatDate(date);
+        const dots = MOCK_CALENDAR_MARKS[formatted] || [];
         const dotColor = (type: CalendarMarkType) =>
-          isInCurrentView ? LEGEND_ITEMS[type].color : '#BDBDBD';
+          isInCurrentView ? LEGEND_MAP[type].color : '#ddd';
 
         return (
-          <Cell key={date} $selected={isSelected} onClick={() => onSelectedDate(date)}>
-            <DateNumber>{day}</DateNumber>
-            <DotRow hasDots={dots.length > 0}>
+          <Cell
+            key={formatted}
+            $selected={isSelected && isViewMatched}
+            onClick={() => onDateClick(date)}
+          >
+            <DateNumber $dimmed={!isInCurrentView}>{day}</DateNumber>
+            <DotRow $hasDots={dots.length > 0}>
               {dots.map(type => (
-                <Dot key={type} color={dotColor(type)} />
+                <Dot key={type} $color={dotColor(type)} />
               ))}
             </DotRow>
           </Cell>
@@ -76,12 +80,13 @@ const Cell = styled.div<{ $selected?: boolean }>`
   cursor: pointer;
 `;
 
-const DateNumber = styled.span`
-  font-size: 14px;
+const DateNumber = styled.span<{ $dimmed?: boolean }>`
   text-align: center;
+  color: ${({ $dimmed }) => ($dimmed ? '#DDD' : '#000')};
+  font-size: 14px;
 `;
 
-const DotRow = styled.div<{ hasDots: boolean }>`
+const DotRow = styled.div<{ $hasDots: boolean }>`
   display: flex;
   justify-content: center;
   gap: 2px;
@@ -89,9 +94,9 @@ const DotRow = styled.div<{ hasDots: boolean }>`
   margin-top: 4px;
 `;
 
-const Dot = styled.div<{ color: string }>`
+const Dot = styled.div<{ $color: string }>`
   width: 6px;
   height: 6px;
-  background-color: ${({ color }) => color};
+  background-color: ${({ $color }) => $color};
   border-radius: 50%;
 `;

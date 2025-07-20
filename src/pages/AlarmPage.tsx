@@ -12,7 +12,7 @@ import EmptyDog from '@/assets/icons/empty-dog.svg?react';
 
 const createEmptyAlarm = (): Alarm => ({
   id: Date.now(),
-  startDate: new Date().toISOString().slice(0, 10),
+  startDate: new Date(),
   title: '',
   description: '',
 });

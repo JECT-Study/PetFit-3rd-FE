@@ -6,13 +6,11 @@ import { PetRegisterForm } from '@/components/PetRegisterForm';
 import type { PetForm } from '@/types/form';
 
 export const SignupPetRegisterPage = () => {
-  const today = new Date().toISOString().split('T')[0];
-
   const [form, setForm] = useState<PetForm>({
     name: '',
     species: '강아지',
     gender: '남아',
-    birthDate: today,
+    birthDate: new Date(),
   });
   const [isPetFormValid, setIsPetFormValid] = useState(false);
 

@@ -89,7 +89,7 @@ export const ScheduleRegisterModal = ({
             onFieldValidChange={fieldValidHandlers.content}
           />
 
-          <SubmitButton onClick={handleSubmit} disabled={!isFormValid}>
+          <SubmitButton onClick={handleSubmit} $disabled={!isFormValid}>
             저장
           </SubmitButton>
         </Form>
@@ -122,7 +122,7 @@ const Form = styled.div`
   gap: 8px;
 `;
 
-const SubmitButton = styled.button<{ disabled: boolean }>`
+const SubmitButton = styled.button<{ $disabled: boolean }>`
   padding: 16px 0;
   font-size: 16px;
   font-weight: 600;
