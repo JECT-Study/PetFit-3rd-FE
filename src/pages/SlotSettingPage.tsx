@@ -1,19 +1,52 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
+import { getSlot } from '@/apis/slot';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { SlotButton } from '@/features/slot/SlotButton';
 import { SlotInput } from '@/features/slot/SlotInput';
+import type { SlotType } from '@/types/slot';
 
 import EmptyRoutine from '@/assets/icons/empty-routine.svg?react';
 
 export const SlotSettingPage = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [defaultValues, setDefaultValues] = useState<Record<string, number>>({});
 
+  useEffect(() => {
+    const fetchSlot = async () => {
+      const data: SlotType = await getSlot(1);
+      // ✅ 활성화된 루틴 추출
+      const newSelectedIds: string[] = [];
+      const values: Record<string, number> = {};
+
+      if (data.feedActivated) {
+        newSelectedIds.push('meal');
+        values['meal'] = data.feedAmount ?? 0;
+      }
+      if (data.waterActivated) {
+        newSelectedIds.push('water');
+        values['water'] = data.waterAmount ?? 0;
+      }
+      if (data.walkActivated) {
+        newSelectedIds.push('walk');
+        values['walk'] = data.walkAmount ?? 0;
+      }
+      if (data.pottyActivated) newSelectedIds.push('poop');
+      if (data.dentalActivated) newSelectedIds.push('teeth');
+      if (data.skinActivated) newSelectedIds.push('skin');
+
+      setSelectedIds(newSelectedIds);
+      setDefaultValues(values);
+    };
+
+    fetchSlot();
+  }, []);
+
+  const hasSelection = selectedIds.length > 0;
   const handleToggle = (id: string) =>
     setSelectedIds(prev => (prev.includes(id) ? prev.filter(k => k !== id) : [...prev, id]));
-  const hasSelection = selectedIds.length > 0;
 
   return (
     <Wrapper>
@@ -34,7 +67,7 @@ export const SlotSettingPage = () => {
         {hasSelection && (
           <>
             <RoutineTitle>활성화된 루틴</RoutineTitle>
-            <SlotInput selectedIds={selectedIds} />
+            <SlotInput selectedIds={selectedIds} mode="edit" defaultValues={defaultValues} />
           </>
         )}
       </ContentArea>
