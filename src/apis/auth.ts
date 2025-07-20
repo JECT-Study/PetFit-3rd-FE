@@ -44,9 +44,9 @@ export const kakaoLogoutDev = async () => {
   }
 };
 
-export const kakaoWithdraw = async () => {
+export const kakaoWithdraw = async (refreshToken: string) => {
   try {
-    await axiosInstance.post('auth/kakao/withdraw');
+    await axiosInstance.post('auth/kakao/withdraw', { refreshToken });
   } catch (error) {
     console.error('user delete failed: ', error);
     throw error;
