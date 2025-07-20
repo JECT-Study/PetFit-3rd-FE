@@ -11,19 +11,27 @@ interface Props {
   selectedIds: string[];
   mode: 'register' | 'edit';
   defaultValues?: Record<string, number>;
+  onChange: (values: Record<string, string>) => void;
 }
 
-export const SlotInput = ({ selectedIds, mode, defaultValues = {} }: Props) => {
+export const SlotInput = ({ selectedIds, mode, defaultValues = {}, onChange }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
 
-  // ✅ selectedIds가 바뀌거나 mode/edit defaultValues가 바뀔 때 input 초기화
   useEffect(() => {
-    const init: Record<string, string> = {};
-    selectedIds.forEach(id => {
-      init[id] = mode === 'edit' ? String(defaultValues[id] ?? '') : '';
+    onChange(values);
+  }, [values]);
+
+  useEffect(() => {
+    setValues(prev => {
+      const newValues = { ...prev };
+      selectedIds.forEach(id => {
+        if (!(id in newValues)) {
+          newValues[id] = mode === 'edit' ? String(defaultValues[id] ?? '') : '';
+        }
+      });
+      return newValues;
     });
-    setValues(init);
   }, [selectedIds, defaultValues, mode]);
 
   const handleChange = (id: string, value: string) => {

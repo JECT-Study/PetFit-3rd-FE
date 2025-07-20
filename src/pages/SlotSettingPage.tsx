@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { getSlot } from '@/apis/slot';
+import { getSlot, patchSlot } from '@/apis/slot';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { SlotButton } from '@/features/slot/SlotButton';
 import { SlotInput } from '@/features/slot/SlotInput';
@@ -11,13 +12,15 @@ import type { SlotType } from '@/types/slot';
 import EmptyRoutine from '@/assets/icons/empty-routine.svg?react';
 
 export const SlotSettingPage = () => {
+  const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [defaultValues, setDefaultValues] = useState<Record<string, number>>({});
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
 
+  // 슬롯 설정 가져오기
   useEffect(() => {
     const fetchSlot = async () => {
       const data: SlotType = await getSlot(1);
-      // ✅ 활성화된 루틴 추출
       const newSelectedIds: string[] = [];
       const values: Record<string, number> = {};
 
@@ -48,6 +51,28 @@ export const SlotSettingPage = () => {
   const handleToggle = (id: string) =>
     setSelectedIds(prev => (prev.includes(id) ? prev.filter(k => k !== id) : [...prev, id]));
 
+  const handleSubmit = async () => {
+    const payload = {
+      feedActivated: selectedIds.includes('meal'),
+      waterActivated: selectedIds.includes('water'),
+      walkActivated: selectedIds.includes('walk'),
+      pottyActivated: selectedIds.includes('poop'),
+      dentalActivated: selectedIds.includes('teeth'),
+      skinActivated: selectedIds.includes('skin'),
+      feedAmount: Number(inputValues['meal'] ?? 0),
+      waterAmount: Number(inputValues['water'] ?? 0),
+      walkAmount: Number(inputValues['walk'] ?? 0),
+    };
+
+    try {
+      await patchSlot(1, payload);
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      alert('슬롯 수정 실패');
+    }
+  };
+
   return (
     <Wrapper>
       <TitleHeader title="하루 루틴 설정" showBack={true} />
@@ -67,11 +92,18 @@ export const SlotSettingPage = () => {
         {hasSelection && (
           <>
             <RoutineTitle>활성화된 루틴</RoutineTitle>
-            <SlotInput selectedIds={selectedIds} mode="edit" defaultValues={defaultValues} />
+            <SlotInput
+              selectedIds={selectedIds}
+              mode="edit"
+              defaultValues={defaultValues}
+              onChange={setInputValues}
+            />
           </>
         )}
       </ContentArea>
-      <CompleteButton disabled={!hasSelection}>완료</CompleteButton>
+      <CompleteButton disabled={!hasSelection} onClick={handleSubmit}>
+        완료
+      </CompleteButton>
     </Wrapper>
   );
 };
