@@ -37,8 +37,8 @@ export const HomePage = () => {
               title: s.title,
               date: s.targetDate,
             }))}
-            loading={loading}
-            error={error}
+            loading={loading.schedules}
+            error={error.schedules}
           />
           <BriefCard
             label="특이사항"
@@ -48,8 +48,8 @@ export const HomePage = () => {
               title: r.title,
               date: r.remarkDate,
             }))}
-            loading={loading}
-            error={error}
+            loading={loading.remarks}
+            error={error.remarks}
           />
         </CardRow>
       </BriefingSection>
