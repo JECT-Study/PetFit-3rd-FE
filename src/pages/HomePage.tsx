@@ -5,11 +5,15 @@ import { BriefCard } from '@/features/home/BriefCard';
 import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
 import { Routine } from '@/features/routine/Routine';
-import { nameListMock, noticeMock, scheduleMock } from '@/mocks/homeData';
+import { useBriefCardData } from '@/hooks/useBriefCardData';
+import { nameListMock } from '@/mocks/homeData';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const HomePage = () => {
+  const petId = 2; // 실제로는 전역 상태나 route param에서 가져오겠죠
+  const { schedules, remarks, loading, error } = useBriefCardData(petId);
+
   return (
     <Container>
       <Header>
@@ -25,8 +29,28 @@ export const HomePage = () => {
       <BriefingSection>
         <SectionTitle>오늘의 브리핑</SectionTitle>
         <CardRow>
-          <BriefCard title="일정" color="#4D9DE0" items={scheduleMock} />
-          <BriefCard title="특이사항" color="#FF5C33" items={noticeMock} />
+          <BriefCard
+            label="일정"
+            color="#4D9DE0"
+            items={schedules.map(s => ({
+              id: s.scheduleId,
+              title: s.title,
+              date: s.targetDate,
+            }))}
+            loading={loading}
+            error={error}
+          />
+          <BriefCard
+            label="특이사항"
+            color="#FF5C33"
+            items={remarks.map(r => ({
+              id: r.remarkId,
+              title: r.title,
+              date: r.remarkDate,
+            }))}
+            loading={loading}
+            error={error}
+          />
         </CardRow>
       </BriefingSection>
 
