@@ -1,4 +1,5 @@
 import { Backpack } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { BriefCard } from '@/features/home/BriefCard';
@@ -14,10 +15,11 @@ export const HomePage = () => {
   const petId = 2; // 실제로는 전역 상태나 route param에서 가져오겠죠
   const { schedules, remarks, loading, error } = useBriefCardData(petId);
 
+  const navigate = useNavigate();
   return (
     <Container>
       <Header>
-        <StyledLogo />
+        <StyledLogo onClick={() => navigate('/signup/pet')} />
         <Backpack size={24} stroke="#444" />
       </Header>
 

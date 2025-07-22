@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { PetRegisterForm } from '@/components/PetRegisterForm';
@@ -13,6 +14,7 @@ export const SignupPetRegisterPage = () => {
     birthDate: new Date(),
   });
   const [isPetFormValid, setIsPetFormValid] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <Container>
@@ -20,7 +22,9 @@ export const SignupPetRegisterPage = () => {
 
       <PetRegisterForm form={form} setForm={setForm} onFormValidChange={setIsPetFormValid} />
 
-      <NextButton disabled={!isPetFormValid}>다음</NextButton>
+      <NextButton onClick={() => navigate('/slot')} disabled={!isPetFormValid}>
+        다음
+      </NextButton>
     </Container>
   );
 };
