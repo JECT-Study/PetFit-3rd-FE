@@ -10,7 +10,7 @@ import { useModal } from '@/hooks/useModal';
 import type { Note } from '@/types/note';
 
 interface WeeklyDetailsSectionProps {
-  selectedDate: Date;
+  selectedDate?: Date;
 }
 
 const createEmptyNote = (): Note => ({
@@ -29,8 +29,8 @@ const addOrUpdateNoteList = (list: Note[], target: Note): Note[] =>
 const deleteNoteById = (list: Note[], targetId: number): Note[] =>
   list.filter(note => note.id !== targetId);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps) => {
+// eslint-disable-next-line no-empty-pattern
+export const WeeklyDetailsSection = ({}: WeeklyDetailsSectionProps) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [editingNote, setEditingNote] = useState<Note>(createEmptyNote());
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);

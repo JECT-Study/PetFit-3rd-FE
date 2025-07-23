@@ -17,7 +17,7 @@ export const handleAxiosError = (error: unknown): string => {
     if (axiosError.response) {
       const { status } = axiosError.response;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { message, code } = axiosError.response.data;
+      const { message } = axiosError.response.data;
 
       // 커스텀 메시지 우선 사용
       if (message) return message;
