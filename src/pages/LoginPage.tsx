@@ -6,7 +6,7 @@ import Logo from '@/assets/icons/logo.svg?react';
 
 export const LoginPage = () => {
   const handleKakaoLogin = () => {
-    const kakaoAuthURI = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_APP_KAKAO_APP_KEY}&redirect_uri=${import.meta.env.VITE_APP_CLIENT_REDIRECT_URI}&response_type=code`;
+    const kakaoAuthURI = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_APP_KAKAO_APP_KEY}&redirect_uri=${import.meta.env.VITE_APP_KAKAO_REDIRECT_URI}&response_type=code`;
     window.location.href = kakaoAuthURI;
   };
 
