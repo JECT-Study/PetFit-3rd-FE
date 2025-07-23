@@ -6,7 +6,11 @@ import { RoutineItem } from '@/features/routine/RoutineItem';
 
 import { RoutineProgress } from './RoutineProgress';
 
-export const Routine = () => {
+interface RoutineProps {
+  petId: number;
+}
+
+export const Routine = ({ petId }: RoutineProps) => {
   const navigate = useNavigate();
 
   return (
@@ -19,7 +23,7 @@ export const Routine = () => {
       </RoutineTitleContainer>
       <RoutineProgress />
 
-      <RoutineItem />
+      <RoutineItem petId={petId} />
     </Container>
   );
 };

@@ -1,24 +1,21 @@
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import type { RootState } from '@/stores/index.ts';
-import { setSelectedPetId } from '@/stores/petSlice.ts';
 import type { PetListType } from '@/types/pets';
 
 interface NameTagBarProps {
   names: PetListType[];
+  selectedPetId: number | null;
+  onSelect: (id: number) => void;
 }
 
-export const NameTagBar = ({ names }: NameTagBarProps) => {
-  const dispatch = useDispatch();
-  const selectedPetId = useSelector((state: RootState) => state.pet.selectedPetId);
+export const NameTagBar = ({ names, selectedPetId, onSelect }: NameTagBarProps) => {
   return (
     <Wrapper>
       <Inner>
         {names.map(({ id, name, isFavorite }) => (
           <Tag
             key={id}
-            onClick={() => dispatch(setSelectedPetId(id))}
+            onClick={() => onSelect(id)}
             $isSelected={selectedPetId === id}
             $isMain={isFavorite}
           >

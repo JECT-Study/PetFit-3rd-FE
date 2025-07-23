@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
-// import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
-// import { getSlot } from '@/apis/slot';
+import { getSlot } from '@/apis/slot';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
 import { routineData } from '@/mocks/routineData';
@@ -12,12 +12,16 @@ import type { SlotId } from '@/types/routine';
 
 import Notice from '@/assets/icons/notice.svg?react';
 
+interface RoutineItemProps {
+  petId: number;
+}
+
 interface ModalProps {
   open: boolean;
   slotId: SlotId | null;
 }
 
-export const RoutineItem = () => {
+export const RoutineItem = ({ petId }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
 
   const STATUS_ICON = {
@@ -26,11 +30,11 @@ export const RoutineItem = () => {
     done: <Check width={24} color="#4D9DE0" />,
   } as const;
 
-  // useQuery({
-  //   queryKey: ['slot', petId],
-  //   queryFn: () => getSlot(petId),
-  //   staleTime: 1000 * 60 * 5,
-  // });
+  useQuery({
+    queryKey: ['slot', petId],
+    queryFn: () => getSlot(petId),
+    staleTime: 1000 * 60 * 5,
+  });
 
   return (
     <div>

@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
 import { Backpack } from 'lucide-react';
 import styled from 'styled-components';
@@ -24,6 +26,15 @@ export const HomePage = () => {
       return Number(b.isFavorite) - Number(a.isFavorite);
     }) ?? [];
 
+  const [selectedPetId, setSelectedPetId] = useState<number | null>(sortedPets[0]?.id ?? null);
+  const selectedPet = sortedPets.find(pet => pet.id === selectedPetId);
+
+  useEffect(() => {
+    if (sortedPets.length > 0 && selectedPetId === null) {
+      setSelectedPetId(sortedPets[0].id);
+    }
+  }, [sortedPets]);
+
   return (
     <Container>
       <Header>
@@ -32,21 +43,24 @@ export const HomePage = () => {
       </Header>
 
       <TopSection>
-        <NameTagBar names={sortedPets} />
+        <NameTagBar names={sortedPets} selectedPetId={selectedPetId} onSelect={setSelectedPetId} />
         <TodayBar />
       </TopSection>
+      {selectedPet && (
+        <>
+          <BriefingSection>
+            <SectionTitle>오늘의 브리핑</SectionTitle>
+            <CardRow>
+              <BriefCard title="일정" color="#4D9DE0" items={scheduleMock} />
+              <BriefCard title="특이사항" color="#FF5C33" items={noticeMock} />
+            </CardRow>
+          </BriefingSection>
 
-      <BriefingSection>
-        <SectionTitle>오늘의 브리핑</SectionTitle>
-        <CardRow>
-          <BriefCard title="일정" color="#4D9DE0" items={scheduleMock} />
-          <BriefCard title="특이사항" color="#FF5C33" items={noticeMock} />
-        </CardRow>
-      </BriefingSection>
-
-      <div>
-        <Routine />
-      </div>
+          <div>
+            <Routine petId={selectedPet.id} />
+          </div>
+        </>
+      )}
     </Container>
   );
 };
