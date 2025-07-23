@@ -1,15 +1,29 @@
+import { useQuery } from '@tanstack/react-query';
 import { Backpack } from 'lucide-react';
 import styled from 'styled-components';
 
+import { getPets } from '@/apis/pets';
 import { BriefCard } from '@/features/home/BriefCard';
 import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
 import { Routine } from '@/features/routine/Routine';
-import { nameListMock, noticeMock, scheduleMock } from '@/mocks/homeData';
+import { noticeMock, scheduleMock } from '@/mocks/homeData';
+import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const HomePage = () => {
+  const { data: pets } = useQuery<PetListType[]>({
+    queryKey: ['pets'],
+    queryFn: () => getPets(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const sortedPets =
+    pets?.slice().sort((a, b) => {
+      return Number(b.isFavorite) - Number(a.isFavorite);
+    }) ?? [];
+
   return (
     <Container>
       <Header>
@@ -18,7 +32,7 @@ export const HomePage = () => {
       </Header>
 
       <TopSection>
-        <NameTagBar names={nameListMock} />
+        <NameTagBar names={sortedPets} />
         <TodayBar />
       </TopSection>
 

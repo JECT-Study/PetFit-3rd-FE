@@ -1,8 +1,10 @@
 import { useState } from 'react';
 
+// import { useQuery } from '@tanstack/react-query';
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
+// import { getSlot } from '@/apis/slot';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
 import { routineData } from '@/mocks/routineData';
@@ -23,6 +25,12 @@ export const RoutineItem = () => {
     note: <Notice />,
     done: <Check width={24} color="#4D9DE0" />,
   } as const;
+
+  // useQuery({
+  //   queryKey: ['slot', petId],
+  //   queryFn: () => getSlot(petId),
+  //   staleTime: 1000 * 60 * 5,
+  // });
 
   return (
     <div>

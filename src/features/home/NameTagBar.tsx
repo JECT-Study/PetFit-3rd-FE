@@ -1,20 +1,27 @@
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-interface NameTag {
-  name: string;
-  isMain: boolean;
-}
+import type { RootState } from '@/stores/index.ts';
+import { setSelectedPetId } from '@/stores/petSlice.ts';
+import type { PetListType } from '@/types/pets';
 
 interface NameTagBarProps {
-  names: NameTag[];
+  names: PetListType[];
 }
 
 export const NameTagBar = ({ names }: NameTagBarProps) => {
+  const dispatch = useDispatch();
+  const selectedPetId = useSelector((state: RootState) => state.pet.selectedPetId);
   return (
     <Wrapper>
       <Inner>
-        {names.map(({ name, isMain }, idx) => (
-          <Tag key={idx} $isMain={isMain}>
+        {names.map(({ id, name, isFavorite }) => (
+          <Tag
+            key={id}
+            onClick={() => dispatch(setSelectedPetId(id))}
+            $isSelected={selectedPetId === id}
+            $isMain={isFavorite}
+          >
             {name}
           </Tag>
         ))}
@@ -61,12 +68,12 @@ const Inner = styled.div`
   white-space: nowrap;
 `;
 
-const Tag = styled.div<{ $isMain?: boolean }>`
+const Tag = styled.div<{ $isMain?: boolean; $isSelected?: boolean }>`
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 14px;
-  font-weight: ${({ $isMain }) => ($isMain ? 700 : 400)};
-  color: ${({ $isMain }) => ($isMain ? '#333' : '#999')};
-  border: ${({ $isMain }) => ($isMain ? '2px solid #FACC15' : 'none')};
-  background-color: ${({ $isMain }) => ($isMain ? '#fff' : 'transparent')};
+  font-weight: ${({ $isSelected }) => ($isSelected ? 700 : 400)};
+  color: ${({ $isSelected }) => ($isSelected ? '#333' : '#999')};
+  border: ${({ $isSelected }) => ($isSelected ? '2px solid #FACC15' : 'none')};
+  background-color: ${({ $isSelected }) => ($isSelected ? '#fff' : 'transparent')};
 `;

@@ -2,7 +2,8 @@ import { axiosInstance } from './axiosInstance';
 
 export const getPets = async () => {
   try {
-    await axiosInstance.get('pets');
+    const response = await axiosInstance.get('pets');
+    return response.data.content;
   } catch (error) {
     console.log('pets', error);
     throw error;
