@@ -3,8 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { getAccessTokenFromCookie, kakaoLogin } from '@/apis/auth';
-
-const isDev = import.meta.env.MODE === 'development';
+import { IS_DEV } from '@/constants/env';
 
 export const AuthRedirectPage = () => {
   const navigate = useNavigate();
@@ -17,12 +16,12 @@ export const AuthRedirectPage = () => {
       try {
         const result = await kakaoLogin(code);
 
-        if (isDev && result) {
+        if (IS_DEV && result) {
           localStorage.setItem('accessToken', result.accessToken);
           localStorage.setItem('refreshToken', result.refreshToken);
         }
 
-        if (!isDev) {
+        if (!IS_DEV) {
           await getAccessTokenFromCookie(); // ✅ prod 환경에서 AT 쿠키 설정
         }
 

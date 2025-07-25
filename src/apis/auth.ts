@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-import { axiosInstance } from './axiosInstance';
+import { IS_DEV } from '@/constants/env';
 
-const isDev = import.meta.env.MODE === 'development';
+import { axiosInstance } from './axiosInstance';
 
 /**
  * 카카오 로그인 요청
@@ -10,7 +10,7 @@ const isDev = import.meta.env.MODE === 'development';
  * - prod: 쿠키(HttpOnly) 기반 자동 저장, 별도 응답 처리 없음
  */
 export const kakaoLogin = async (code: string) => {
-  const endpoint = isDev ? '/auth/kakao/login/dev' : '/auth/kakao/login';
+  const endpoint = IS_DEV ? '/auth/kakao/login/dev' : '/auth/kakao/login';
 
   try {
     const response = await axios.get(endpoint, {
@@ -18,7 +18,7 @@ export const kakaoLogin = async (code: string) => {
     });
 
     // 개발환경일 경우 accessToken, refreshToken 반환
-    if (isDev) {
+    if (IS_DEV) {
       return {
         accessToken: response.data.content.accessToken,
         refreshToken: response.data.content.refreshToken,
@@ -39,10 +39,10 @@ export const kakaoLogin = async (code: string) => {
  * - prod: 쿠키 기반 로그아웃
  */
 export const kakaoLogout = async () => {
-  const endpoint = isDev ? '/auth/kakao/logout/dev' : '/auth/kakao/logout';
+  const endpoint = IS_DEV ? '/auth/kakao/logout/dev' : '/auth/kakao/logout';
 
   try {
-    const body = isDev ? { refreshToken: localStorage.getItem('refreshToken') } : undefined; // prod는 쿠키 기반이라 body 비움
+    const body = IS_DEV ? { refreshToken: localStorage.getItem('refreshToken') } : undefined; // prod는 쿠키 기반이라 body 비움
 
     await axiosInstance.post(endpoint, body);
   } catch (error) {
@@ -73,5 +73,19 @@ export const getAccessTokenFromCookie = async () => {
   } catch (error) {
     console.error('get access cookie failed:', error);
     throw error;
+  }
+};
+
+/**
+ * 서버에 쿠키 기반 인증 상태 확인 요청
+ * @returns 인증 성공 시 true, 실패 시 false
+ */
+export const verifyAuth = async (): Promise<boolean> => {
+  try {
+    await axios.get('/auth/verify'); // 200 OK 시 인증됨
+    return true;
+  } catch (err) {
+    console.log('verify auth failed:', err);
+    return false;
   }
 };
