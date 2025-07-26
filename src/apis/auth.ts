@@ -64,6 +64,25 @@ export const kakaoWithdraw = async () => {
 };
 
 /**
+ * 운영환경: 서버에 accessToken, refreshToken 전달하여 쿠키 설정
+ * - 서버가 쿠키(HttpOnly)를 응답으로 내려주는 역할
+ * - 프론트는 토큰을 직접 저장하지 않고 쿠키로 인증 유지
+ */
+export const setAuthCookies = async (accessToken: string, refreshToken: string) => {
+  try {
+    const response = await axiosInstance.post('/auth/cookie', {
+      accessToken,
+      refreshToken,
+    });
+
+    return response.data; // 예: { isNewUser: true }
+  } catch (error) {
+    console.error('setAuthCookies failed:', error);
+    throw error;
+  }
+};
+
+/**
  * 서버에 쿠키 기반 인증 상태 확인 요청
  */
 export const verifyAuth = async (): Promise<boolean> => {

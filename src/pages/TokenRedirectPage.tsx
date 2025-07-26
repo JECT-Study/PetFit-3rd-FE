@@ -1,22 +1,21 @@
 import { useEffect } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { axiosInstance } from '@/apis/axiosInstance';
+import { setAuthCookies } from '@/apis/auth';
 import { IS_DEV } from '@/constants/env';
 import { setTokens, setIsNewUser } from '@/store/authSlice';
-import type { RootState } from '@/store/store';
 
 /**
  * 카카오 인증 후, 서버에서 리디렉션 되는 페이지
- * 리디렉션 되면서 리턴값과 쿠키 설정이 무시되므로, 쿠키 설정 요청을 직접 보냄.
+ * - 개발환경: 토큰을 localStorage에 저장 후 바로 회원가입 페이지로 이동
+ * - 운영환경: 쿠키 설정 API 호출 후 신규 유저 여부에 따라 페이지 분기
  */
 export const TokenRedirectPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const reduxAccessToken = useSelector((state: RootState) => state.auth.accessToken);
 
   useEffect(() => {
     const accessToken = searchParams.get('access_token');
@@ -37,39 +36,33 @@ export const TokenRedirectPage = () => {
       localStorage.setItem('refreshToken', refreshToken);
       console.info('✅ 개발환경: 토큰을 localStorage에 저장했습니다.');
       navigate('/signup/pet'); // 개발환경에선 쿠키 설정 없이 바로 이동
-      return;
+    } else {
+      // 3. 운영환경: 쿠키 설정 API 호출
+      const setCookieAndRedirect = async () => {
+        try {
+          const { isNewUser } = await setAuthCookies(accessToken, refreshToken);
+
+          dispatch(setIsNewUser(isNewUser));
+
+          if (isNewUser) {
+            navigate('/signup/pet');
+          } else {
+            navigate('/');
+          }
+        } catch (err) {
+          console.error('❌ 쿠키 설정 실패', err);
+
+          if (accessToken) {
+            console.warn('⚠️ 쿠키 설정 실패했지만 accessToken은 Redux에 있음 → /signup/pet로 이동');
+            navigate('/signup/pet');
+          } else {
+            navigate('/login');
+          }
+        }
+      };
+
+      setCookieAndRedirect();
     }
-
-    // 3. 운영환경: 쿠키 설정 API 호출
-    const setCookie = async () => {
-      try {
-        const res = await axiosInstance.post('/auth/cookie', {
-          accessToken,
-          refreshToken,
-        });
-
-        const { isNewUser } = res.data;
-
-        dispatch(setIsNewUser(isNewUser));
-
-        if (isNewUser) {
-          navigate('/signup/pet');
-        } else {
-          navigate('/');
-        }
-      } catch (err) {
-        console.error('❌ 쿠키 설정 실패', err);
-        // ✅ 임시 fallback 처리: accessToken이 있으면 /signup/pet로 이동
-        if (reduxAccessToken) {
-          console.warn('⚠️ 쿠키 설정 실패했지만 accessToken은 Redux에 있음 → /signup/pet로 이동');
-          navigate('/signup/pet');
-        } else {
-          navigate('/login');
-        }
-      }
-    };
-
-    setCookie();
   }, [dispatch, navigate, searchParams]);
 
   return <p>로그인 처리 중입니다...</p>;
