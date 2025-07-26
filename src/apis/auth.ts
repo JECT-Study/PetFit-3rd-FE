@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-import { axiosInstance } from './axiosInstance';
+import { IS_DEV } from '@/constants/env';
 
-const isDev = import.meta.env.MODE === 'development';
+import { axiosInstance } from './axiosInstance';
 
 /**
  * 카카오 로그인 요청
@@ -10,7 +10,7 @@ const isDev = import.meta.env.MODE === 'development';
  * - prod: 쿠키(HttpOnly) 기반 자동 저장, 별도 응답 처리 없음
  */
 export const kakaoLogin = async (code: string) => {
-  const endpoint = isDev ? '/auth/kakao/login/dev' : '/auth/kakao/login';
+  const endpoint = IS_DEV ? '/auth/kakao/login/dev' : '/auth/kakao/login';
 
   try {
     const response = await axios.get(endpoint, {
@@ -18,7 +18,7 @@ export const kakaoLogin = async (code: string) => {
     });
 
     // 개발환경일 경우 accessToken, refreshToken 반환
-    if (isDev) {
+    if (IS_DEV) {
       return {
         accessToken: response.data.content.accessToken,
         refreshToken: response.data.content.refreshToken,
@@ -39,10 +39,10 @@ export const kakaoLogin = async (code: string) => {
  * - prod: 쿠키 기반 로그아웃
  */
 export const kakaoLogout = async () => {
-  const endpoint = isDev ? '/auth/kakao/logout/dev' : '/auth/kakao/logout';
+  const endpoint = IS_DEV ? '/auth/kakao/logout/dev' : '/auth/kakao/logout';
 
   try {
-    const body = isDev ? { refreshToken: localStorage.getItem('refreshToken') } : undefined; // prod는 쿠키 기반이라 body 비움
+    const body = IS_DEV ? { refreshToken: localStorage.getItem('refreshToken') } : undefined; // prod는 쿠키 기반이라 body 비움
 
     await axiosInstance.post(endpoint, body);
   } catch (error) {
@@ -64,14 +64,9 @@ export const kakaoWithdraw = async () => {
 };
 
 /**
- * Access Token을 쿠키로 재설정 요청 (서버가 쿠키로만 발급하는 경우에 사용)
- * - 주로 로그인 직후, 쿠키 기반 토큰을 새로 심기 위해 사용
+ * 서버에 쿠키 기반 인증 상태 확인 요청
  */
-export const getAccessTokenFromCookie = async () => {
-  try {
-    await axiosInstance.get('/auth/accesscookie');
-  } catch (error) {
-    console.error('get access cookie failed:', error);
-    throw error;
-  }
+export const verifyAuth = async (): Promise<boolean> => {
+  const res = await axiosInstance.get('/auth/verify'); // 서버에서 쿠키 기반 검증
+  return res.data.isAuthenticated; // 서버에서 { isAuthenticated: true } 응답 가정
 };
