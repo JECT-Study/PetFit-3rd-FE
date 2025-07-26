@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import { getAccessTokenFromCookie, kakaoLogin } from '@/apis/auth';
+import { kakaoLogin } from '@/apis/auth';
 import { IS_DEV } from '@/constants/env';
 
 export const AuthRedirectPage = () => {
@@ -22,7 +22,7 @@ export const AuthRedirectPage = () => {
         }
 
         if (!IS_DEV) {
-          await getAccessTokenFromCookie(); // ✅ prod 환경에서 AT 쿠키 설정
+          // ✅ prod 환경에서 AT 쿠키 설정
         }
 
         navigate('/signup/pet'); // TODO: 추후 반려동물 유무에 따라 navigate 경로 수정 필요.

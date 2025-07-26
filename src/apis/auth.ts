@@ -64,28 +64,9 @@ export const kakaoWithdraw = async () => {
 };
 
 /**
- * Access Token을 쿠키로 재설정 요청 (서버가 쿠키로만 발급하는 경우에 사용)
- * - 주로 로그인 직후, 쿠키 기반 토큰을 새로 심기 위해 사용
- */
-export const getAccessTokenFromCookie = async () => {
-  try {
-    await axiosInstance.get('/auth/accesscookie');
-  } catch (error) {
-    console.error('get access cookie failed:', error);
-    throw error;
-  }
-};
-
-/**
  * 서버에 쿠키 기반 인증 상태 확인 요청
- * @returns 인증 성공 시 true, 실패 시 false
  */
 export const verifyAuth = async (): Promise<boolean> => {
-  try {
-    await axios.get('/auth/verify'); // 200 OK 시 인증됨
-    return true;
-  } catch (err) {
-    console.log('verify auth failed:', err);
-    return false;
-  }
+  const res = await axiosInstance.get('/auth/verify'); // 서버에서 쿠키 기반 검증
+  return res.data.isAuthenticated; // 서버에서 { isAuthenticated: true } 응답 가정
 };
