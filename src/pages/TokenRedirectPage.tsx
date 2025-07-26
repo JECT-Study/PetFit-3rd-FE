@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { axiosInstance } from '@/apis/axiosInstance';
 import { IS_DEV } from '@/constants/env';
 import { setTokens, setIsNewUser } from '@/store/authSlice';
+import type { RootState } from '@/store/store';
 
 /**
  * 카카오 인증 후, 서버에서 리디렉션 되는 페이지
@@ -15,6 +16,7 @@ export const TokenRedirectPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const reduxAccessToken = useSelector((state: RootState) => state.auth.accessToken);
 
   useEffect(() => {
     const accessToken = searchParams.get('access_token');
@@ -41,7 +43,7 @@ export const TokenRedirectPage = () => {
     // 3. 운영환경: 쿠키 설정 API 호출
     const setCookie = async () => {
       try {
-        const res = await axiosInstance.post('/api/auth/cookie', {
+        const res = await axiosInstance.post('/auth/cookie', {
           accessToken,
           refreshToken,
         });
@@ -57,7 +59,13 @@ export const TokenRedirectPage = () => {
         }
       } catch (err) {
         console.error('❌ 쿠키 설정 실패', err);
-        navigate('/login');
+        // ✅ 임시 fallback 처리: accessToken이 있으면 /signup/pet로 이동
+        if (reduxAccessToken) {
+          console.warn('⚠️ 쿠키 설정 실패했지만 accessToken은 Redux에 있음 → /signup/pet로 이동');
+          navigate('/signup/pet');
+        } else {
+          navigate('/login');
+        }
       }
     };
 
