@@ -70,9 +70,11 @@ export const kakaoWithdraw = async () => {
  */
 export const setAuthCookies = async (accessToken: string, refreshToken: string) => {
   try {
-    const response = await axiosInstance.post('/auth/token/cookie', {
-      accessToken,
-      refreshToken,
+    const response = await axiosInstance.post('/auth/token/cookie', null, {
+      params: {
+        accessToken,
+        refreshToken,
+      },
     });
 
     const { newUser } = response.data.content;
