@@ -1,6 +1,6 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 
-const isDev = import.meta.env.MODE === 'development';
+import { IS_DEV } from '@/constants/env';
 
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -10,7 +10,7 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // 개발환경일 때만 accessToken 헤더 추가
-    if (isDev) {
+    if (IS_DEV) {
       const accessToken = localStorage.getItem('accessToken');
       if (accessToken) {
         config.headers['Authorization'] = `Bearer ${accessToken}`;
@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
       try {
         const newAccessToken = await refreshAccessToken();
 
-        if (isDev && newAccessToken) {
+        if (IS_DEV && newAccessToken) {
           originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
         }
 
@@ -54,11 +54,11 @@ axiosInstance.interceptors.response.use(
  */
 const refreshAccessToken = async () => {
   try {
-    const body = isDev ? { refreshToken: localStorage.getItem('refreshToken') } : undefined;
+    const body = IS_DEV ? { refreshToken: localStorage.getItem('refreshToken') } : undefined;
 
     const response = await axiosInstance.post('/auth/refresh', body);
 
-    if (isDev) {
+    if (IS_DEV) {
       const newAccessToken = response.data.content.accessToken;
       localStorage.setItem('accessToken', newAccessToken);
       return newAccessToken;

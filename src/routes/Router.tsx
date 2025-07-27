@@ -11,6 +11,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
+import { TokenRedirectPage } from '@/pages/TokenRedirectPage';
 import { WithdrawPage } from '@/pages/WithdrawPage';
 
 import { PrivateRouter } from './PrivateRouter';
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
     children: [
       { path: '/login', element: <LoginPage /> },
       { path: '/api/auth/kakao/login/dev', element: <AuthRedirectPage /> },
+      { path: '/token', element: <TokenRedirectPage /> },
     ],
   },
   {
