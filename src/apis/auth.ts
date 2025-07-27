@@ -70,12 +70,14 @@ export const kakaoWithdraw = async () => {
  */
 export const setAuthCookies = async (accessToken: string, refreshToken: string) => {
   try {
-    const response = await axiosInstance.post('/auth/cookie', {
+    const response = await axiosInstance.post('/auth/token/cookie', {
       accessToken,
       refreshToken,
     });
 
-    return response.data; // 예: { isNewUser: true }
+    const { newUser } = response.data.content;
+
+    return { isNewUser: newUser }; // 호출부에서는 isNewUser로 사용할 수 있도록 변환
   } catch (error) {
     console.error('setAuthCookies failed:', error);
     throw error;
