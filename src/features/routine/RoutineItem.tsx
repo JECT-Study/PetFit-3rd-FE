@@ -1,13 +1,14 @@
 import { useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
+import { checkRoutine, getCheckedRoutine } from '@/apis/routine';
 import { getSlot } from '@/apis/slot';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
-import { routineData } from '@/mocks/routineData';
 import type { SlotId } from '@/types/routine';
 
 import Notice from '@/assets/icons/notice.svg?react';
@@ -24,17 +25,82 @@ interface ModalProps {
 export const RoutineItem = ({ petId }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
 
-  const STATUS_ICON = {
+  type StatusType = 'todo' | 'note' | 'done';
+
+  const STATUS_ICON: Record<StatusType, React.ReactElement> = {
     todo: <Check width={24} color="#DDDDDD" />,
     note: <Notice />,
     done: <Check width={24} color="#4D9DE0" />,
   } as const;
 
-  useQuery({
+  // 체크되거나 메모된 루틴이 있는지 확인
+  const today = dayjs().format('YYYY-MM-DD');
+
+  const { data: checkedData } = useQuery({
+    queryKey: ['checkedRoutine', petId, today],
+    queryFn: () => getCheckedRoutine(petId, today),
+  });
+
+  // 기본 슬롯 데이터 가져오기
+  const { data: slotData } = useQuery({
     queryKey: ['slot', petId],
     queryFn: () => getSlot(petId),
     staleTime: 1000 * 60 * 5,
   });
+
+  if (!slotData) {
+    return <NonSlot>슬롯을 설정해주세요</NonSlot>;
+  }
+
+  const routineData = SLOT_ITEMS.filter(({ id }) => {
+    switch (id) {
+      case 'feed':
+        return slotData.feedActivated;
+      case 'water':
+        return slotData.waterActivated;
+      case 'walk':
+        return slotData.walkActivated;
+      case 'potty':
+        return slotData.pottyActivated;
+      case 'dental':
+        return slotData.dentalActivated;
+      case 'skin':
+        return slotData.skinActivated;
+      default:
+        return false;
+    }
+  }).map(({ id, ...rest }) => {
+    const isChecked = checkedData?.some(
+      (item: { category: string; status: string }) =>
+        item.category === id && item.status === 'CHECKED'
+    );
+    const status: StatusType = isChecked ? 'done' : 'todo';
+
+    return {
+      id,
+      ...rest,
+      default:
+        id === 'feed'
+          ? slotData.feedAmount
+          : id === 'water'
+            ? slotData.waterAmount
+            : id === 'walk'
+              ? slotData.walkAmount
+              : '이상 없음',
+      current: ['feed', 'water', 'walk'].includes(id) ? 0 : undefined,
+      status,
+    };
+  });
+
+  // 루틴을 완료하거나 취소하기
+  const handleStatusClick = async (id: SlotId) => {
+    try {
+      const today = dayjs().format('YYYY-MM-DD');
+      await checkRoutine(petId, today, id);
+    } catch (err) {
+      console.error('루틴 체크 실패', err);
+    }
+  };
 
   return (
     <div>
@@ -43,8 +109,7 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
         return (
           <Container key={id}>
             <ItemContainer>
-              {STATUS_ICON[rtn.status]}
-
+              <div onClick={() => handleStatusClick(id)}>{STATUS_ICON[rtn.status]}</div>
               <MainInfoContainer>
                 <MainInfo>
                   <Icon width={16} color="#4D9DE0" />
@@ -123,4 +188,8 @@ const NoteButton = styled.div`
   &:hover {
     cursor: pointer;
   }
+`;
+
+const NonSlot = styled.div`
+  text-align: center;
 `;
