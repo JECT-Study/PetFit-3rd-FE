@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
+import { createSchedule, deleteSchedule, getAllSchedules, updateSchedule } from '@/apis/alarm';
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
 import { ScheduleAlarmItem } from '@/features/alarm/ScheduleAlarmItem';
 import { ScheduleRegisterModal } from '@/features/alarm/ScheduleRegisterModal';
 import { useModal } from '@/hooks/useModal';
 import type { Alarm } from '@/types/alarm';
+import { toAlarm, toScheduleFormData } from '@/utils/transform/alarm';
 
 import EmptyDog from '@/assets/icons/empty-dog.svg?react';
 
@@ -23,6 +25,52 @@ export const AlarmPage = () => {
   const [alarmList, setAlarmList] = useState<Alarm[]>([]);
   const [editingAlarm, setEditingAlarm] = useState<Alarm>(createEmptyAlarm());
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  const petId = 2; // 예시용, 실제로는 props/context에서 주입
+
+  // 🟢 API 연동: 알람 전체 불러오기
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await getAllSchedules(petId);
+        setAlarmList(res.map(toAlarm));
+      } catch (e) {
+        console.error('알람 불러오기 실패', e);
+      }
+    };
+    fetch();
+  }, []);
+
+  // 🟢 API 연동: 알람 등록/수정
+  const handleSubmit = async (submittedAlarm: Alarm) => {
+    try {
+      const formData = toScheduleFormData(submittedAlarm);
+
+      if (isEditing(alarmList, submittedAlarm)) {
+        const updated = await updateSchedule(submittedAlarm.id, formData);
+        setAlarmList(prev => addOrUpdateAlarmList(prev, toAlarm(updated)));
+      } else {
+        const created = await createSchedule(petId, formData);
+        setAlarmList(prev => addOrUpdateAlarmList(prev, toAlarm(created)));
+      }
+      closeModal();
+    } catch (err) {
+      console.error('알람 저장 실패', err);
+    }
+  };
+
+  // 🟢 API 연동: 알람 삭제
+  const confirmDelete = async () => {
+    if (deleteTargetId === null) return;
+    try {
+      await deleteSchedule(deleteTargetId);
+      setAlarmList(prev => deleteAlarmById(prev, deleteTargetId));
+    } catch (err) {
+      console.error('알람 삭제 실패', err);
+    } finally {
+      setDeleteTargetId(null);
+    }
+  };
 
   const isEditing = (list: Alarm[], target: Alarm) => list.some(alarm => alarm.id === target.id);
 
@@ -42,18 +90,6 @@ export const AlarmPage = () => {
   const handleEdit = (alarm: Alarm) => {
     setEditingAlarm(alarm);
     openModal();
-  };
-
-  const handleSubmit = (submittedAlarm: Alarm) => {
-    setAlarmList(prev => addOrUpdateAlarmList(prev, submittedAlarm));
-    closeModal();
-  };
-
-  const confirmDelete = () => {
-    if (deleteTargetId !== null) {
-      setAlarmList(prev => deleteAlarmById(prev, deleteTargetId));
-      setDeleteTargetId(null);
-    }
   };
 
   return (

@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 import { IS_DEV } from '@/constants/env';
 
 import { axiosInstance } from './axiosInstance';
@@ -13,20 +11,10 @@ export const kakaoLogin = async (code: string) => {
   const endpoint = IS_DEV ? '/auth/kakao/login/dev' : '/auth/kakao/login';
 
   try {
-    const response = await axios.get(endpoint, {
+    // 302 redirect 목적의 요청만 수행 (개발 환경만 실행)
+    await axiosInstance.get(endpoint, {
       params: { code },
     });
-
-    // 개발환경일 경우 accessToken, refreshToken 반환
-    if (IS_DEV) {
-      return {
-        accessToken: response.data.content.accessToken,
-        refreshToken: response.data.content.refreshToken,
-      };
-    }
-
-    // 배포 환경은 쿠키 기반 저장 → 응답 별도 처리 없음
-    return null;
   } catch (error) {
     console.error('kakao login failed:', error);
     throw error;

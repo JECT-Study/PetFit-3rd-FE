@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
     element: <PlainLayout />,
     children: [
       { path: '/login', element: <LoginPage /> },
-      { path: '/api/auth/kakao/login/dev', element: <AuthRedirectPage /> },
+      { path: '/oauth/redirect', element: <AuthRedirectPage /> },
       { path: '/token', element: <TokenRedirectPage /> },
     ],
   },

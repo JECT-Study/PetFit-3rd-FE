@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
 import { DAYS_OF_WEEK } from '@/constants/calendar';
@@ -17,15 +17,18 @@ import {
 interface CustomDatePickerProps extends BaseFieldProps {
   value: Date;
   onChange: (date: Date) => void;
+  withYearSelect?: boolean;
 }
 
 export const CustomDatePicker = ({
   label,
   value: selectedDate,
   onChange,
+  withYearSelect,
 }: CustomDatePickerProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [visibleDate, setVisibleDate] = useState(new Date(selectedDate));
+  const [isSelectingYear, setIsSelectingYear] = useState(false);
 
   const calendarDates = getMonthDates(visibleDate);
 
@@ -34,6 +37,7 @@ export const CustomDatePicker = ({
       setVisibleDate(new Date(selectedDate));
     }
     setIsCalendarOpen(prev => !prev);
+    setIsSelectingYear(false);
   };
 
   const handlePrevMonth = () => {
@@ -53,6 +57,12 @@ export const CustomDatePicker = ({
     setIsCalendarOpen(false);
   };
 
+  const handleToggleYearSelect = () => {
+    if (withYearSelect) setIsSelectingYear(prev => !prev);
+  };
+
+  const yearList = Array.from({ length: 42 }, (_, i) => 1984 + i); // 1984 ~ 2025
+
   return (
     <FieldGroup>
       {label && <Label>{label}</Label>}
@@ -66,38 +76,66 @@ export const CustomDatePicker = ({
             <button onClick={handlePrevMonth}>
               <ChevronLeft size={18} />
             </button>
-            <span>
-              {getYear(visibleDate)}년 {getMonthNumber(visibleDate)}월
-            </span>
+            <CalendarHeaderCenter>
+              <span>
+                {getYear(visibleDate)}년 {getMonthNumber(visibleDate)}월
+              </span>
+              {withYearSelect && (
+                <YearToggleButton onClick={handleToggleYearSelect}>
+                  <ChevronDown size={18} />
+                </YearToggleButton>
+              )}
+            </CalendarHeaderCenter>
             <button onClick={handleNextMonth}>
               <ChevronRight size={18} />
             </button>
           </CalendarHeaderRow>
 
-          <DayOfWeekRow>
-            {DAYS_OF_WEEK.map(day => (
-              <CalendarHeaderCell key={day}>{day}</CalendarHeaderCell>
-            ))}
-          </DayOfWeekRow>
-
-          <CalendarGrid>
-            {calendarDates.map(date => {
-              const day = date.getDate();
-              const isCurrentMonth = isSameMonth(date, visibleDate);
-              const isSelected = isSameDay(date, selectedDate);
-
-              return (
+          {isSelectingYear ? (
+            <YearScrollContainer>
+              {yearList.map(year => (
                 <DateCell
-                  key={date.toISOString()}
-                  $dimmed={!isCurrentMonth}
-                  $isSelected={isSelected}
-                  onClick={() => handleSelectDate(date)}
+                  key={year}
+                  $isSelected={year === getYear(visibleDate)}
+                  onClick={() => {
+                    const newDate = new Date(visibleDate);
+                    newDate.setFullYear(year);
+                    setVisibleDate(newDate);
+                    setIsSelectingYear(false);
+                  }}
                 >
-                  {day}
+                  {year}
                 </DateCell>
-              );
-            })}
-          </CalendarGrid>
+              ))}
+            </YearScrollContainer>
+          ) : (
+            <>
+              <DayOfWeekRow>
+                {DAYS_OF_WEEK.map(day => (
+                  <CalendarHeaderCell key={day}>{day}</CalendarHeaderCell>
+                ))}
+              </DayOfWeekRow>
+
+              <CalendarGrid>
+                {calendarDates.map(date => {
+                  const day = date.getDate();
+                  const isCurrentMonth = isSameMonth(date, visibleDate);
+                  const isSelected = isSameDay(date, selectedDate);
+
+                  return (
+                    <DateCell
+                      key={date.toISOString()}
+                      $dimmed={!isCurrentMonth}
+                      $isSelected={isSelected}
+                      onClick={() => handleSelectDate(date)}
+                    >
+                      {day}
+                    </DateCell>
+                  );
+                })}
+              </CalendarGrid>
+            </>
+          )}
         </CalendarPanel>
       )}
     </FieldGroup>
@@ -141,6 +179,33 @@ const CalendarHeaderRow = styled.div`
   align-items: center;
   font-weight: bold;
   margin-bottom: 10px;
+`;
+
+const CalendarHeaderCenter = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const YearToggleButton = styled.button`
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  svg {
+    stroke: #333;
+  }
+`;
+
+const YearScrollContainer = styled.div`
+  max-height: 210px; // 7줄까지 보여주고 나머진 스크롤
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border-top: 1px solid #eee;
 `;
 
 const CalendarHeaderCell = styled.div`
