@@ -1,9 +1,11 @@
 import { useState } from 'react';
 
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { PetRegisterForm } from '@/components/PetRegisterForm';
+import { setPetForm } from '@/store/petSlice';
 import type { PetForm } from '@/types/form';
 
 export const SignupPetRegisterPage = () => {
@@ -15,6 +17,7 @@ export const SignupPetRegisterPage = () => {
   });
   const [isPetFormValid, setIsPetFormValid] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   return (
     <Container>
@@ -22,7 +25,13 @@ export const SignupPetRegisterPage = () => {
 
       <PetRegisterForm form={form} setForm={setForm} onFormValidChange={setIsPetFormValid} />
 
-      <NextButton onClick={() => navigate('/slot')} disabled={!isPetFormValid}>
+      <NextButton
+        onClick={() => {
+          dispatch(setPetForm(form));
+          navigate('/slot');
+        }}
+        disabled={!isPetFormValid}
+      >
         다음
       </NextButton>
     </Container>
