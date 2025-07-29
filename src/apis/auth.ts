@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 import { IS_DEV } from '@/constants/env';
 
 import { axiosInstance } from './axiosInstance';
@@ -14,7 +12,7 @@ export const kakaoLogin = async (code: string) => {
 
   try {
     // 302 redirect 목적의 요청만 수행 (개발 환경만 실행)
-    await axios.get(endpoint, {
+    await axiosInstance.get(endpoint, {
       params: { code },
     });
   } catch (error) {
