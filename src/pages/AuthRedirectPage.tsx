@@ -3,29 +3,22 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { kakaoLogin } from '@/apis/auth';
-import { IS_DEV } from '@/constants/env';
 
 export const AuthRedirectPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const code = new URL(window.location.href).searchParams.get('code');
-    if (!code) return;
+    if (!code) {
+      console.error('❌ 인가 코드 없음');
+      navigate('/login');
+      return;
+    }
 
     const getToken = async () => {
       try {
-        const result = await kakaoLogin(code);
-
-        if (IS_DEV && result) {
-          localStorage.setItem('accessToken', result.accessToken);
-          localStorage.setItem('refreshToken', result.refreshToken);
-        }
-
-        if (!IS_DEV) {
-          // ✅ prod 환경에서 AT 쿠키 설정
-        }
-
-        navigate('/signup/pet'); // TODO: 추후 반려동물 유무에 따라 navigate 경로 수정 필요.
+        await kakaoLogin(code); // API 호출만 수행
+        // 이후 자동 302 리디렉션이 일어나서 /token 으로 이동
       } catch (err) {
         console.error('로그인 실패', err);
         navigate('/login');
