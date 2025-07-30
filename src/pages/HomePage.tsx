@@ -1,4 +1,5 @@
 import { Backpack } from 'lucide-react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -8,12 +9,15 @@ import { TodayBar } from '@/features/home/TodayBar';
 import { Routine } from '@/features/routine/Routine';
 import { useBriefCardData } from '@/hooks/useBriefCardData';
 import { nameListMock } from '@/mocks/homeData';
+import type { RootState } from '@/store/store';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const HomePage = () => {
-  const petId = 2; // 실제로는 전역 상태나 route param에서 가져오겠죠
-  const { schedules, remarks, loading, error } = useBriefCardData(petId);
+  // ✅ 전역 상태에서 selectedPet.id 추출
+  const petId = useSelector((state: RootState) => state.selectedPet.id);
+
+  const { schedules, remarks, loading, error } = useBriefCardData(petId ?? -1);
 
   const navigate = useNavigate();
   return (

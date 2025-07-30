@@ -1,8 +1,21 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import type { PetForm } from '@/types/form';
+interface SelectedPetState {
+  id: number | null;
+  name: string;
+  species: string;
+  gender: string;
+  birthDate: Date;
+}
 
-const initialState: PetForm = {
+// ✅ id만 localStorage에서 불러오기
+const loadSelectedPetId = (): number | null => {
+  const stored = localStorage.getItem('selectedPetId');
+  return stored ? Number(stored) : null;
+};
+
+const initialState: SelectedPetState = {
+  id: loadSelectedPetId(),
   name: '',
   species: '강아지',
   gender: '남아',
@@ -10,23 +23,29 @@ const initialState: PetForm = {
 };
 
 const petSlice = createSlice({
-  name: 'pet',
+  name: 'selectedPet',
   initialState,
   reducers: {
-    setPetForm: (state, action: PayloadAction<PetForm>) => {
-      state.name = action.payload.name;
-      state.species = action.payload.species;
-      state.gender = action.payload.gender;
-      state.birthDate = action.payload.birthDate;
+    setSelectedPet: (state, action: PayloadAction<SelectedPetState>) => {
+      return { ...action.payload };
     },
-    resetPetForm: state => {
-      state.name = initialState.name;
-      state.species = initialState.species;
-      state.gender = initialState.gender;
-      state.birthDate = initialState.birthDate;
+    resetSelectedPet: () => {
+      localStorage.removeItem('selectedPetId');
+      return {
+        id: null,
+        name: '',
+        species: '강아지',
+        gender: '남아',
+        birthDate: new Date(),
+      };
+    },
+    // ✅ 전용 id 저장 리듀서
+    setSelectedPetId: (state, action: PayloadAction<number>) => {
+      state.id = action.payload;
+      localStorage.setItem('selectedPetId', String(action.payload));
     },
   },
 });
 
-export const { setPetForm, resetPetForm } = petSlice.actions;
+export const { setSelectedPet, resetSelectedPet, setSelectedPetId } = petSlice.actions;
 export default petSlice.reducer;
