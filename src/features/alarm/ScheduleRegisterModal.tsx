@@ -8,6 +8,7 @@ import { FormInput } from '@/components/common/FormInput';
 import { FormTextarea } from '@/components/common/FormTextarea';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import type { Alarm } from '@/types/alarm';
+import { validators } from '@/utils/validators';
 
 interface ScheduleRegisterModalProps {
   isOpen: boolean;
@@ -34,7 +35,11 @@ export const ScheduleRegisterModal = ({
   useEffect(() => {
     if (isOpen) {
       setAlarm(initialAlarm);
-      setFormValidity({ startDate: true, title: false, content: false });
+      setFormValidity({
+        startDate: true,
+        title: validators.title(initialAlarm.title).isValid,
+        content: validators.content(initialAlarm.description).isValid,
+      });
     }
   }, [isOpen, initialAlarm]);
 
