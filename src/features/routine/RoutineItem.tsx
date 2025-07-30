@@ -120,7 +120,7 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
                   </AmountText>
                 </MainInfo>
 
-                <MemoInfo>{rtn.memo}</MemoInfo>
+                {/* <MemoInfo>{rtn.memo}</MemoInfo> */}
               </MainInfoContainer>
             </ItemContainer>
 
@@ -175,14 +175,14 @@ const MainInfo = styled.div`
   font-size: 14px;
 `;
 
-const MemoInfo = styled.div`
-  font-size: 14px;
-  color: gray;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
-`;
+// const MemoInfo = styled.div`
+//   font-size: 14px;
+//   color: gray;
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   max-width: 220px;
+// `;
 
 const NoteButton = styled.div`
   &:hover {

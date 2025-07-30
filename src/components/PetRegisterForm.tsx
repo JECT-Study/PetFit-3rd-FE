@@ -79,6 +79,7 @@ export const PetRegisterForm = ({ form, setForm, onFormValidChange }: PetRegiste
         label="생일"
         value={form.birthDate}
         onChange={birthDate => setForm({ ...form, birthDate })}
+        withYearSelect
       />
     </FormSection>
   );

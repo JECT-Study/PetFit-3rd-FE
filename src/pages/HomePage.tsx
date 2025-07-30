@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { Backpack } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getPets } from '@/apis/pets';
@@ -9,41 +11,61 @@ import { BriefCard } from '@/features/home/BriefCard';
 import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
 import { Routine } from '@/features/routine/Routine';
-import { noticeMock, scheduleMock } from '@/mocks/homeData';
+import { useBriefCardData } from '@/hooks/useBriefCardData';
+import { setSelectedPet } from '@/store/petSlice';
+import type { RootState } from '@/store/store';
 import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const HomePage = () => {
-  const { data: pets } = useQuery<PetListType[]>({
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // 1. 펫 목록 불러오기
+  const { data: pets = [] } = useQuery({
     queryKey: ['pets'],
-    queryFn: () => getPets(),
+    queryFn: getPets,
     staleTime: 1000 * 60 * 5,
   });
 
-  const sortedPets =
-    pets?.slice().sort((a, b) => {
-      return Number(b.isFavorite) - Number(a.isFavorite);
-    }) ?? [];
+  // 2. 즐겨찾기 순 정렬
+  const sortedPets = pets
+    .slice()
+    .sort((a: PetListType, b: PetListType) => Number(b.isFavorite) - Number(a.isFavorite));
 
-  const [selectedPetId, setSelectedPetId] = useState<number | null>(sortedPets[0]?.id ?? null);
-  const selectedPet = sortedPets.find(pet => pet.id === selectedPetId);
+  // 3. 전역 상태에서 현재 선택된 petId 가져오기
+  const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
+  const selectedPet = sortedPets.find((pet: PetListType) => pet.id === selectedPetId);
 
+  // 4. selectedPetId가 없으면 자동 설정
   useEffect(() => {
     if (sortedPets.length > 0 && selectedPetId === null) {
-      setSelectedPetId(sortedPets[0].id);
+      const firstPet = sortedPets[0];
+      dispatch(setSelectedPet(firstPet)); // 전체 pet 정보 저장
     }
-  }, [sortedPets]);
+  }, [sortedPets, selectedPetId, dispatch]);
+
+  // 5. 유저가 NameTag에서 펫을 선택했을 때
+  const handleSelectPet = (id: number) => {
+    const pet = sortedPets.find((p: PetListType) => p.id === id);
+    if (pet) {
+      dispatch(setSelectedPet(pet));
+    }
+  };
+
+  // 6. 데이터 요청
+  const { schedules, remarks, loading, error } = useBriefCardData(selectedPetId ?? -1);
 
   return (
     <Container>
       <Header>
-        <StyledLogo />
+        <StyledLogo onClick={() => navigate('/signup/pet')} />
         <Backpack size={24} stroke="#444" />
       </Header>
 
       <TopSection>
-        <NameTagBar names={sortedPets} selectedPetId={selectedPetId} onSelect={setSelectedPetId} />
+        <NameTagBar names={sortedPets} selectedPetId={selectedPetId} onSelect={handleSelectPet} />
         <TodayBar />
       </TopSection>
       {selectedPet && (
@@ -51,8 +73,52 @@ export const HomePage = () => {
           <BriefingSection>
             <SectionTitle>오늘의 브리핑</SectionTitle>
             <CardRow>
-              <BriefCard title="일정" color="#4D9DE0" items={scheduleMock} />
-              <BriefCard title="특이사항" color="#FF5C33" items={noticeMock} />
+              <BriefCard
+                label="일정"
+                color="#4D9DE0"
+                items={schedules.map(s => ({
+                  id: s.scheduleId,
+                  title: s.title,
+                  date: s.targetDate,
+                }))}
+              />
+              <BriefCard
+                label="특이사항"
+                color="#FF5C33"
+                items={remarks.map(r => ({
+                  id: r.remarkId,
+                  title: r.title,
+                  date: r.remarkDate,
+                }))}
+              />
+            </CardRow>
+          </BriefingSection>
+
+          <BriefingSection>
+            <SectionTitle>오늘의 브리핑</SectionTitle>
+            <CardRow>
+              <BriefCard
+                label="일정"
+                color="#4D9DE0"
+                items={schedules.map(s => ({
+                  id: s.scheduleId,
+                  title: s.title,
+                  date: s.targetDate,
+                }))}
+                loading={loading.schedules}
+                error={error.schedules}
+              />
+              <BriefCard
+                label="특이사항"
+                color="#FF5C33"
+                items={remarks.map(r => ({
+                  id: r.remarkId,
+                  title: r.title,
+                  date: r.remarkDate,
+                }))}
+                loading={loading.remarks}
+                error={error.remarks}
+              />
             </CardRow>
           </BriefingSection>
 

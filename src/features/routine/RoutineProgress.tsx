@@ -1,10 +1,8 @@
 import styled from 'styled-components';
 
-import { routineData } from '@/mocks/routineData';
-
 export const RoutineProgress = () => {
-  const totalRoutineCount = routineData.length;
-  const doneRoutineCount = routineData.filter(rtn => rtn.status === 'done').length;
+  const totalRoutineCount = 6;
+  const doneRoutineCount = 3;
   const completedPercent = ((doneRoutineCount / totalRoutineCount) * 100).toFixed(1);
   return (
     <Container>

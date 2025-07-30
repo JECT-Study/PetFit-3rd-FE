@@ -1,114 +1,118 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { X } from 'lucide-react';
 import styled from 'styled-components';
 
+import { BaseModal } from '@/components/common/BaseModal';
+import { FormInput } from '@/components/common/FormInput';
+import { FormTextarea } from '@/components/common/FormTextarea';
+import type { Note } from '@/types/note';
+
 interface NoteModalProps {
-  open: boolean;
+  isOpen: boolean;
   onClose: () => void;
+  initialNote: Note;
+  onSubmit: (note: Note) => void;
 }
 
-export const NoteModal = ({ open, onClose }: NoteModalProps) => {
-  if (!open) return null;
+export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalProps) => {
+  const [note, setNote] = useState<Note>(initialNote);
+  const [formValidity, setFormValidity] = useState({
+    title: false,
+    content: false,
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      setNote(initialNote);
+      setFormValidity({
+        title: true,
+        content: true,
+      });
+    }
+  }, [isOpen, initialNote]);
+
+  const isFormValid = useMemo(() => Object.values(formValidity).every(Boolean), [formValidity]);
+
+  // ✅ useCallback으로 고정
+  const handleFieldValidChange = useCallback((field: 'title' | 'content', isValid: boolean) => {
+    setFormValidity(prev => ({ ...prev, [field]: isValid }));
+  }, []);
+
+  // ✅ 필드별 핸들러 useCallback으로 고정
+  const titleValidHandler = useCallback(
+    (isValid: boolean) => handleFieldValidChange('title', isValid),
+    [handleFieldValidChange]
+  );
+  const contentValidHandler = useCallback(
+    (isValid: boolean) => handleFieldValidChange('content', isValid),
+    [handleFieldValidChange]
+  );
+
+  const handleSubmit = () => {
+    if (!isFormValid) return;
+    onSubmit(note);
+    onClose();
+  };
 
   return (
-    <Overlay>
+    <BaseModal isOpen={isOpen} onClose={onClose}>
       <ModalContainer>
-        <Header>
-          <span style={{ paddingLeft: '8px' }}>특이사항 제목</span>
-          <CloseButton onClick={onClose}>
-            <X size={20} />
-          </CloseButton>
-        </Header>
+        <CloseButton onClick={onClose}>
+          <X size={20} />
+        </CloseButton>
 
-        <Input placeholder="특이사항 제목을 입력해주세요." maxLength={20} />
-        <CharCount>0/20</CharCount>
+        <FormInput
+          label="특이사항 제목"
+          value={note.title}
+          onChange={e => setNote(prev => ({ ...prev, title: e.target.value }))}
+          validationType="title"
+          placeholder="특이사항 제목을 입력해주세요."
+          onFieldValidChange={titleValidHandler}
+        />
 
-        <Label>특이사항 내용</Label>
-        <Textarea placeholder="내용을 입력해주세요." maxLength={200} />
-        <CharCount>0/200</CharCount>
+        <FormTextarea
+          label="특이사항 내용"
+          value={note.content}
+          onChange={e => setNote(prev => ({ ...prev, content: e.target.value }))}
+          validationType="content"
+          placeholder="내용을 입력해주세요."
+          onFieldValidChange={contentValidHandler}
+        />
 
-        <SaveButton disabled>저장</SaveButton>
+        <SaveButton onClick={handleSubmit} $disabled={!isFormValid}>
+          저장
+        </SaveButton>
       </ModalContainer>
-    </Overlay>
+    </BaseModal>
   );
 };
 
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
 const ModalContainer = styled.div`
-  width: 90%;
-  max-width: 320px;
-  background-color: white;
-  border-radius: 12px;
-  padding: 20px 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  margin-bottom: 8px;
+  position: relative;
+  padding-top: 24px;
 `;
 
 const CloseButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: transparent;
+
+  svg {
+    stroke: #373737;
+  }
 `;
 
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #f5c46a;
-  background-color: #fff8e1;
-  margin-bottom: 4px;
-`;
-
-const Label = styled.div`
-  font-size: 14px;
-  margin: 12px 0 4px;
-  padding-left: 8px;
-`;
-
-const Textarea = styled.textarea`
-  width: 100%;
-  height: 80px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #f5c46a;
-  background-color: #fff8e1;
-  resize: none;
-`;
-
-const CharCount = styled.div`
-  font-size: 12px;
-  text-align: right;
-  color: #999;
-  margin-top: 4px;
-`;
-
-const SaveButton = styled.button`
+const SaveButton = styled.button<{ $disabled: boolean }>`
   width: 100%;
   margin-top: 16px;
   padding: 12px 0;
-  background-color: #e0e0e0;
+  background-color: ${({ $disabled }) => ($disabled ? '#eee' : '#facc15')};
   border-radius: 10px;
-  color: #999;
+  border: none;
+  color: ${({ $disabled }) => ($disabled ? '#999' : '#222')};
   font-size: 16px;
   font-weight: bold;
-  border: none;
-  cursor: default;
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 `;

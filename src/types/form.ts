@@ -5,9 +5,17 @@ export interface PetForm {
   name: string;
   species: PetType;
   gender: PetGender;
-  birthDate: string;
+  birthDate: Date;
 }
 
 export interface BaseFieldProps {
   label?: string;
+}
+
+export interface PetInfo {
+  id: number;
+  name: string;
+  species: string;
+  gender: string;
+  birthDate: Date;
 }
