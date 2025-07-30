@@ -1,4 +1,4 @@
-import type { Schedule, ScheduleFormData } from '@/apis/alarm';
+import type { ScheduleApiResponse, ScheduleFormData } from '@/apis/alarm';
 import type { Alarm } from '@/types/alarm';
 import { formatDate } from '@/utils/calendar'; // 너가 정의한 함수
 
@@ -10,7 +10,7 @@ export const toScheduleFormData = (alarm: Alarm): ScheduleFormData => ({
 });
 
 // 🔄 Schedule(API 응답) → Alarm(UI에서 사용하는 객체)
-export const toAlarm = (schedule: Schedule): Alarm => ({
+export const toAlarm = (schedule: ScheduleApiResponse): Alarm => ({
   id: schedule.scheduleId,
   title: schedule.title,
   description: schedule.content,

@@ -11,3 +11,11 @@ export interface PetForm {
 export interface BaseFieldProps {
   label?: string;
 }
+
+export interface PetInfo {
+  id: number;
+  name: string;
+  species: string;
+  gender: string;
+  birthDate: Date;
+}

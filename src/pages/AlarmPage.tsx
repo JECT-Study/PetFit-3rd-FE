@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { createSchedule, deleteSchedule, getAllSchedules, updateSchedule } from '@/apis/alarm';
@@ -7,6 +8,7 @@ import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
 import { ScheduleAlarmItem } from '@/features/alarm/ScheduleAlarmItem';
 import { ScheduleRegisterModal } from '@/features/alarm/ScheduleRegisterModal';
 import { useModal } from '@/hooks/useModal';
+import type { RootState } from '@/store/store';
 import type { Alarm } from '@/types/alarm';
 import { toAlarm, toScheduleFormData } from '@/utils/transform/alarm';
 
@@ -26,13 +28,14 @@ export const AlarmPage = () => {
   const [editingAlarm, setEditingAlarm] = useState<Alarm>(createEmptyAlarm());
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
-  const petId = 2; // 예시용, 실제로는 props/context에서 주입
+  // ✅ 전역 상태에서 selectedPet.id 추출
+  const petId = useSelector((state: RootState) => state.selectedPet.id);
 
   // 🟢 API 연동: 알람 전체 불러오기
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await getAllSchedules(petId);
+        const res = await getAllSchedules(petId ?? -1);
         setAlarmList(res.map(toAlarm));
       } catch (e) {
         console.error('알람 불러오기 실패', e);
@@ -50,7 +53,7 @@ export const AlarmPage = () => {
         const updated = await updateSchedule(submittedAlarm.id, formData);
         setAlarmList(prev => addOrUpdateAlarmList(prev, toAlarm(updated)));
       } else {
-        const created = await createSchedule(petId, formData);
+        const created = await createSchedule(petId ?? -1, formData);
         setAlarmList(prev => addOrUpdateAlarmList(prev, toAlarm(created)));
       }
       closeModal();
@@ -74,10 +77,27 @@ export const AlarmPage = () => {
 
   const isEditing = (list: Alarm[], target: Alarm) => list.some(alarm => alarm.id === target.id);
 
-  const addOrUpdateAlarmList = (list: Alarm[], target: Alarm): Alarm[] =>
-    isEditing(list, target)
-      ? list.map(alarm => (alarm.id === target.id ? target : alarm))
-      : [...list, target];
+  // const addOrUpdateAlarmList = (list: Alarm[], target: Alarm): Alarm[] =>
+  //   isEditing(list, target)
+  //     ? list.map(alarm => (alarm.id === target.id ? target : alarm))
+  //     : [...list, target];
+
+  const addOrUpdateAlarmList = (list: Alarm[], target: Alarm): Alarm[] => {
+    const index = list.findIndex(alarm => alarm.id === target.id);
+    let newList: Alarm[];
+
+    if (index === -1) {
+      // 신규 알람 추가
+      newList = [...list, { ...target }];
+    } else {
+      // 기존 알람 수정
+      newList = [...list];
+      newList[index] = { ...target };
+    }
+
+    // 🔁 날짜 기준 오름차순 정렬 (가까운 날짜가 위로)
+    return newList.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  };
 
   const deleteAlarmById = (list: Alarm[], targetId: number): Alarm[] =>
     list.filter(alarm => alarm.id !== targetId);
