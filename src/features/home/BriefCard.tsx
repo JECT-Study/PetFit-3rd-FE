@@ -2,35 +2,48 @@ import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-interface BriefCardProps {
+interface BriefCardItem {
+  id: number;
   title: string;
-  color: string;
-  items: string[];
+  content?: string;
+  date?: string;
 }
 
-export const BriefCard = ({ title, color, items }: BriefCardProps) => {
+interface BriefCardProps {
+  label: string;
+  color: string;
+  items: BriefCardItem[];
+  loading?: boolean;
+  error?: string | null;
+}
+
+export const BriefCard = ({ label, color, items, loading, error }: BriefCardProps) => {
   const navigate = useNavigate();
   const hasContent = items.length > 0;
 
   const handleAddClick = () => {
-    if (title === '일정') navigate('/alarm');
-    else if (title === '특이사항') navigate('/calendar');
+    if (label === '일정') navigate('/alarm');
+    else if (label === '특이사항') navigate('/calendar');
   };
 
   return (
     <Card>
       <Header>
         <ColorBar style={{ backgroundColor: color }} />
-        <Title>{title}</Title>
-        <AddButton type="button" onClick={handleAddClick} aria-label={`${title} 추가`}>
+        <Title>{label}</Title>
+        <AddButton type="button" onClick={handleAddClick} aria-label={`${label} 추가`}>
           <Plus size={20} color="#999" />
         </AddButton>
       </Header>
       <Content>
-        {hasContent ? (
-          items.slice(0, 2).map((item, i) => <Item key={i}>• {item}</Item>)
+        {error ? (
+          <ErrorMessage>{error}</ErrorMessage>
+        ) : loading ? (
+          <LoadingMessage>불러오는 중...</LoadingMessage>
+        ) : hasContent ? (
+          items.slice(0, 2).map(item => <Item key={item.id}>• {item.title}</Item>)
         ) : (
-          <NoContent>{title}이 없습니다.</NoContent>
+          <NoContent>{label}이 없습니다.</NoContent>
         )}
       </Content>
     </Card>
@@ -76,6 +89,16 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+`;
+
+const ErrorMessage = styled.div`
+  font-size: 14px;
+  color: #d32f2f;
+`;
+
+const LoadingMessage = styled.div`
+  font-size: 14px;
+  color: #888;
 `;
 
 const Item = styled.div`

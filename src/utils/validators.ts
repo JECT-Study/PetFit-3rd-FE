@@ -21,7 +21,7 @@ export const VALID_CHAR_REGEX = /^[\w가-힣\s!@#%^&*()[\]{}\-_=+~;:'",.<>/?\\|`
 export const VALIDATION_MESSAGES = {
   required: (label: string) => `${label}을(를) 입력해주세요.`,
   maxLength: (max: number) => `${max}자까지 입력할 수 있습니다.`,
-  invalidChar: () => `영문, 한글, 숫자, 특수문자만 입력할 수 있습니다.`,
+  invalidChar: () => `영문, 한글만 입력할 수 있습니다.`,
 };
 
 // ✅ 개별 validator 함수
