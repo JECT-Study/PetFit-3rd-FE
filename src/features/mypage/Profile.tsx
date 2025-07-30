@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { RootState } from '@/store';
+import type { RootState } from '@/store/store';
 export const Profile = () => {
   const nickname = useSelector((state: RootState) => state.user.nickname);
   const navigate = useNavigate();

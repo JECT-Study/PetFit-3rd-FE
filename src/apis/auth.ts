@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import type { AppDispatch } from '@/store';
+import type { AppDispatch } from '@/store/store';
 import { setUser } from '@/store/userSlice';
 
 import { axiosInstance } from './axiosInstance';

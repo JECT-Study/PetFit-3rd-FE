@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { editNickname } from '@/apis/auth';
 import { FormInput } from '@/components/common/FormInput';
 import { TitleHeader } from '@/components/common/TitleHeader';
-import type { AppDispatch, RootState } from '@/store';
+import type { AppDispatch, RootState } from '@/store/store';
 import { setUser } from '@/store/userSlice';
 
 export const NicknameEditPage = () => {

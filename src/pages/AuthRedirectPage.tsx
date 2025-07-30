@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { kakaoLoginDev } from '@/apis/auth';
-import type { AppDispatch } from '@/store';
+import type { AppDispatch } from '@/store/store.ts';
 
 export const AuthRedirectPage = () => {
   const navigate = useNavigate();
