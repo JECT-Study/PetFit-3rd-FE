@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import dayjs from 'dayjs';
 
 import { getDailyRoutine } from '@/apis/routine';
 import type { Routine } from '@/types/routine';
+import { formatDate } from '@/utils/calendar';
 
 export const useDailyRoutine = (petId: number) => {
-  const today = dayjs().format('YYYY-MM-DD');
+  const today = formatDate(new Date());
 
   return useQuery<Routine[]>({
     queryKey: ['dailyRoutine', petId, today],

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import dayjs from 'dayjs';
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
@@ -9,6 +8,7 @@ import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
 import type { Routine, SlotId } from '@/types/routine';
+import { formatDate } from '@/utils/calendar';
 
 import Notice from '@/assets/icons/notice.svg?react';
 
@@ -41,7 +41,7 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
   // 루틴을 완료하거나 취소하기
   const handleStatusClick = async (id: SlotId) => {
     try {
-      const today = dayjs().format('YYYY-MM-DD');
+      const today = formatDate(new Date());
       await checkRoutine(petId, today, id);
     } catch (err) {
       console.error('루틴 체크 실패', err);
