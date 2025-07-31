@@ -36,13 +36,16 @@ export const router = createBrowserRouter([
           { path: '/calendar', element: <CalendarPage /> },
           { path: '/info', element: <InfoPage /> },
           { path: '/mypage', element: <MyPage /> },
-          { path: '/slot', element: <SlotSettingPage /> },
           { path: '/withdraw', element: <WithdrawPage /> },
         ],
       },
       {
         element: <PlainLayout />,
-        children: [{ path: '/signup/pet', element: <SignupPetRegisterPage /> }],
+
+        children: [
+          { path: '/signup/pet', element: <SignupPetRegisterPage /> },
+          { path: '/slot', element: <SlotSettingPage /> },
+        ],
       },
     ],
   },

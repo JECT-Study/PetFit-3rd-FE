@@ -1,25 +1,60 @@
+import { useEffect } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
 import { Backpack } from 'lucide-react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { getPets } from '@/apis/pets';
 import { BriefCard } from '@/features/home/BriefCard';
 import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
 import { Routine } from '@/features/routine/Routine';
 import { useBriefCardData } from '@/hooks/useBriefCardData';
-import { nameListMock } from '@/mocks/homeData';
+import { setSelectedPet } from '@/store/petSlice';
 import type { RootState } from '@/store/store';
+import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
 export const HomePage = () => {
-  // ✅ 전역 상태에서 selectedPet.id 추출
-  const petId = useSelector((state: RootState) => state.selectedPet.id);
-
-  const { schedules, remarks, loading, error } = useBriefCardData(petId ?? -1);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { data: pets = [] } = useQuery({
+    queryKey: ['pets'],
+    queryFn: getPets,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // 대표 동물을 맨 앞으로 설정
+  const sortedPets = pets
+    .slice()
+    .sort((a: PetListType, b: PetListType) => Number(b.isFavorite) - Number(a.isFavorite));
+
+  // redux에서 현재 선택된 petId 가져오기
+  const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
+  const selectedPet = sortedPets.find((pet: PetListType) => pet.id === selectedPetId);
+
+  // selectedPetId가 대표 동물로 설정
+  useEffect(() => {
+    if (sortedPets.length > 0 && selectedPetId === null) {
+      const firstPet = sortedPets[0];
+      dispatch(setSelectedPet(firstPet));
+    }
+  }, [sortedPets, selectedPetId, dispatch]);
+
+  const handleSelectPet = (id: number) => {
+    const pet = sortedPets.find((p: PetListType) => p.id === id);
+    if (pet) {
+      dispatch(setSelectedPet(pet));
+      localStorage.setItem('selectedPetId', String(pet.id));
+    }
+  };
+  // 일정, 특이사항
+  const { schedules, remarks } = useBriefCardData(selectedPetId ?? -1);
+
   return (
     <Container>
       <Header>
@@ -28,41 +63,40 @@ export const HomePage = () => {
       </Header>
 
       <TopSection>
-        <NameTagBar names={nameListMock} />
+        <NameTagBar names={sortedPets} selectedPetId={selectedPetId} onSelect={handleSelectPet} />
         <TodayBar />
       </TopSection>
+      {selectedPet && (
+        <>
+          <BriefingSection>
+            <SectionTitle>오늘의 브리핑</SectionTitle>
+            <CardRow>
+              <BriefCard
+                label="일정"
+                color="#4D9DE0"
+                items={schedules.map(s => ({
+                  id: s.scheduleId,
+                  title: s.title,
+                  date: s.targetDate,
+                }))}
+              />
+              <BriefCard
+                label="특이사항"
+                color="#FF5C33"
+                items={remarks.map(r => ({
+                  id: r.remarkId,
+                  title: r.title,
+                  date: r.remarkDate,
+                }))}
+              />
+            </CardRow>
+          </BriefingSection>
 
-      <BriefingSection>
-        <SectionTitle>오늘의 브리핑</SectionTitle>
-        <CardRow>
-          <BriefCard
-            label="일정"
-            color="#4D9DE0"
-            items={schedules.map(s => ({
-              id: s.scheduleId,
-              title: s.title,
-              date: s.targetDate,
-            }))}
-            loading={loading.schedules}
-            error={error.schedules}
-          />
-          <BriefCard
-            label="특이사항"
-            color="#FF5C33"
-            items={remarks.map(r => ({
-              id: r.remarkId,
-              title: r.title,
-              date: r.remarkDate,
-            }))}
-            loading={loading.remarks}
-            error={error.remarks}
-          />
-        </CardRow>
-      </BriefingSection>
-
-      <div>
-        <Routine />
-      </div>
+          <div>
+            <Routine petId={selectedPet.id} />
+          </div>
+        </>
+      )}
     </Container>
   );
 };

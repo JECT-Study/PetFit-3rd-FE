@@ -1,12 +1,14 @@
 import { SLOT_ITEMS } from '@/constants/slot';
 
 export type SlotId = (typeof SLOT_ITEMS)[number]['id'];
-export type RoutineStatus = 'done' | 'note' | 'todo';
+export type RoutineStatus = 'CHECKED' | 'note' | 'UNCHECKED';
 
 export interface Routine {
   id: SlotId;
-  current?: number | null;
-  default: number | string;
-  memo: string | null;
+  actualAmount?: number | null;
+  category: string;
+  targetAmount: number | string;
+  content: string | null;
   status: RoutineStatus;
+  date: string;
 }

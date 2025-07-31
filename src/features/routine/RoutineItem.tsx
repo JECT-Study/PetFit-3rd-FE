@@ -3,47 +3,79 @@ import { useState } from 'react';
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
+import { checkRoutine } from '@/apis/routine';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
-import { routineData } from '@/mocks/routineData';
-import type { SlotId } from '@/types/routine';
+import { useDailyRoutine } from '@/hooks/useDailyRoutine';
+import type { Routine, SlotId } from '@/types/routine';
+import { formatDate } from '@/utils/calendar';
 
 import Notice from '@/assets/icons/notice.svg?react';
+
+interface RoutineItemProps {
+  petId: number;
+}
 
 interface ModalProps {
   open: boolean;
   slotId: SlotId | null;
 }
 
-export const RoutineItem = () => {
+export const RoutineItem = ({ petId }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
 
-  const STATUS_ICON = {
-    todo: <Check width={24} color="#DDDDDD" />,
+  type StatusType = 'UNCHECKED' | 'note' | 'CHECKED';
+
+  const STATUS_ICON: Record<StatusType, React.ReactElement> = {
+    UNCHECKED: <Check width={24} color="#DDDDDD" />,
     note: <Notice />,
-    done: <Check width={24} color="#4D9DE0" />,
+    CHECKED: <Check width={24} color="#4D9DE0" />,
   } as const;
+
+  const { data: routineData } = useDailyRoutine(petId);
+
+  if (!routineData) {
+    return <NonSlot>슬롯을 설정해주세요</NonSlot>;
+  }
+
+  // 루틴을 완료하거나 취소하기
+  const handleStatusClick = async (id: SlotId) => {
+    try {
+      const today = formatDate(new Date());
+      await checkRoutine(petId, today, id);
+    } catch (err) {
+      console.error('루틴 체크 실패', err);
+    }
+  };
 
   return (
     <div>
-      {routineData.map(rtn => {
-        const { id, Icon, label, unit } = SLOT_ITEMS.find(slot => slot.id === rtn.id)!;
+      {routineData.map((rtn: Routine) => {
+        const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(
+          slot => slot.id === rtn.category
+        )!;
         return (
           <Container key={id}>
             <ItemContainer>
-              {STATUS_ICON[rtn.status]}
-
+              <div onClick={() => handleStatusClick(id)}>{STATUS_ICON[rtn.status]}</div>
               <MainInfoContainer>
                 <MainInfo>
                   <Icon width={16} color="#4D9DE0" />
                   <TitleText>{label}</TitleText>
                   <AmountText>
-                    {rtn.current !== undefined ? `${rtn.current}${unit} / ` : null} {rtn.default}
-                    {unit}
+                    {rtn.targetAmount != null ? (
+                      <>
+                        {rtn.actualAmount !== undefined ? `${rtn.actualAmount}${unit} / ` : ''}
+                        {rtn.targetAmount}
+                        {unit}
+                      </>
+                    ) : (
+                      placeholder
+                    )}
                   </AmountText>
                 </MainInfo>
 
-                <MemoInfo>{rtn.memo}</MemoInfo>
+                <MemoInfo>{rtn.content}</MemoInfo>
               </MainInfoContainer>
             </ItemContainer>
 
@@ -111,4 +143,8 @@ const NoteButton = styled.div`
   &:hover {
     cursor: pointer;
   }
+`;
+
+const NonSlot = styled.div`
+  text-align: center;
 `;

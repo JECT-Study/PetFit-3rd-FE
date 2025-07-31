@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
@@ -7,6 +8,7 @@ import { NoteItemList } from '@/features/calendar/NoteItemList';
 import { NoteModal } from '@/features/calendar/NoteModal';
 import { RoutineItem } from '@/features/routine/RoutineItem';
 import { useModal } from '@/hooks/useModal';
+import type { RootState } from '@/store/store';
 import type { Note } from '@/types/note';
 
 interface WeeklyDetailsSectionProps {
@@ -36,6 +38,8 @@ export const WeeklyDetailsSection = ({}: WeeklyDetailsSectionProps) => {
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   const { isOpen: isModalOpen, openModal, closeModal } = useModal();
+
+  const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
 
   const handleAddNote = () => {
     setEditingNote(createEmptyNote());
@@ -78,7 +82,7 @@ export const WeeklyDetailsSection = ({}: WeeklyDetailsSectionProps) => {
           <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
         </MarginBottom>
 
-        <RoutineItem />
+        <RoutineItem petId={selectedPetId ?? -1} />
         <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
       </MarginTop>
 
