@@ -9,16 +9,14 @@ interface Props {
 
 export const NonUnitModal = ({ isOpen, onClose }: Props) => {
   return (
-    <div>
-      <BaseModal isOpen={isOpen} onClose={onClose}>
-        <Message>기본값으로 제공돼요</Message>
-        <Description>배변, 치아, 피부, 털에 대한 이상증상은</Description>
-        <Description>나중에 입력할 수 있어요.</Description>
-        <ButtonRow>
-          <ConfirmButton onClick={onClose}>확인</ConfirmButton>
-        </ButtonRow>
-      </BaseModal>
-    </div>
+    <BaseModal isOpen={isOpen} onClose={onClose}>
+      <Message>기본값으로 제공돼요</Message>
+      <Description>배변, 치아, 피부, 털에 대한 이상증상은</Description>
+      <Description>나중에 입력할 수 있어요.</Description>
+      <ButtonRow>
+        <ConfirmButton onClick={onClose}>확인</ConfirmButton>
+      </ButtonRow>
+    </BaseModal>
   );
 };
 
