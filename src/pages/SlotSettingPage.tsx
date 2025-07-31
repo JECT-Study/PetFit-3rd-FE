@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 
+import type { AxiosError } from 'axios';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { getSlot, patchSlot } from '@/apis/slot';
+import { getSlot, patchSlot, initializeSlot } from '@/apis/slot';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { SlotButton } from '@/features/slot/SlotButton';
 import { SlotInput } from '@/features/slot/SlotInput';
+import type { RootState } from '@/store/store';
 import type { SlotType } from '@/types/slot';
 
 import EmptyRoutine from '@/assets/icons/empty-routine.svg?react';
@@ -16,32 +19,51 @@ export const SlotSettingPage = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [defaultValues, setDefaultValues] = useState<Record<string, number>>({});
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
+  const [isInitial, setIsInitial] = useState(false);
+
+  const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
 
   // 슬롯 설정 가져오기
   useEffect(() => {
     const fetchSlot = async () => {
-      const data: SlotType = await getSlot(1);
-      const newSelectedIds: string[] = [];
-      const values: Record<string, number> = {};
+      try {
+        const data: SlotType | null = await getSlot(selectedPetId ?? 0);
 
-      if (data.feedActivated) {
-        newSelectedIds.push('meal');
-        values['meal'] = data.feedAmount ?? 0;
-      }
-      if (data.waterActivated) {
-        newSelectedIds.push('water');
-        values['water'] = data.waterAmount ?? 0;
-      }
-      if (data.walkActivated) {
-        newSelectedIds.push('walk');
-        values['walk'] = data.walkAmount ?? 0;
-      }
-      if (data.pottyActivated) newSelectedIds.push('poop');
-      if (data.dentalActivated) newSelectedIds.push('teeth');
-      if (data.skinActivated) newSelectedIds.push('skin');
+        // 슬롯 데이터가 있는지 확인
+        if (!data || Object.values(data).every(v => v === false || v === 0 || v == null)) {
+          setIsInitial(true);
+          return;
+        }
 
-      setSelectedIds(newSelectedIds);
-      setDefaultValues(values);
+        setIsInitial(false);
+        const newSelectedIds: string[] = [];
+        const values: Record<string, number> = {};
+
+        if (data.feedActivated) {
+          newSelectedIds.push('feed');
+          values['feed'] = data.feedAmount ?? 0;
+        }
+        if (data.waterActivated) {
+          newSelectedIds.push('water');
+          values['water'] = data.waterAmount ?? 0;
+        }
+        if (data.walkActivated) {
+          newSelectedIds.push('walk');
+          values['walk'] = data.walkAmount ?? 0;
+        }
+        if (data.pottyActivated) newSelectedIds.push('potty');
+        if (data.dentalActivated) newSelectedIds.push('dental');
+        if (data.skinActivated) newSelectedIds.push('skin');
+
+        setSelectedIds(newSelectedIds);
+        setDefaultValues(values);
+      } catch (error) {
+        if ((error as AxiosError).response?.status === 404) {
+          setIsInitial(true);
+        } else {
+          console.error('슬롯 정보를 불러오는 데 실패했습니다', error);
+        }
+      }
     };
 
     fetchSlot();
@@ -53,23 +75,27 @@ export const SlotSettingPage = () => {
 
   const handleSubmit = async () => {
     const payload = {
-      feedActivated: selectedIds.includes('meal'),
+      feedActivated: selectedIds.includes('feed'),
       waterActivated: selectedIds.includes('water'),
       walkActivated: selectedIds.includes('walk'),
-      pottyActivated: selectedIds.includes('poop'),
-      dentalActivated: selectedIds.includes('teeth'),
+      pottyActivated: selectedIds.includes('potty'),
+      dentalActivated: selectedIds.includes('dental'),
       skinActivated: selectedIds.includes('skin'),
-      feedAmount: Number(inputValues['meal'] ?? 0),
+      feedAmount: Number(inputValues['feed'] ?? 0),
       waterAmount: Number(inputValues['water'] ?? 0),
       walkAmount: Number(inputValues['walk'] ?? 0),
     };
 
     try {
-      await patchSlot(1, payload);
+      if (isInitial) {
+        await initializeSlot(selectedPetId ?? 0, payload);
+      } else {
+        await patchSlot(selectedPetId ?? 0, payload);
+      }
       navigate('/');
     } catch (err) {
       console.error(err);
-      alert('슬롯 수정 실패');
+      alert(isInitial ? '슬롯 등록 실패' : '슬롯 수정 실패');
     }
   };
 

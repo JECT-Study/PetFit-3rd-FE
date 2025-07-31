@@ -1,15 +1,14 @@
 import { useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
-import { checkRoutine, getCheckedRoutine } from '@/apis/routine';
-import { getSlot } from '@/apis/slot';
+import { checkRoutine } from '@/apis/routine';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
-import type { SlotId } from '@/types/routine';
+import { useDailyRoutine } from '@/hooks/useDailyRoutine';
+import type { Routine, SlotId } from '@/types/routine';
 
 import Notice from '@/assets/icons/notice.svg?react';
 
@@ -25,72 +24,19 @@ interface ModalProps {
 export const RoutineItem = ({ petId }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
 
-  type StatusType = 'todo' | 'note' | 'done';
+  type StatusType = 'UNCHECKED' | 'note' | 'CHECKED';
 
   const STATUS_ICON: Record<StatusType, React.ReactElement> = {
-    todo: <Check width={24} color="#DDDDDD" />,
+    UNCHECKED: <Check width={24} color="#DDDDDD" />,
     note: <Notice />,
-    done: <Check width={24} color="#4D9DE0" />,
+    CHECKED: <Check width={24} color="#4D9DE0" />,
   } as const;
 
-  // 체크되거나 메모된 루틴이 있는지 확인
-  const today = dayjs().format('YYYY-MM-DD');
+  const { data: routineData } = useDailyRoutine(petId);
 
-  const { data: checkedData } = useQuery({
-    queryKey: ['checkedRoutine', petId, today],
-    queryFn: () => getCheckedRoutine(petId, today),
-  });
-
-  // 기본 슬롯 데이터 가져오기
-  const { data: slotData } = useQuery({
-    queryKey: ['slot', petId],
-    queryFn: () => getSlot(petId),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  if (!slotData) {
+  if (!routineData) {
     return <NonSlot>슬롯을 설정해주세요</NonSlot>;
   }
-
-  const routineData = SLOT_ITEMS.filter(({ id }) => {
-    switch (id) {
-      case 'feed':
-        return slotData.feedActivated;
-      case 'water':
-        return slotData.waterActivated;
-      case 'walk':
-        return slotData.walkActivated;
-      case 'potty':
-        return slotData.pottyActivated;
-      case 'dental':
-        return slotData.dentalActivated;
-      case 'skin':
-        return slotData.skinActivated;
-      default:
-        return false;
-    }
-  }).map(({ id, ...rest }) => {
-    const isChecked = checkedData?.some(
-      (item: { category: string; status: string }) =>
-        item.category === id && item.status === 'CHECKED'
-    );
-    const status: StatusType = isChecked ? 'done' : 'todo';
-
-    return {
-      id,
-      ...rest,
-      default:
-        id === 'feed'
-          ? slotData.feedAmount
-          : id === 'water'
-            ? slotData.waterAmount
-            : id === 'walk'
-              ? slotData.walkAmount
-              : '이상 없음',
-      current: ['feed', 'water', 'walk'].includes(id) ? 0 : undefined,
-      status,
-    };
-  });
 
   // 루틴을 완료하거나 취소하기
   const handleStatusClick = async (id: SlotId) => {
@@ -104,8 +50,10 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
 
   return (
     <div>
-      {routineData.map(rtn => {
-        const { id, Icon, label, unit } = SLOT_ITEMS.find(slot => slot.id === rtn.id)!;
+      {routineData.map((rtn: Routine) => {
+        const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(
+          slot => slot.id === rtn.category
+        )!;
         return (
           <Container key={id}>
             <ItemContainer>
@@ -115,12 +63,19 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
                   <Icon width={16} color="#4D9DE0" />
                   <TitleText>{label}</TitleText>
                   <AmountText>
-                    {rtn.current !== undefined ? `${rtn.current}${unit} / ` : null} {rtn.default}
-                    {unit}
+                    {rtn.targetAmount != null ? (
+                      <>
+                        {rtn.actualAmount !== undefined ? `${rtn.actualAmount}${unit} / ` : ''}
+                        {rtn.targetAmount}
+                        {unit}
+                      </>
+                    ) : (
+                      placeholder
+                    )}
                   </AmountText>
                 </MainInfo>
 
-                {/* <MemoInfo>{rtn.memo}</MemoInfo> */}
+                <MemoInfo>{rtn.content}</MemoInfo>
               </MainInfoContainer>
             </ItemContainer>
 
@@ -175,14 +130,14 @@ const MainInfo = styled.div`
   font-size: 14px;
 `;
 
-// const MemoInfo = styled.div`
-//   font-size: 14px;
-//   color: gray;
-//   white-space: nowrap;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   max-width: 220px;
-// `;
+const MemoInfo = styled.div`
+  font-size: 14px;
+  color: gray;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+`;
 
 const NoteButton = styled.div`
   &:hover {

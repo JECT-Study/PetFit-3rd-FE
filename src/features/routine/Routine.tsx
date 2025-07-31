@@ -21,7 +21,7 @@ export const Routine = ({ petId }: RoutineProps) => {
           <Plus />
         </button>
       </RoutineTitleContainer>
-      <RoutineProgress />
+      <RoutineProgress petId={petId} />
 
       <RoutineItem petId={petId} />
     </Container>

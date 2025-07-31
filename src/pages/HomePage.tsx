@@ -22,40 +22,38 @@ export const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // 1. 펫 목록 불러오기
   const { data: pets = [] } = useQuery({
     queryKey: ['pets'],
     queryFn: getPets,
     staleTime: 1000 * 60 * 5,
   });
 
-  // 2. 즐겨찾기 순 정렬
+  // 대표 동물을 맨 앞으로 설정
   const sortedPets = pets
     .slice()
     .sort((a: PetListType, b: PetListType) => Number(b.isFavorite) - Number(a.isFavorite));
 
-  // 3. 전역 상태에서 현재 선택된 petId 가져오기
+  // redux에서 현재 선택된 petId 가져오기
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
   const selectedPet = sortedPets.find((pet: PetListType) => pet.id === selectedPetId);
 
-  // 4. selectedPetId가 없으면 자동 설정
+  // selectedPetId가 대표 동물로 설정
   useEffect(() => {
     if (sortedPets.length > 0 && selectedPetId === null) {
       const firstPet = sortedPets[0];
-      dispatch(setSelectedPet(firstPet)); // 전체 pet 정보 저장
+      dispatch(setSelectedPet(firstPet));
     }
   }, [sortedPets, selectedPetId, dispatch]);
 
-  // 5. 유저가 NameTag에서 펫을 선택했을 때
   const handleSelectPet = (id: number) => {
     const pet = sortedPets.find((p: PetListType) => p.id === id);
     if (pet) {
       dispatch(setSelectedPet(pet));
+      localStorage.setItem('selectedPetId', String(pet.id));
     }
   };
-
-  // 6. 데이터 요청
-  const { schedules, remarks, loading, error } = useBriefCardData(selectedPetId ?? -1);
+  // 일정, 특이사항
+  const { schedules, remarks } = useBriefCardData(selectedPetId ?? -1);
 
   return (
     <Container>
@@ -90,34 +88,6 @@ export const HomePage = () => {
                   title: r.title,
                   date: r.remarkDate,
                 }))}
-              />
-            </CardRow>
-          </BriefingSection>
-
-          <BriefingSection>
-            <SectionTitle>오늘의 브리핑</SectionTitle>
-            <CardRow>
-              <BriefCard
-                label="일정"
-                color="#4D9DE0"
-                items={schedules.map(s => ({
-                  id: s.scheduleId,
-                  title: s.title,
-                  date: s.targetDate,
-                }))}
-                loading={loading.schedules}
-                error={error.schedules}
-              />
-              <BriefCard
-                label="특이사항"
-                color="#FF5C33"
-                items={remarks.map(r => ({
-                  id: r.remarkId,
-                  title: r.title,
-                  date: r.remarkDate,
-                }))}
-                loading={loading.remarks}
-                error={error.remarks}
               />
             </CardRow>
           </BriefingSection>

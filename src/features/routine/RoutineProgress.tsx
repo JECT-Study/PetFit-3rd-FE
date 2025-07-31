@@ -1,9 +1,23 @@
 import styled from 'styled-components';
 
-export const RoutineProgress = () => {
-  const totalRoutineCount = 6;
-  const doneRoutineCount = 3;
+import { useDailyRoutine } from '@/hooks/useDailyRoutine';
+import type { Routine } from '@/types/routine';
+
+interface RoutineProps {
+  petId: number;
+}
+
+export const RoutineProgress = ({ petId }: RoutineProps) => {
+  const { data: routineData, isLoading } = useDailyRoutine(petId);
+
+  if (isLoading) return <div>로딩중</div>;
+
+  const totalRoutineCount = (routineData ?? []).length;
+  const doneRoutineCount = (routineData ?? []).filter(
+    (rtn: Routine) => rtn.status === 'CHECKED'
+  ).length;
   const completedPercent = ((doneRoutineCount / totalRoutineCount) * 100).toFixed(1);
+
   return (
     <Container>
       <Label>루틴 달성률</Label>
