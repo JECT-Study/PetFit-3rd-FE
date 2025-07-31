@@ -18,6 +18,16 @@ import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
+interface Props {
+  scheduleId: number;
+  title: string;
+  targetDate: string;
+}
+interface RemarkProps {
+  remarkId: number;
+  title: string;
+  remarkDate: string;
+}
 export const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,6 +52,7 @@ export const HomePage = () => {
     if (sortedPets.length > 0 && selectedPetId === null) {
       const firstPet = sortedPets[0];
       dispatch(setSelectedPet(firstPet));
+      localStorage.setItem('selectedPetId', String(firstPet.id));
     }
   }, [sortedPets, selectedPetId, dispatch]);
 
@@ -52,9 +63,9 @@ export const HomePage = () => {
       localStorage.setItem('selectedPetId', String(pet.id));
     }
   };
-  // 일정, 특이사항
-  const { schedules, remarks } = useBriefCardData(selectedPetId ?? -1);
 
+  // 일정, 특이사항
+  const { scheduleData, remarkData } = useBriefCardData(selectedPetId ?? -1);
   return (
     <Container>
       <Header>
@@ -74,7 +85,7 @@ export const HomePage = () => {
               <BriefCard
                 label="일정"
                 color="#4D9DE0"
-                items={schedules.map(s => ({
+                items={scheduleData.map((s: Props) => ({
                   id: s.scheduleId,
                   title: s.title,
                   date: s.targetDate,
@@ -83,7 +94,7 @@ export const HomePage = () => {
               <BriefCard
                 label="특이사항"
                 color="#FF5C33"
-                items={remarks.map(r => ({
+                items={remarkData.map((r: RemarkProps) => ({
                   id: r.remarkId,
                   title: r.title,
                   date: r.remarkDate,
