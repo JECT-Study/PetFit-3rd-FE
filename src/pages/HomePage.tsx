@@ -18,16 +18,18 @@ import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
-interface Props {
+interface ScheduleProps {
   scheduleId: number;
   title: string;
   targetDate: string;
 }
+
 interface RemarkProps {
   remarkId: number;
   title: string;
   remarkDate: string;
 }
+
 export const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -85,7 +87,7 @@ export const HomePage = () => {
               <BriefCard
                 label="일정"
                 color="#4D9DE0"
-                items={scheduleData.map((s: Props) => ({
+                items={scheduleData.map((s: ScheduleProps) => ({
                   id: s.scheduleId,
                   title: s.title,
                   date: s.targetDate,
