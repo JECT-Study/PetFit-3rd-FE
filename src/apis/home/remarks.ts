@@ -10,6 +10,11 @@ export interface RemarkItem {
 }
 
 export const fetchHomeRemarks = async (petId: number): Promise<RemarkItem[]> => {
-  const res = await axiosInstance.get<ApiResponse<RemarkItem[]>>(`/remarks/${petId}/home`);
-  return res.data.content;
+  try {
+    const res = await axiosInstance.get<ApiResponse<RemarkItem[]>>(`/remarks/${petId}/home`);
+    return res.data.content;
+  } catch (error) {
+    console.log('fetch home remarks failed', error);
+    throw error;
+  }
 };

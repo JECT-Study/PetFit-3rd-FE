@@ -15,7 +15,6 @@ export const AuthRedirectPage = () => {
 
     // 브라우저가 직접 백엔드로 이동하여 302 리디렉션을 따르도록 함
     window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/kakao/login/dev?code=${code}`;
-
     // const getToken = async () => {
     //   try {
     //     await kakaoLogin(code); // API 호출만 수행

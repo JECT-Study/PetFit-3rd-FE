@@ -10,6 +10,11 @@ export interface ScheduleItem {
 }
 
 export const fetchHomeSchedules = async (petId: number): Promise<ScheduleItem[]> => {
-  const res = await axiosInstance.get<ApiResponse<ScheduleItem[]>>(`/schedules/${petId}/home`);
-  return res.data.content;
+  try {
+    const res = await axiosInstance.get<ApiResponse<ScheduleItem[]>>(`/schedules/${petId}/home`);
+    return res.data.content;
+  } catch (error) {
+    console.log('fetch home schedules failed', error);
+    throw error;
+  }
 };

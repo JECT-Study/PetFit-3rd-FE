@@ -4,14 +4,15 @@ import { formatDate } from '@/utils/calendar';
 
 import { axiosInstance } from './axiosInstance';
 
-// export const getPets = async () => {
-//   try {
-//     await axiosInstance.get('pets');
-//   } catch (error) {
-//     console.log('pets', error);
-//     throw error;
-//   }
-// };
+export const getPets = async () => {
+  try {
+    const response = await axiosInstance.get('pets');
+    return response.data.content;
+  } catch (error) {
+    console.log('pets', error);
+    throw error;
+  }
+};
 
 export interface PetApiResponse {
   id: number;
