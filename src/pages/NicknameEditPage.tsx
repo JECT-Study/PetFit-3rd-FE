@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { editNickname } from '@/apis/auth';
+import { editNickname, getNickname } from '@/apis/auth';
 import { FormInput } from '@/components/common/FormInput';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import type { AppDispatch, RootState } from '@/store/store';
@@ -14,11 +15,25 @@ export const NicknameEditPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
+  // redux에서 닉네임을 가져오는 부분인데, 현재는 적용 안되고 있음
   const user = useSelector((state: RootState) => state.user);
 
-  const [nickname, setNickname] = useState(user.nickname ?? '');
+  // redux에 저장된 nickname을 가져오는 로직으로 바뀔 수 있음
+  // 임의로 memberId = 2 로 요청 보냄
+  const { data: userInfo } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: () => getNickname(2),
+  });
+
+  const [nickname, setNickname] = useState('');
   const [isValid, setIsValid] = useState(false);
   const isDisabled = !nickname.trim() || !isValid;
+
+  useEffect(() => {
+    if (userInfo?.nickname) {
+      setNickname(userInfo.nickname);
+    }
+  }, [userInfo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNickname(e.target.value);
@@ -26,11 +41,8 @@ export const NicknameEditPage = () => {
 
   const handleSave = async () => {
     if (!isValid || !nickname.trim()) return;
-    if (user.userId === null) {
-      alert('유저 정보가 올바르지 않습니다.');
-      return;
-    }
-    await editNickname(user.userId, nickname);
+
+    await editNickname(2, nickname);
     dispatch(setUser({ ...user, nickname }));
     navigate(-1);
   };
