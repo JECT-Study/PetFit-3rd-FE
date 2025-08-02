@@ -1,6 +1,6 @@
 export interface Alarm {
   id: number;
-  startDate: string;
+  startDate: Date;
   title: string;
   description: string;
 }

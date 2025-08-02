@@ -6,41 +6,75 @@ export const formatDate = (date: Date): string => {
 };
 
 /**
- * 주어진 연/월에 대한 달력용 날짜 배열 반환 (앞/뒤 포함 7xN 구성)
- * @param year - 연도 (ex: 2025)
- * @param month - 월 (1-based, ex: 7 = 7월)
+ * 주어진 날짜에 해당하는 달력용 날짜 배열 반환 (앞/뒤 포함 7xN 구성)
+ * @param viewDate - 기준 날짜 (ex: new Date(2025, 6, 1) = 2025년 7월)
  */
-export const getMonthDates = (year: number, month: number): string[] => {
-  const result: string[] = [];
+export const getMonthDates = (viewDate: Date): Date[] => {
+  const result: Date[] = [];
 
-  const firstDayOfMonth = new Date(year, month - 1, 1);
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth(); // 0-based (0 = 1월, 6 = 7월)
+
+  const firstDayOfMonth = new Date(year, month, 1);
   const startDay = firstDayOfMonth.getDay(); // 0(일)~6(토)
-  const prevMonthLastDate = new Date(year, month - 1, 0).getDate();
-  const currMonthLastDate = new Date(year, month, 0).getDate();
+  const prevMonthLastDate = new Date(year, month, 0).getDate(); // 이전 달 마지막 날짜
+  const currMonthLastDate = new Date(year, month + 1, 0).getDate(); // 현재 달 마지막 날짜
 
   // 이전 달 날짜
   for (let i = startDay - 1; i >= 0; i--) {
-    const date = new Date(year, month - 2, prevMonthLastDate - i);
-    result.push(formatDate(date));
+    result.push(new Date(year, month - 1, prevMonthLastDate - i));
   }
 
   // 현재 달 날짜
   for (let i = 1; i <= currMonthLastDate; i++) {
-    result.push(formatDate(new Date(year, month - 1, i)));
+    result.push(new Date(year, month, i));
   }
 
-  // 다음 달 날짜
-  const totalCells = Math.ceil(result.length / 7) * 7; // 7의 배수 맞춤
+  // 다음 달 날짜 (총 셀 수를 7의 배수로 맞춤)
+  const totalCells = Math.ceil(result.length / 7) * 7;
   const remaining = totalCells - result.length;
 
   for (let i = 1; i <= remaining; i++) {
-    const date = new Date(year, month, i); // 정확히 다음 달 날짜
-    result.push(formatDate(date));
+    result.push(new Date(year, month + 1, i));
   }
 
   return result;
 };
 
-export const isSameMonth = (date: Date, year: number, month: number): boolean => {
-  return formatDate(date).startsWith(`${year}-${String(month).padStart(2, '0')}`);
+/**
+ * 두 날짜가 같은 연도와 같은 월인지 확인
+ *
+ * @param a - 비교할 첫 번째 날짜 객체
+ * @param b - 비교할 두 번째 날짜 객체
+ * @returns 두 날짜가 같은 연도 및 같은 월이면 true, 그렇지 않으면 false
+ */
+export const isSameMonth = (a: Date, b: Date): boolean => {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+};
+
+export const isSameDay = (a: Date, b: Date): boolean => {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+};
+
+/**
+ * 주어진 Date 객체에서 연도를 반환합니다.
+ * @param date Date 객체
+ * @returns 연도 (ex: 2025)
+ */
+export const getYear = (date: Date): number => {
+  return date.getFullYear();
+};
+
+/**
+ * 주어진 Date 객체에서 1-based 월을 반환합니다.
+ * (JS Date는 0~11월이므로 +1 필요)
+ * @param date Date 객체
+ * @returns 월 (1~12)
+ */
+export const getMonthNumber = (date: Date): number => {
+  return date.getMonth() + 1;
 };

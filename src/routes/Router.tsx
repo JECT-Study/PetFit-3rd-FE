@@ -12,6 +12,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
+import { TokenRedirectPage } from '@/pages/TokenRedirectPage';
 import { WithdrawPage } from '@/pages/WithdrawPage';
 
 import { PrivateRouter } from './PrivateRouter';
@@ -21,8 +22,9 @@ export const router = createBrowserRouter([
     element: <PlainLayout />,
     children: [
       { path: '/login', element: <LoginPage /> },
-      { path: '/api/auth/kakao/login/dev', element: <AuthLoginRedirectPage /> },
+      { path: '/oauth/redirect', element: <AuthLoginRedirectPage /> },
       { path: '/api/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
+      { path: '/token', element: <TokenRedirectPage /> },
     ],
   },
   {
@@ -36,13 +38,16 @@ export const router = createBrowserRouter([
           { path: '/calendar', element: <CalendarPage /> },
           { path: '/info', element: <InfoPage /> },
           { path: '/mypage', element: <MyPage /> },
-          { path: '/slot', element: <SlotSettingPage /> },
           { path: '/withdraw', element: <WithdrawPage /> },
         ],
       },
       {
         element: <PlainLayout />,
-        children: [{ path: '/signup/pet', element: <SignupPetRegisterPage /> }],
+
+        children: [
+          { path: '/signup/pet', element: <SignupPetRegisterPage /> },
+          { path: '/slot', element: <SlotSettingPage /> },
+        ],
       },
     ],
   },

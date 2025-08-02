@@ -10,11 +10,19 @@ interface ScheduleAlarmItemProps {
 }
 
 export const ScheduleAlarmItem = ({ alarm, onEdit, onDelete }: ScheduleAlarmItemProps) => {
-  const getDday = (date: string) => {
+  const getDday = (targetDate: Date) => {
     const today = new Date();
-    const target = new Date(date);
+    const target = new Date(targetDate);
+
+    // 시, 분, 초, 밀리초 제거 → 날짜만 비교
+    today.setHours(0, 0, 0, 0);
+    target.setHours(0, 0, 0, 0);
+
     const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return `D-${diff}`;
+
+    if (diff > 0) return `D-${diff}`;
+    if (diff === 0) return 'D-Day';
+    return `D+${Math.abs(diff)}`;
   };
 
   return (

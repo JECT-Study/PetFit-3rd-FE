@@ -8,6 +8,7 @@ import { FormInput } from '@/components/common/FormInput';
 import { FormTextarea } from '@/components/common/FormTextarea';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import type { Alarm } from '@/types/alarm';
+import { validators } from '@/utils/validators';
 
 interface ScheduleRegisterModalProps {
   isOpen: boolean;
@@ -34,7 +35,11 @@ export const ScheduleRegisterModal = ({
   useEffect(() => {
     if (isOpen) {
       setAlarm(initialAlarm);
-      setFormValidity({ startDate: true, title: false, content: false });
+      setFormValidity({
+        startDate: true,
+        title: validators.title(initialAlarm.title).isValid,
+        content: validators.content(initialAlarm.description).isValid,
+      });
     }
   }, [isOpen, initialAlarm]);
 
@@ -89,7 +94,7 @@ export const ScheduleRegisterModal = ({
             onFieldValidChange={fieldValidHandlers.content}
           />
 
-          <SubmitButton onClick={handleSubmit} disabled={!isFormValid}>
+          <SubmitButton onClick={handleSubmit} $disabled={!isFormValid}>
             저장
           </SubmitButton>
         </Form>
@@ -122,7 +127,7 @@ const Form = styled.div`
   gap: 8px;
 `;
 
-const SubmitButton = styled.button<{ disabled: boolean }>`
+const SubmitButton = styled.button<{ $disabled: boolean }>`
   padding: 16px 0;
   font-size: 16px;
   font-weight: 600;

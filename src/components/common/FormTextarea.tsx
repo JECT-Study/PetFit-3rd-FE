@@ -51,7 +51,7 @@ export const FormTextarea = ({
         placeholder={placeholder}
       />
       <HelperRow>
-        <ErrorMessage isVisible={hasError}>{errorMessage}</ErrorMessage>
+        <ErrorMessage $isVisible={hasError}>{errorMessage}</ErrorMessage>
         <CharCount $hasError={hasError}>
           {value.length}/{maxLength}
         </CharCount>
@@ -95,8 +95,8 @@ const CharCount = styled.span<{ $hasError?: boolean }>`
   color: ${({ $hasError }) => ($hasError ? '#f87171' : '#999')};
 `;
 
-const ErrorMessage = styled.p<{ isVisible?: boolean }>`
+const ErrorMessage = styled.p<{ $isVisible?: boolean }>`
   color: #f87171;
   font-size: 12px;
-  visibility: ${({ isVisible }) => (isVisible ? 'visible' : 'hidden')};
+  visibility: ${({ $isVisible }) => ($isVisible ? 'visible' : 'hidden')};
 `;

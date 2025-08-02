@@ -20,7 +20,7 @@ export const WithdrawModal = ({ isOpen, onClose }: Props) => {
         return;
       }
 
-      await kakaoWithdraw(refreshToken);
+      await kakaoWithdraw();
 
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');

@@ -8,7 +8,7 @@ export const AuthLogoutRedirectPage = () => {
   useEffect(() => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-
+    localStorage.removeItem('selectedPetId');
     // Redux 초기화
 
     navigate('/login');

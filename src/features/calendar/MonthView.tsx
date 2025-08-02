@@ -1,44 +1,38 @@
 import styled from 'styled-components';
 
-import { LEGEND_ITEMS } from '@/constants/calendar';
+import { LEGEND_MAP } from '@/constants/calendar';
 import { MOCK_CALENDAR_MARKS } from '@/mocks/calendarData';
 import type { CalendarMarkType } from '@/types/calendar';
-import { getMonthDates, isSameMonth } from '@/utils/calendar';
+import { formatDate, getMonthDates, isSameDay, isSameMonth } from '@/utils/calendar';
 
 interface Props {
-  year: number;
-  month: number;
-  selectedDate: string;
-  onSelectDate: (date: string) => void;
-  manuallySelected: boolean;
+  viewDate: Date;
+  selectedDate: Date;
+  onDateClick: (date: Date) => void;
 }
 
-export const MonthView = ({ year, month, selectedDate, onSelectDate, manuallySelected }: Props) => {
-  const dates = getMonthDates(year, month); // 월간 날짜 생성
+export const MonthView = ({ viewDate, selectedDate, onDateClick }: Props) => {
+  const dates = getMonthDates(viewDate); // 월간 날짜 생성
 
   return (
     <Grid>
       {dates.map(date => {
-        const dateObj = new Date(date);
-        const day = dateObj.getDate();
-        const isInCurrentMonth = isSameMonth(dateObj, year, month);
-        const isSelected = selectedDate === date;
+        const day = date.getDate();
+        const isInCurrentMonth = isSameMonth(date, viewDate);
 
-        const dots = MOCK_CALENDAR_MARKS[date] || [];
+        const isSelected = isSameDay(selectedDate, date);
+
+        const formatted = formatDate(date);
+        const dots = MOCK_CALENDAR_MARKS[formatted] || [];
         const dotColor = (type: CalendarMarkType) =>
-          isInCurrentMonth ? LEGEND_ITEMS[type].color : '#BDBDBD';
+          isInCurrentMonth ? LEGEND_MAP[type].color : '#ddd';
 
         return (
-          <Cell
-            key={date}
-            $selected={isSelected}
-            $filled={isSelected && manuallySelected}
-            onClick={() => onSelectDate(date)}
-          >
-            <DateNumber>{day}</DateNumber>
-            <DotRow hasDots={dots.length > 0}>
+          <Cell key={formatted} $selected={isSelected} onClick={() => onDateClick(date)}>
+            <DateNumber $dimmed={!isInCurrentMonth}>{day}</DateNumber>
+            <DotRow $hasDots={dots.length > 0}>
               {dots.map(type => (
-                <Dot key={type} color={dotColor(type)} />
+                <Dot key={type} $color={dotColor(type)} />
               ))}
             </DotRow>
           </Cell>
@@ -54,23 +48,23 @@ const Grid = styled.div`
   row-gap: 4px;
 `;
 
-const Cell = styled.div<{ $selected?: boolean; $filled?: boolean }>`
+const Cell = styled.div<{ $selected?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
   height: 48px;
   border-radius: 6px;
   border: ${({ $selected }) => ($selected ? '2px solid orange' : 'none')};
-  background-color: ${({ $filled }) => ($filled ? '#FFFBEA' : 'transparent')};
   cursor: pointer;
 `;
 
-const DateNumber = styled.span`
-  font-size: 14px;
+const DateNumber = styled.span<{ $dimmed?: boolean }>`
   text-align: center;
+  color: ${({ $dimmed }) => ($dimmed ? '#DDD' : '#000')};
+  font-size: 14px;
 `;
 
-const DotRow = styled.div<{ hasDots: boolean }>`
+const DotRow = styled.div<{ $hasDots: boolean }>`
   display: flex;
   justify-content: center;
   gap: 2px;
@@ -78,9 +72,9 @@ const DotRow = styled.div<{ hasDots: boolean }>`
   margin-top: 4px;
 `;
 
-const Dot = styled.div<{ color: string }>`
+const Dot = styled.div<{ $color: string }>`
   width: 6px;
   height: 6px;
-  background-color: ${({ color }) => color};
+  background-color: ${({ $color }) => $color};
   border-radius: 50%;
 `;
