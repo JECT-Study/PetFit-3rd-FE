@@ -81,3 +81,24 @@ export const verifyAuth = async (): Promise<boolean> => {
   const res = await axiosInstance.get('/auth/verify'); // 서버에서 쿠키 기반 검증
   return res.data.isAuthenticated; // 서버에서 { isAuthenticated: true } 응답 가정
 };
+
+// 회원 정보를 가져오는 /auth/accesscookie api로 바뀔 수 있음
+// /auth/accesscookie은 회원 정보를 가져올 때 이름, 닉네임, memberId까지 가져올 수 있음
+// /auth/accesscookie 적용 시 삭제될 api
+// 현재 memberId를 가져오는 api가 제대로 구현되어 있지 않아서 memberId = 2로 기능 구현
+export const getNickname = async (memberId: number) => {
+  try {
+    const response = await axiosInstance.get(`members/${memberId}`);
+    return response.data.content;
+  } catch (error) {
+    console.error('get nickname failed: ', error);
+  }
+};
+
+export const editNickname = async (memberId: number, nickname: string) => {
+  try {
+    await axiosInstance.put(`members/${memberId}`, { nickname });
+  } catch (error) {
+    console.error('edit nickname failed: ', error);
+  }
+};
