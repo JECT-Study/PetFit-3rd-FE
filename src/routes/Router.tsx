@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
     children: [
       { path: '/login', element: <LoginPage /> },
       { path: '/oauth/redirect', element: <AuthLoginRedirectPage /> },
-      { path: '/api/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
+      { path: '/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
       { path: '/token', element: <TokenRedirectPage /> },
     ],
   },
