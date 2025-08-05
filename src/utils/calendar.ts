@@ -6,6 +6,16 @@ export const formatDate = (date: Date): string => {
 };
 
 /**
+ * Date 객체를 'YYYY-MM' 형식 문자열로 포맷합니다.
+ * 예: new Date(2025, 6, 1) → '2025-07'
+ */
+export const formatYearMonth = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // 0-based → 1-based
+  return `${year}-${month.toString().padStart(2, '0')}`;
+};
+
+/**
  * 주어진 날짜에 해당하는 달력용 날짜 배열 반환 (앞/뒤 포함 7xN 구성)
  * @param viewDate - 기준 날짜 (ex: new Date(2025, 6, 1) = 2025년 7월)
  */

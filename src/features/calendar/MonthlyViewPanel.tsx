@@ -1,12 +1,15 @@
 import { useState } from 'react';
 
+import { useQueries } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
+import { fetchMonthlyEntries } from '@/apis/calendar';
 import { DAYS_OF_WEEK, LEGEND, PET_TYPE_ICON_MAP } from '@/constants/calendar';
 import { MonthView } from '@/features/calendar/MonthView';
 import { MOCK_PETS } from '@/mocks/calendarData';
-import { getMonthNumber, getYear, isSameMonth } from '@/utils/calendar';
+import type { CalendarMarkType } from '@/types/calendar';
+import { formatYearMonth, getMonthNumber, getYear, isSameMonth } from '@/utils/calendar';
 
 interface MonthlyViewPanelProps {
   viewDate: Date;
@@ -15,6 +18,14 @@ interface MonthlyViewPanelProps {
   onDateClick: (date: Date) => void;
 }
 
+const getSurroundingMonths = (date: Date): string[] => {
+  const prev = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+  const current = new Date(date.getFullYear(), date.getMonth(), 1);
+  const next = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+
+  return [prev, current, next].map(formatYearMonth);
+};
+
 export const MonthlyViewPanel = ({
   viewDate,
   selectedDate,
@@ -22,6 +33,42 @@ export const MonthlyViewPanel = ({
   onDateClick,
 }: MonthlyViewPanelProps) => {
   const [selectedPetId, setSelectedPetId] = useState<number>(1);
+
+  // const { data: pets = [] } = useQuery({
+  //   queryKey: ['pets'],
+  //   queryFn: getPets,
+  //   staleTime: 1000 * 60 * 5, // 5분 캐시 유지
+  // });
+
+  const formattedMonths = getSurroundingMonths(viewDate);
+
+  const results = useQueries({
+    queries: formattedMonths.map(month => ({
+      queryKey: ['monthlyEntries', selectedPetId, month],
+      queryFn: () => fetchMonthlyEntries(selectedPetId, month),
+      enabled: !!selectedPetId,
+      staleTime: 1000 * 60 * 5,
+    })),
+  });
+
+  const allEntries = results.flatMap(r => r.data ?? []);
+
+  // 📌 CalendarMarkType으로 변환 (scheduled 제외)
+  const calendarMarks: Record<string, CalendarMarkType[]> = allEntries.reduce(
+    (acc, entry) => {
+      const types: CalendarMarkType[] = [];
+
+      if (entry.completed) types.push('completed');
+      if (entry.memo) types.push('memo');
+      if (entry.remarked) types.push('note'); // 👈 renamed
+
+      if (types.length > 0) {
+        acc[entry.entryDate] = types;
+      }
+      return acc;
+    },
+    {} as Record<string, CalendarMarkType[]>
+  );
 
   const handlePrevMonth = () => {
     const newDate = new Date(viewDate);
@@ -88,7 +135,12 @@ export const MonthlyViewPanel = ({
           ))}
         </DayHeaderRow>
 
-        <MonthView viewDate={viewDate} selectedDate={selectedDate} onDateClick={onDateClick} />
+        <MonthView
+          viewDate={viewDate}
+          selectedDate={selectedDate}
+          onDateClick={onDateClick}
+          calendarMarks={calendarMarks}
+        />
       </CalendarMonthWrapper>
 
       {/* 범례 영역 */}

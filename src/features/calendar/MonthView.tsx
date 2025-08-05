@@ -9,6 +9,7 @@ interface Props {
   viewDate: Date;
   selectedDate: Date;
   onDateClick: (date: Date) => void;
+  calendarMarks: Record<string, CalendarMarkType[]>;
 }
 
 export const MonthView = ({ viewDate, selectedDate, onDateClick }: Props) => {

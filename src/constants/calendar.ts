@@ -21,7 +21,7 @@ export const DAYS_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'] as
 
 // 순서를 보장하면서 구조적 데이터를 유지
 export const LEGEND = [
-  { key: 'routine', label: '루틴 체크', color: '#4285F4' },
+  { key: 'completed', label: '루틴 완료', color: '#4285F4' },
   { key: 'memo', label: '메모', color: '#EA4335' },
   { key: 'note', label: '특이사항', color: '#FBBC05' },
 ] as const;
