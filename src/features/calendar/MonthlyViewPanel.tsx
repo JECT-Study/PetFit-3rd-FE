@@ -1,15 +1,16 @@
-import { useState } from 'react';
-
-import { useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { fetchMonthlyEntries } from '@/apis/calendar';
+import { getPets } from '@/apis/pets';
 import { DAYS_OF_WEEK, LEGEND, PET_TYPE_ICON_MAP } from '@/constants/calendar';
 import { MonthView } from '@/features/calendar/MonthView';
-import { MOCK_PETS } from '@/mocks/calendarData';
+import { setSelectedPetId } from '@/store/petSlice';
+import type { RootState } from '@/store/store';
 import type { CalendarMarkType } from '@/types/calendar';
-import { formatYearMonth, getMonthNumber, getYear, isSameMonth } from '@/utils/calendar';
+import { getMonthNumber, getSurroundingMonths, getYear, isSameMonth } from '@/utils/calendar';
 
 interface MonthlyViewPanelProps {
   viewDate: Date;
@@ -18,34 +19,27 @@ interface MonthlyViewPanelProps {
   onDateClick: (date: Date) => void;
 }
 
-const getSurroundingMonths = (date: Date): string[] => {
-  const prev = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-  const current = new Date(date.getFullYear(), date.getMonth(), 1);
-  const next = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-
-  return [prev, current, next].map(formatYearMonth);
-};
-
 export const MonthlyViewPanel = ({
   viewDate,
   selectedDate,
   onChangeViewDate,
   onDateClick,
 }: MonthlyViewPanelProps) => {
-  const [selectedPetId, setSelectedPetId] = useState<number>(1);
+  const dispatch = useDispatch();
+  const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
 
-  // const { data: pets = [] } = useQuery({
-  //   queryKey: ['pets'],
-  //   queryFn: getPets,
-  //   staleTime: 1000 * 60 * 5, // 5분 캐시 유지
-  // });
+  const { data: pets = [] } = useQuery({
+    queryKey: ['pets'],
+    queryFn: getPets,
+    staleTime: 1000 * 60 * 5, // 5분 캐시 유지
+  });
 
   const formattedMonths = getSurroundingMonths(viewDate);
 
   const results = useQueries({
     queries: formattedMonths.map(month => ({
       queryKey: ['monthlyEntries', selectedPetId, month],
-      queryFn: () => fetchMonthlyEntries(selectedPetId, month),
+      queryFn: () => fetchMonthlyEntries(selectedPetId ?? -1, month),
       enabled: !!selectedPetId,
       staleTime: 1000 * 60 * 5,
     })),
@@ -99,14 +93,14 @@ export const MonthlyViewPanel = ({
     <>
       {/* 동물 종류 탭 */}
       <PetTabs>
-        {MOCK_PETS.map(pet => {
+        {pets.map(pet => {
           const Icon = PET_TYPE_ICON_MAP[pet.type];
 
           return (
             <PetTab
               key={pet.id}
               $active={selectedPetId === pet.id}
-              onClick={() => setSelectedPetId(pet.id)}
+              onClick={() => dispatch(setSelectedPetId(pet.id))}
             >
               <PetIconWrapper $active={selectedPetId === pet.id}>
                 <Icon width={36} height={36} />

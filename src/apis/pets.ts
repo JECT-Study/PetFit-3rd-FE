@@ -1,12 +1,19 @@
 import type { ApiResponse } from '@/types/common';
-import type { PetForm, PetInfo } from '@/types/form';
+import type { PetForm, PetInfo, PetType } from '@/types/form';
 import { formatDate } from '@/utils/calendar';
 
 import { axiosInstance } from './axiosInstance';
 
-export const getPets = async () => {
+export interface Pet {
+  id: number;
+  name: string;
+  type: PetType;
+  isFavorite: boolean;
+}
+
+export const getPets = async (): Promise<Pet[]> => {
   try {
-    const response = await axiosInstance.get('pets');
+    const response = await axiosInstance.get<ApiResponse<Pet[]>>('pets');
     return response.data.content;
   } catch (error) {
     console.log('pets', error);
