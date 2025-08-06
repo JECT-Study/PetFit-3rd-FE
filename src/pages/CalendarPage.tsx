@@ -1,26 +1,28 @@
-import { useState } from 'react';
-
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { MonthlyViewPanel } from '@/features/calendar/MonthlyViewPanel';
 import { WeeklyViewPanel } from '@/features/calendar/WeeklyViewPanel';
-import type { CalendarMode } from '@/types/calendar';
+import { setMode, setSelectedDate, setViewDate } from '@/store/calendarSlice';
+import type { RootState } from '@/store/store';
 import { isSameDay } from '@/utils/calendar';
 
 export const CalendarPage = () => {
-  const [mode, setMode] = useState<CalendarMode>('month');
-  const [viewDate, setViewDate] = useState<Date>(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const dispatch = useDispatch();
+
+  const mode = useSelector((state: RootState) => state.calendar.mode);
+  const viewDate = useSelector((state: RootState) => state.calendar.viewDate);
+  const selectedDate = useSelector((state: RootState) => state.calendar.selectedDate);
 
   const handleSelectedtDate = (date: Date) => {
     // 주간 보기에서 동일 날짜를 다시 선택하면 월간 모드로 전환
     if (mode === 'week' && isSameDay(selectedDate, date)) {
-      setMode('month');
+      dispatch(setMode('month'));
     } else {
-      setMode('week');
+      dispatch(setMode('week'));
     }
-    setSelectedDate(date);
-    setViewDate(date); // 선택된 날짜 기준으로 viewDate도 갱신
+    dispatch(setSelectedDate(date));
+    dispatch(setViewDate(date)); // 선택된 날짜 기준으로 viewDate 갱신
   };
 
   return (
@@ -31,7 +33,7 @@ export const CalendarPage = () => {
         <MonthlyViewPanel
           viewDate={viewDate}
           selectedDate={selectedDate}
-          onChangeViewDate={setViewDate}
+          onChangeViewDate={date => dispatch(setViewDate(date))}
           onDateClick={handleSelectedtDate}
         />
       )}
@@ -40,7 +42,7 @@ export const CalendarPage = () => {
         <WeeklyViewPanel
           viewDate={viewDate}
           selectedDate={selectedDate}
-          onChangeViewDate={setViewDate}
+          onChangeViewDate={date => dispatch(setViewDate(date))}
           onDateClick={handleSelectedtDate}
         />
       )}
