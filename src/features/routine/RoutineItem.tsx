@@ -14,6 +14,7 @@ import Notice from '@/assets/icons/notice.svg?react';
 
 interface RoutineItemProps {
   petId: number;
+  routines?: Routine[];
 }
 
 interface ModalProps {
@@ -21,7 +22,7 @@ interface ModalProps {
   slotId: SlotId | null;
 }
 
-export const RoutineItem = ({ petId }: RoutineItemProps) => {
+export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
 
   type StatusType = 'UNCHECKED' | 'note' | 'CHECKED';
@@ -32,9 +33,11 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
     CHECKED: <Check width={24} color="#4D9DE0" />,
   } as const;
 
-  const { data: routineData } = useDailyRoutine(petId);
+  const { data: routineDataFromHook } = useDailyRoutine(petId);
 
-  if (!routineData) {
+  const routineList = routines ?? routineDataFromHook;
+
+  if (!routineList) {
     return <NonSlot>슬롯을 설정해주세요</NonSlot>;
   }
 
@@ -50,7 +53,7 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
 
   return (
     <div>
-      {routineData.map((rtn: Routine) => {
+      {routineList.map((rtn: Routine) => {
         const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(
           slot => slot.id === rtn.category
         )!;
