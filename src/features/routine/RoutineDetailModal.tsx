@@ -1,21 +1,33 @@
 import { useState, useEffect } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
 
+import { memoRoutine } from '@/apis/routine';
 import { BaseModal } from '@/components/common/BaseModal';
 import { SLOT_ITEMS } from '@/constants/slot';
 import type { SlotId } from '@/types/routine';
+import { formatDate } from '@/utils/calendar';
 
 interface Props {
   slotId: SlotId;
   isOpen: boolean;
+  petId: number;
   onClose: () => void;
   initial?: { amount?: number; memo?: string | '' };
 }
 
-export const RoutineDetailModal = ({ slotId, isOpen, onClose, initial = { memo: '' } }: Props) => {
+export const RoutineDetailModal = ({
+  slotId,
+  isOpen,
+  petId,
+  onClose,
+  initial = { memo: '' },
+}: Props) => {
   const slot = SLOT_ITEMS.find(slot => slot.id === slotId)!;
   const hasAmount = slot.unit !== null;
+  const today = formatDate(new Date());
+  const queryClient = useQueryClient();
 
   const [amount, setAmount] = useState('');
   const [memo, setMemo] = useState('');
@@ -32,8 +44,17 @@ export const RoutineDetailModal = ({ slotId, isOpen, onClose, initial = { memo: 
 
   // 현재는 모든 필드에 입력값이 있으면 save 버튼 활성화됨
   // api 연결 시 변경사항이 있을 때만 save 버튼 활성화되도록 수정해야 함
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!isValid) return;
+
+    const body = {
+      actualAmount: hasAmount ? Number(amount) : undefined,
+      content: memo ? memo.trim() : null,
+    };
+
+    await memoRoutine(petId, today, slotId, body);
+    queryClient.invalidateQueries({ queryKey: ['dailyRoutine', petId, today] });
+
     onClose();
   };
 
@@ -57,7 +78,10 @@ export const RoutineDetailModal = ({ slotId, isOpen, onClose, initial = { memo: 
               maxLength={5}
               value={amount}
               placeholder="숫자를 입력해주세요."
-              onChange={e => setAmount(e.target.value)}
+              onChange={e => {
+                const onlyNumbers = e.target.value.replace(/[^0-9]/g, '');
+                setAmount(onlyNumbers);
+              }}
             />
             <InputLength>{amount.length}/5</InputLength>
           </Field>
