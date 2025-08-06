@@ -52,6 +52,26 @@ export const getMonthDates = (viewDate: Date): Date[] => {
 };
 
 /**
+ * 해당 날짜를 기준으로 주간 날짜 배열 반환 (일요일 ~ 토요일)
+ * @param date 기준 날짜
+ * @returns 일주일(7일)의 Date[] 배열
+ */
+export function getWeekDates(date: Date): Date[] {
+  const result: Date[] = [];
+  const dayOfWeek = date.getDay();
+  const sunday = new Date(date);
+  sunday.setDate(date.getDate() - dayOfWeek);
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(sunday);
+    d.setDate(sunday.getDate() + i);
+    result.push(d);
+  }
+
+  return result;
+}
+
+/**
  * 두 날짜가 같은 연도와 같은 월인지 확인
  *
  * @param a - 비교할 첫 번째 날짜 객체
@@ -87,4 +107,17 @@ export const getYear = (date: Date): number => {
  */
 export const getMonthNumber = (date: Date): number => {
   return date.getMonth() + 1;
+};
+
+/**
+ * 지정한 날짜를 기준으로 이전/현재/다음 달의 YYYY-MM 문자열 배열을 반환
+ * @example getSurroundingMonths(new Date('2025-08-01'))
+ * // → ['2025-07', '2025-08', '2025-09']
+ */
+export const getSurroundingMonths = (date: Date): string[] => {
+  const prev = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+  const current = new Date(date.getFullYear(), date.getMonth(), 1);
+  const next = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+
+  return [prev, current, next].map(formatYearMonth);
 };
