@@ -1,5 +1,7 @@
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { kakaoWithdraw } from '@/apis/auth';
 import { BaseModal } from '@/components/common/BaseModal';
 
 interface Props {
@@ -8,8 +10,26 @@ interface Props {
 }
 
 export const WithdrawModal = ({ isOpen, onClose }: Props) => {
-  // api 연결 시 탈퇴 구현 예정
-  const onConfirm = () => {};
+  const navigate = useNavigate();
+  const onConfirm = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (!refreshToken) {
+        alert('토큰이 없습니다.');
+        return;
+      }
+
+      await kakaoWithdraw();
+
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+
+      navigate('/login');
+    } catch (error) {
+      console.log('회원 탈퇴 failed : ', error);
+    }
+  };
 
   return (
     <div>
