@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
-import { checkRoutine } from '@/apis/routine';
+import { checkRoutine, uncheckRoutine } from '@/apis/routine';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
@@ -23,6 +24,7 @@ interface ModalProps {
 
 export const RoutineItem = ({ petId }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
+  const queryClient = useQueryClient();
 
   type StatusType = 'UNCHECKED' | 'note' | 'CHECKED';
 
@@ -42,9 +44,18 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
   const handleStatusClick = async (id: SlotId) => {
     try {
       const today = formatDate(new Date());
-      await checkRoutine(petId, today, id);
+
+      const currentStatus = routineData.find(rtn => rtn.category === id)?.status;
+      console.log('currentStatus', currentStatus);
+      if (currentStatus === 'CHECKED') {
+        await uncheckRoutine(petId, today, id);
+      } else {
+        await checkRoutine(petId, today, id);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['dailyRoutine', petId, today] });
     } catch (err) {
-      console.error('루틴 체크 실패', err);
+      console.error('루틴 체크/해제 실패', err);
     }
   };
 

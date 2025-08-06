@@ -20,9 +20,9 @@ export const checkRoutine = async (petId: number, date: string, category: string
   }
 };
 
-export const unCheckedRoutine = async (petId: number, date: string, category: string) => {
+export const uncheckRoutine = async (petId: number, date: string, category: string) => {
   try {
-    const response = await axiosInstance.post(`routines/${petId}/${date}/${category}/check`);
+    const response = await axiosInstance.delete(`routines/${petId}/${date}/${category}/uncheck`);
     console.log(response);
   } catch (error) {
     console.log('unchecked routine failed', error);
