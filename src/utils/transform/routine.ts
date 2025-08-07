@@ -4,7 +4,7 @@ import type { RoutineStatus, SlotId, Routine as UiRoutine } from '@/types/routin
 export const toRoutineModel = (routine: APIRoutine): UiRoutine => {
   const statusMap: Record<APIRoutine['status'], RoutineStatus> = {
     CHECKED: 'CHECKED',
-    MEMO: 'note',
+    MEMO: 'MEMO',
     UNCHECKED: 'UNCHECKED',
   };
 
