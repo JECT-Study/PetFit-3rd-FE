@@ -1,12 +1,16 @@
-import { useState } from 'react';
-
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import { fetchMonthlyEntries } from '@/apis/calendar';
+import { getPets } from '@/apis/pets';
 import { DAYS_OF_WEEK, LEGEND, PET_TYPE_ICON_MAP } from '@/constants/calendar';
 import { MonthView } from '@/features/calendar/MonthView';
-import { MOCK_PETS } from '@/mocks/calendarData';
-import { getMonthNumber, getYear, isSameMonth } from '@/utils/calendar';
+import { setSelectedPetId } from '@/store/petSlice';
+import type { RootState } from '@/store/store';
+import type { CalendarMarkType } from '@/types/calendar';
+import { getMonthNumber, getSurroundingMonths, getYear, isSameMonth } from '@/utils/calendar';
 
 interface MonthlyViewPanelProps {
   viewDate: Date;
@@ -21,7 +25,44 @@ export const MonthlyViewPanel = ({
   onChangeViewDate,
   onDateClick,
 }: MonthlyViewPanelProps) => {
-  const [selectedPetId, setSelectedPetId] = useState<number>(1);
+  const dispatch = useDispatch();
+  const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
+
+  const { data: pets = [] } = useQuery({
+    queryKey: ['pets'],
+    queryFn: getPets,
+    staleTime: 1000 * 60 * 5, // 5분 캐시 유지
+  });
+
+  const formattedMonths = getSurroundingMonths(viewDate);
+
+  const results = useQueries({
+    queries: formattedMonths.map(month => ({
+      queryKey: ['monthlyEntries', selectedPetId, month],
+      queryFn: () => fetchMonthlyEntries(selectedPetId ?? -1, month),
+      enabled: !!selectedPetId,
+      staleTime: 1000 * 60 * 5,
+    })),
+  });
+
+  const allEntries = results.flatMap(r => r.data ?? []);
+
+  // 📌 CalendarMarkType으로 변환 (scheduled 제외)
+  const calendarMarks: Record<string, CalendarMarkType[]> = allEntries.reduce(
+    (acc, entry) => {
+      const types: CalendarMarkType[] = [];
+
+      if (entry.completed) types.push('completed');
+      if (entry.memo) types.push('memo');
+      if (entry.remarked) types.push('note'); // 👈 renamed
+
+      if (types.length > 0) {
+        acc[entry.entryDate] = types;
+      }
+      return acc;
+    },
+    {} as Record<string, CalendarMarkType[]>
+  );
 
   const handlePrevMonth = () => {
     const newDate = new Date(viewDate);
@@ -52,14 +93,14 @@ export const MonthlyViewPanel = ({
     <>
       {/* 동물 종류 탭 */}
       <PetTabs>
-        {MOCK_PETS.map(pet => {
+        {pets.map(pet => {
           const Icon = PET_TYPE_ICON_MAP[pet.type];
 
           return (
             <PetTab
               key={pet.id}
               $active={selectedPetId === pet.id}
-              onClick={() => setSelectedPetId(pet.id)}
+              onClick={() => dispatch(setSelectedPetId(pet.id))}
             >
               <PetIconWrapper $active={selectedPetId === pet.id}>
                 <Icon width={36} height={36} />
@@ -88,7 +129,12 @@ export const MonthlyViewPanel = ({
           ))}
         </DayHeaderRow>
 
-        <MonthView viewDate={viewDate} selectedDate={selectedDate} onDateClick={onDateClick} />
+        <MonthView
+          viewDate={viewDate}
+          selectedDate={selectedDate}
+          onDateClick={onDateClick}
+          calendarMarks={calendarMarks}
+        />
       </CalendarMonthWrapper>
 
       {/* 범례 영역 */}

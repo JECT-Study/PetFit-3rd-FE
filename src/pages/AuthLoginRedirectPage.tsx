@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import { IS_DEV } from '@/constants/env';
+
 export const AuthLoginRedirectPage = () => {
   const navigate = useNavigate();
 
@@ -14,7 +16,8 @@ export const AuthLoginRedirectPage = () => {
     }
 
     // 브라우저가 직접 백엔드로 이동하여 302 리디렉션을 따르도록 함
-    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/kakao/login/dev?code=${code}`;
+    const redirectUrl = `${import.meta.env.VITE_BACKEND_URL}/auth/kakao/login${IS_DEV ? '/dev' : ''}?code=${code}`;
+    window.location.href = redirectUrl;
     // const getToken = async () => {
     //   try {
     //     await kakaoLogin(code); // API 호출만 수행

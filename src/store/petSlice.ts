@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-interface SelectedPetState {
+export interface SelectedPetState {
   id: number | null;
   name: string;
   species: string;

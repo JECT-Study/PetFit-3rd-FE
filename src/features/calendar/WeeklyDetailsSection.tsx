@@ -1,8 +1,12 @@
-import { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useEffect, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import { fetchDailyEntries } from '@/apis/calendar';
+import { createRemark, deleteRemark, updateRemark, type RemarkResponse } from '@/apis/note';
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
 import { NoteItemList } from '@/features/calendar/NoteItemList';
 import { NoteModal } from '@/features/calendar/NoteModal';
@@ -10,9 +14,12 @@ import { RoutineItem } from '@/features/routine/RoutineItem';
 import { useModal } from '@/hooks/useModal';
 import type { RootState } from '@/store/store';
 import type { Note } from '@/types/note';
+import { formatDate } from '@/utils/calendar';
+import { toRemarkFormData } from '@/utils/transform/note';
+import { toRoutineModel } from '@/utils/transform/routine';
 
 interface WeeklyDetailsSectionProps {
-  selectedDate?: Date;
+  selectedDate: Date;
 }
 
 const createEmptyNote = (): Note => ({
@@ -32,7 +39,7 @@ const deleteNoteById = (list: Note[], targetId: number): Note[] =>
   list.filter(note => note.id !== targetId);
 
 // eslint-disable-next-line no-empty-pattern
-export const WeeklyDetailsSection = ({}: WeeklyDetailsSectionProps) => {
+export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [editingNote, setEditingNote] = useState<Note>(createEmptyNote());
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
@@ -40,6 +47,28 @@ export const WeeklyDetailsSection = ({}: WeeklyDetailsSectionProps) => {
   const { isOpen: isModalOpen, openModal, closeModal } = useModal();
 
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
+
+  const formattedDate = formatDate(selectedDate); // 'YYYY-MM-DD'
+
+  // ✅ 일간 특이사항 + 루틴 조회 API 호출
+  const { data } = useQuery({
+    queryKey: ['dailyEntries', selectedPetId, formattedDate],
+    queryFn: () => {
+      if (selectedPetId === null) throw new Error('No pet selected');
+      return fetchDailyEntries(selectedPetId, formattedDate);
+    },
+    enabled: selectedPetId !== null,
+  });
+
+  useEffect(() => {
+    const remarks = data?.remarkResponseList ?? [];
+    const transformed: Note[] = remarks.map(r => ({
+      id: r.remarkId,
+      title: r.title,
+      content: r.content,
+    }));
+    setNotes(transformed);
+  }, [data]);
 
   const handleAddNote = () => {
     setEditingNote(createEmptyNote());
@@ -53,24 +82,60 @@ export const WeeklyDetailsSection = ({}: WeeklyDetailsSectionProps) => {
     openModal();
   };
 
-  const handleSubmitNote = (note: Note) => {
-    setNotes(prev => addOrUpdateNoteList(prev, note));
-    closeModal();
+  const handleSubmitNote = async (note: Note) => {
+    if (!selectedPetId) return;
+
+    try {
+      let saved: RemarkResponse;
+
+      if (isEditing(notes, note)) {
+        // 수정
+        saved = await updateRemark(note.id, {
+          title: note.title,
+          content: note.content,
+        });
+      } else {
+        // 등록
+        const formData = toRemarkFormData(note, selectedDate);
+        saved = await createRemark(selectedPetId, formData);
+      }
+
+      setNotes(prev =>
+        addOrUpdateNoteList(prev, {
+          id: saved.remarkId,
+          title: saved.title,
+          content: saved.content,
+        })
+      );
+
+      closeModal();
+    } catch (err) {
+      console.error('특이사항 저장 실패', err);
+    }
   };
 
   const handleDeleteRequest = (id: number) => {
     setDeleteTargetId(id);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteTargetId === null) return;
-    setNotes(prev => deleteNoteById(prev, deleteTargetId));
-    setDeleteTargetId(null);
+
+    try {
+      await deleteRemark(deleteTargetId);
+      setNotes(prev => deleteNoteById(prev, deleteTargetId));
+    } catch (err) {
+      console.error('특이사항 삭제 실패', err);
+    } finally {
+      setDeleteTargetId(null);
+    }
   };
 
   const handleCancelDelete = () => {
     setDeleteTargetId(null);
   };
+
+  const routines = data?.routineResponseList?.map(toRoutineModel) ?? [];
 
   return (
     <Wrapper>
@@ -82,7 +147,7 @@ export const WeeklyDetailsSection = ({}: WeeklyDetailsSectionProps) => {
           <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
         </MarginBottom>
 
-        <RoutineItem petId={selectedPetId ?? -1} />
+        <RoutineItem petId={selectedPetId ?? -1} routines={routines} />
         <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
       </MarginTop>
 
@@ -104,6 +169,7 @@ export const WeeklyDetailsSection = ({}: WeeklyDetailsSectionProps) => {
 
 const Wrapper = styled.div`
   margin-top: 20px;
+  padding: 0 20px;
 `;
 
 const Divider = styled.div`
