@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import authReducer from './authSlice';
+import calendarReducer from './calendarSlice';
 import petReducer from './petSlice';
 import userReducer from './userSlice';
 
@@ -9,6 +10,7 @@ export const store = configureStore({
     auth: authReducer,
     selectedPet: petReducer,
     user: userReducer,
+    calendar: calendarReducer,
   },
 });
 

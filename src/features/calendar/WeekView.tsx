@@ -1,34 +1,18 @@
 import styled from 'styled-components';
 
 import { LEGEND_MAP } from '@/constants/calendar';
-import { MOCK_CALENDAR_MARKS } from '@/mocks/calendarData';
 import type { CalendarMarkType } from '@/types/calendar';
-import { formatDate, isSameDay, isSameMonth } from '@/utils/calendar';
+import { formatDate, getWeekDates, isSameDay, isSameMonth } from '@/utils/calendar';
 
 interface WeekViewProps {
   viewDate: Date;
   selectedDate: Date;
   onDateClick: (date: Date) => void;
+  calendarMarks: Record<string, CalendarMarkType[]>;
 }
 
-// 주간 날짜 생성
-function getWeekDates(date: Date): Date[] {
-  const result: Date[] = [];
-  const dayOfWeek = date.getDay();
-  const sunday = new Date(date);
-  sunday.setDate(date.getDate() - dayOfWeek);
-
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(sunday);
-    d.setDate(sunday.getDate() + i);
-    result.push(d);
-  }
-
-  return result;
-}
-
-export const WeekView = ({ viewDate, selectedDate, onDateClick }: WeekViewProps) => {
-  const dates = getWeekDates(viewDate);
+export const WeekView = ({ viewDate, selectedDate, onDateClick, calendarMarks }: WeekViewProps) => {
+  const dates = getWeekDates(viewDate); // 주간 날짜 생성
 
   return (
     <Grid>
@@ -40,7 +24,7 @@ export const WeekView = ({ viewDate, selectedDate, onDateClick }: WeekViewProps)
         const isViewMatched = isSameDay(selectedDate, viewDate);
 
         const formatted = formatDate(date);
-        const dots = MOCK_CALENDAR_MARKS[formatted] || [];
+        const dots = calendarMarks[formatted] || [];
         const dotColor = (type: CalendarMarkType) =>
           isInCurrentView ? LEGEND_MAP[type].color : '#ddd';
 

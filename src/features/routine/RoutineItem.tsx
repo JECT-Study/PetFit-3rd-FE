@@ -15,6 +15,7 @@ import Memo from '@/assets/icons/memo.svg?react';
 
 interface RoutineItemProps {
   petId: number;
+  routines?: Routine[];
 }
 
 interface ModalProps {
@@ -22,7 +23,7 @@ interface ModalProps {
   slotId: SlotId | null;
 }
 
-export const RoutineItem = ({ petId }: RoutineItemProps) => {
+export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
   const queryClient = useQueryClient();
 
@@ -34,14 +35,17 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
     CHECKED: <Check width={24} color="#4D9DE0" />,
   } as const;
 
-  const { data: routineData } = useDailyRoutine(petId);
-  if (!routineData) {
+  const { data: routineDataFromHook } = useDailyRoutine(petId);
+
+  const routineList = routines ?? routineDataFromHook;
+
+  if (!routineList) {
     return <NonSlot>슬롯을 설정해주세요</NonSlot>;
   }
 
   const FIXED_ORDER = ['feed', 'water', 'walk', 'potty', 'dental', 'skin'];
 
-  const sortedRoutineData = [...routineData].sort((a, b) => {
+  const sortedRoutineData = [...routineList].sort((a, b) => {
     return FIXED_ORDER.indexOf(a.category) - FIXED_ORDER.indexOf(b.category);
   });
 
@@ -50,7 +54,7 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
     try {
       const today = formatDate(new Date());
 
-      const currentStatus = routineData.find(rtn => rtn.category === id)?.status;
+      const currentStatus = sortedRoutineData.find(rtn => rtn.category === id)?.status;
       if (currentStatus === 'CHECKED') {
         await uncheckRoutine(petId, today, id);
       } else {
