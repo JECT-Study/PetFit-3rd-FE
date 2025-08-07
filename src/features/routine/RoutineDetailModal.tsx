@@ -42,8 +42,6 @@ export const RoutineDetailModal = ({
 
   const isValid = (hasAmount ? amount.trim() !== '' : true) && memo.length <= 200;
 
-  // 현재는 모든 필드에 입력값이 있으면 save 버튼 활성화됨
-  // api 연결 시 변경사항이 있을 때만 save 버튼 활성화되도록 수정해야 함
   const handleSave = async () => {
     if (!isValid) return;
 
