@@ -16,6 +16,7 @@ import type { RootState } from '@/store/store';
 import type { Note } from '@/types/note';
 import { formatDate } from '@/utils/calendar';
 import { toRemarkFormData } from '@/utils/transform/note';
+import { toRoutineModel } from '@/utils/transform/routine';
 
 interface WeeklyDetailsSectionProps {
   selectedDate: Date;
@@ -134,6 +135,8 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
     setDeleteTargetId(null);
   };
 
+  const routines = data?.routineResponseList?.map(toRoutineModel) ?? [];
+
   return (
     <Wrapper>
       <Divider />
@@ -144,7 +147,7 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
           <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
         </MarginBottom>
 
-        <RoutineItem petId={selectedPetId ?? -1} />
+        <RoutineItem petId={selectedPetId ?? -1} routines={routines} />
         <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
       </MarginTop>
 
