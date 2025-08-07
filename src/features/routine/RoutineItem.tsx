@@ -1,16 +1,17 @@
 import { useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { Ellipsis, Check } from 'lucide-react';
 import styled from 'styled-components';
 
-import { checkRoutine } from '@/apis/routine';
+import { checkRoutine, uncheckRoutine } from '@/apis/routine';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
 import type { Routine, SlotId } from '@/types/routine';
 import { formatDate } from '@/utils/calendar';
 
-import Notice from '@/assets/icons/notice.svg?react';
+import Memo from '@/assets/icons/memo.svg?react';
 
 interface RoutineItemProps {
   petId: number;
@@ -24,12 +25,13 @@ interface ModalProps {
 
 export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
+  const queryClient = useQueryClient();
 
-  type StatusType = 'UNCHECKED' | 'note' | 'CHECKED';
+  type StatusType = 'UNCHECKED' | 'MEMO' | 'CHECKED';
 
   const STATUS_ICON: Record<StatusType, React.ReactElement> = {
     UNCHECKED: <Check width={24} color="#DDDDDD" />,
-    note: <Notice />,
+    MEMO: <Memo />,
     CHECKED: <Check width={24} color="#4D9DE0" />,
   } as const;
 
@@ -41,26 +43,42 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
     return <NonSlot>슬롯을 설정해주세요</NonSlot>;
   }
 
+  const FIXED_ORDER = ['feed', 'water', 'walk', 'potty', 'dental', 'skin'];
+
+  const sortedRoutineData = [...routineList].sort((a, b) => {
+    return FIXED_ORDER.indexOf(a.category) - FIXED_ORDER.indexOf(b.category);
+  });
+
   // 루틴을 완료하거나 취소하기
   const handleStatusClick = async (id: SlotId) => {
     try {
       const today = formatDate(new Date());
-      await checkRoutine(petId, today, id);
+
+      const currentStatus = sortedRoutineData.find(rtn => rtn.category === id)?.status;
+      if (currentStatus === 'CHECKED') {
+        await uncheckRoutine(petId, today, id);
+      } else {
+        await checkRoutine(petId, today, id);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['dailyRoutine', petId, today] });
     } catch (err) {
-      console.error('루틴 체크 실패', err);
+      console.error('루틴 체크/해제 실패', err);
     }
   };
 
   return (
     <div>
-      {routineList.map((rtn: Routine) => {
+      {sortedRoutineData.map((rtn: Routine) => {
         const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(
           slot => slot.id === rtn.category
         )!;
         return (
           <Container key={id}>
             <ItemContainer>
-              <div onClick={() => handleStatusClick(id)}>{STATUS_ICON[rtn.status]}</div>
+              <StuatusIcon onClick={() => handleStatusClick(id)}>
+                {STATUS_ICON[rtn.status]}
+              </StuatusIcon>
               <MainInfoContainer>
                 <MainInfo>
                   <Icon width={16} color="#4D9DE0" />
@@ -72,6 +90,8 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
                         {rtn.targetAmount}
                         {unit}
                       </>
+                    ) : rtn.content ? (
+                      ''
                     ) : (
                       placeholder
                     )}
@@ -93,6 +113,7 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
         <RoutineDetailModal
           slotId={modal.slotId}
           isOpen={modal.open}
+          petId={petId}
           onClose={() => setModal({ open: false, slotId: null })}
         />
       )}
@@ -112,6 +133,10 @@ const ItemContainer = styled.div`
   align-items: center;
   gap: 20px;
   margin: 10px 0;
+`;
+
+const StuatusIcon = styled.div`
+  cursor: pointer;
 `;
 
 const MainInfoContainer = styled.div``;
@@ -140,6 +165,7 @@ const MemoInfo = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;
+  margin-left: 24px;
 `;
 
 const NoteButton = styled.div`
