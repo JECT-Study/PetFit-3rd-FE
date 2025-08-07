@@ -39,6 +39,12 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
     return <NonSlot>슬롯을 설정해주세요</NonSlot>;
   }
 
+  const FIXED_ORDER = ['feed', 'water', 'walk', 'potty', 'dental', 'skin'];
+
+  const sortedRoutineData = [...routineData].sort((a, b) => {
+    return FIXED_ORDER.indexOf(a.category) - FIXED_ORDER.indexOf(b.category);
+  });
+
   // 루틴을 완료하거나 취소하기
   const handleStatusClick = async (id: SlotId) => {
     try {
@@ -59,7 +65,7 @@ export const RoutineItem = ({ petId }: RoutineItemProps) => {
 
   return (
     <div>
-      {routineData.map((rtn: Routine) => {
+      {sortedRoutineData.map((rtn: Routine) => {
         const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(
           slot => slot.id === rtn.category
         )!;
