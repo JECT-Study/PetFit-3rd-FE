@@ -1,6 +1,7 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 
 import { IS_DEV } from '@/constants/env';
+import { store } from '@/store/store';
 
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -15,6 +16,14 @@ axiosInstance.interceptors.request.use(
       if (accessToken) {
         config.headers['Authorization'] = `Bearer ${accessToken}`;
       }
+    }
+    const state = store.getState();
+    const tokenFromRedux = state.auth.accessToken;
+    const tokenFromLocal = IS_DEV ? localStorage.getItem('accessToken') : null;
+    const accessToken = tokenFromRedux ?? tokenFromLocal;
+
+    if (accessToken) {
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
     return config;
   },

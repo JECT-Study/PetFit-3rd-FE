@@ -28,9 +28,10 @@ export const MonthlyViewPanel = ({
   const dispatch = useDispatch();
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
 
+  const memberId = useSelector((s: RootState) => s.user.memberId);
   const { data: pets = [] } = useQuery({
-    queryKey: ['pets'],
-    queryFn: getPets,
+    queryKey: ['pets', memberId],
+    queryFn: () => getPets(memberId as number),
     staleTime: 1000 * 60 * 5, // 5분 캐시 유지
   });
 
