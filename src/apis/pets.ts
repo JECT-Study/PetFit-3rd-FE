@@ -13,7 +13,7 @@ export interface Pet {
 
 export const getPets = async (memberId: number): Promise<Pet[]> => {
   try {
-    const response = await axiosInstance.get<ApiResponse<Pet[]>>(`/pets/${memberId}`);
+    const response = await axiosInstance.get<ApiResponse<Pet[]>>(`/pets/list/${memberId}`);
     return response.data.content;
   } catch (error) {
     console.log('pets', error);
