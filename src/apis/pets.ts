@@ -30,8 +30,9 @@ export interface PetApiResponse {
   isFavorite: boolean;
 }
 
-export const registerPet = async (form: PetForm): Promise<PetInfo> => {
+export const registerPet = async (memberId: number, form: PetForm): Promise<PetInfo> => {
   const payload = {
+    memberId,
     name: form.name,
     type: form.species,
     gender: form.gender,

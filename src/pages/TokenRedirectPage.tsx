@@ -43,6 +43,7 @@ export const TokenRedirectPage = () => {
         try {
           const { memberId, isNewUser } = await setAuthCookies(accessToken, refreshToken);
 
+          localStorage.setItem('memberId', String(memberId));
           dispatch(setMemberId(memberId));
           dispatch(setIsNewUser(isNewUser));
 
