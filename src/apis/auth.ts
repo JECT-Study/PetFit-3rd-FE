@@ -65,9 +65,12 @@ export const setAuthCookies = async (accessToken: string, refreshToken: string) 
       },
     });
 
-    const { newUser } = response.data.content;
+    const { memberId, newUser } = response.data.content;
+    if (typeof memberId !== 'number') {
+      throw new Error('memberId가 응답에 없습니다.');
+    }
 
-    return { isNewUser: newUser }; // 호출부에서는 isNewUser로 사용할 수 있도록 변환
+    return { memberId, isNewUser: newUser }; // 호출부에서는 isNewUser로 사용할 수 있도록 변환
   } catch (error) {
     console.error('setAuthCookies failed:', error);
     throw error;
