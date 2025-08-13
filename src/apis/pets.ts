@@ -11,9 +11,9 @@ export interface Pet {
   isFavorite: boolean;
 }
 
-export const getPets = async (): Promise<Pet[]> => {
+export const getPets = async (memberId: number): Promise<Pet[]> => {
   try {
-    const response = await axiosInstance.get<ApiResponse<Pet[]>>('pets');
+    const response = await axiosInstance.get<ApiResponse<Pet[]>>(`/pets/list/${memberId}`);
     return response.data.content;
   } catch (error) {
     console.log('pets', error);
@@ -30,8 +30,9 @@ export interface PetApiResponse {
   isFavorite: boolean;
 }
 
-export const registerPet = async (form: PetForm): Promise<PetInfo> => {
+export const registerPet = async (memberId: number, form: PetForm): Promise<PetInfo> => {
   const payload = {
+    memberId,
     name: form.name,
     type: form.species,
     gender: form.gender,

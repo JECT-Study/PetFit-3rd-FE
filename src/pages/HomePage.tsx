@@ -42,9 +42,10 @@ export const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const memberId = useSelector((s: RootState) => s.user.memberId);
   const { data: pets = [] } = useQuery({
-    queryKey: ['pets'],
-    queryFn: getPets,
+    queryKey: ['pets', memberId],
+    queryFn: () => getPets(memberId as number),
     staleTime: 1000 * 60 * 5,
   });
 

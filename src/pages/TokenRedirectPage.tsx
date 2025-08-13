@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { setAuthCookies } from '@/apis/auth';
 import { IS_DEV } from '@/constants/env';
 import { setTokens, setIsNewUser } from '@/store/authSlice';
+import { setMemberId } from '@/store/userSlice';
 
 /**
  * 카카오 인증 후, 서버에서 리디렉션 되는 페이지
@@ -40,8 +41,10 @@ export const TokenRedirectPage = () => {
       // 3. 운영환경: 쿠키 설정 API 호출
       const setCookieAndRedirect = async () => {
         try {
-          const { isNewUser } = await setAuthCookies(accessToken, refreshToken);
+          const { memberId, isNewUser } = await setAuthCookies(accessToken, refreshToken);
 
+          localStorage.setItem('memberId', String(memberId));
+          dispatch(setMemberId(memberId));
           dispatch(setIsNewUser(isNewUser));
 
           if (isNewUser) {

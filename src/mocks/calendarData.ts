@@ -9,15 +9,15 @@ export const MOCK_PETS: { id: number; name: string; type: PetType }[] = [
 ];
 
 export const MOCK_CALENDAR_MARKS: Record<string, CalendarMarkType[]> = {
-  '2025-04-28': ['routine'],
-  '2025-05-01': ['routine', 'memo'],
+  '2025-04-28': ['completed'],
+  '2025-05-01': ['completed', 'memo'],
   '2025-05-04': ['note'],
-  '2025-05-15': ['routine'],
+  '2025-05-15': ['completed'],
   '2025-05-30': ['memo'],
   '2025-06-01': ['note'],
-  '2025-06-04': ['routine', 'note'],
+  '2025-06-04': ['completed', 'note'],
   '2025-06-08': ['memo'],
-  '2025-06-15': ['routine', 'memo'],
+  '2025-06-15': ['completed', 'memo'],
   '2025-06-28': ['note'],
   '2025-06-29': ['note'],
   '2025-07-02': ['note'],
