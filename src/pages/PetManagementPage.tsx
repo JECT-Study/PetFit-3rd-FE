@@ -51,7 +51,7 @@ const CardList = styled.div`
   gap: 12px;
 `;
 
-const Item = styled.button`
+const Item = styled.div`
   display: flex;
   border-radius: 16px;
   border-width: 1px;
@@ -67,5 +67,6 @@ const PetItem = styled(Item)`
 
 const AddPetButton = styled(Item)`
   justify-content: center;
+  cursor: pointer;
   gap: 3px;
 `;
