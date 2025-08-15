@@ -1,4 +1,4 @@
-import { Home, Clock, Calendar, Play, User } from 'lucide-react';
+import { Home, Clock, Calendar, User } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -45,7 +45,7 @@ export const BottomNav = () => {
             </>
           )}
         </StyledLink>
-        <StyledLink to="/info">
+        {/* <StyledLink to="/info">
           {({ isActive }) => (
             <>
               <Play
@@ -57,7 +57,7 @@ export const BottomNav = () => {
               <Label $active={isActive}>정보</Label>
             </>
           )}
-        </StyledLink>
+        </StyledLink> */}
         <StyledLink to="/mypage">
           {({ isActive }) => (
             <>

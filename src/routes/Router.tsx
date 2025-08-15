@@ -7,7 +7,6 @@ import { AuthLoginRedirectPage } from '@/pages/AuthLoginRedirectPage';
 import { AuthLogoutRedirectPage } from '@/pages/AuthLogoutRedirectPage';
 import { CalendarPage } from '@/pages/CalendarPage';
 import { HomePage } from '@/pages/HomePage';
-import InfoPage from '@/pages/InfoPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { NicknameEditPage } from '@/pages/NicknameEditPage';
@@ -37,7 +36,7 @@ export const router = createBrowserRouter([
           { path: '/', element: <HomePage /> },
           { path: '/alarm', element: <AlarmPage /> },
           { path: '/calendar', element: <CalendarPage /> },
-          { path: '/info', element: <InfoPage /> },
+          // { path: '/info', element: <InfoPage /> },
           { path: '/mypage', element: <MyPage /> },
           { path: '/withdraw', element: <WithdrawPage /> },
           { path: '/edit-nickname', element: <NicknameEditPage /> },
