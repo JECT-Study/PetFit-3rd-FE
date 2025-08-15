@@ -1,4 +1,6 @@
-import { Plus } from 'lucide-react';
+import { useState } from 'react';
+
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -19,7 +21,11 @@ interface BriefCardProps {
 
 export const BriefCard = ({ label, color, items, loading, error }: BriefCardProps) => {
   const navigate = useNavigate();
+  const [expanded, setExpanded] = useState(false);
+
   const hasContent = items.length > 0;
+  const showAccordion = items.length >= 3; // 2개 이상부터 토글 표시
+  const visibleItems = expanded ? items : items.slice(0, 2);
 
   const handleAddClick = () => {
     if (label === '일정') navigate('/alarm');
@@ -41,7 +47,23 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
         ) : loading ? (
           <LoadingMessage>불러오는 중...</LoadingMessage>
         ) : hasContent ? (
-          items.slice(0, 2).map(item => <Item key={item.id}>• {item.title}</Item>)
+          <>
+            {visibleItems.map(item => (
+              <Item key={item.id}>• {item.title}</Item>
+            ))}
+            {showAccordion && (
+              <ToggleWrap>
+                <ToggleButton
+                  type="button"
+                  onClick={() => setExpanded(p => !p)}
+                  aria-expanded={expanded}
+                  aria-label={expanded ? `${label} 접기` : `${label} 더 보기`}
+                >
+                  {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </ToggleButton>
+              </ToggleWrap>
+            )}
+          </>
         ) : (
           <NoContent>{label}이 없습니다.</NoContent>
         )}
@@ -105,6 +127,27 @@ const Item = styled.div`
   padding-left: 5px;
   font-size: 14px;
   color: #333;
+`;
+
+const ToggleWrap = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const ToggleButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+
+  &:hover {
+    background: #f5f5f5;
+  }
 `;
 
 const NoContent = styled.div`
