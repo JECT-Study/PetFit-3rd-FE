@@ -15,14 +15,12 @@ export const NicknameEditPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // redux에서 닉네임을 가져오는 부분인데, 현재는 적용 안되고 있음
   const user = useSelector((state: RootState) => state.user);
+  const memberId = useSelector((state: RootState) => state.user.memberId);
 
-  // redux에 저장된 nickname을 가져오는 로직으로 바뀔 수 있음
-  // 임의로 memberId = 2 로 요청 보냄
   const { data: userInfo } = useQuery({
     queryKey: ['userInfo'],
-    queryFn: () => getNickname(2),
+    queryFn: () => getNickname(memberId),
   });
 
   const [nickname, setNickname] = useState('');
