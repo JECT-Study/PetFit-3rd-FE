@@ -18,10 +18,6 @@ export const WithdrawModal = ({ isOpen, onClose }: Props) => {
   const onConfirm = async () => {
     try {
       await kakaoWithdraw(memberId);
-      // 개발 환경
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-
       navigate('/login');
     } catch (error) {
       console.log('회원 탈퇴 failed : ', error);
