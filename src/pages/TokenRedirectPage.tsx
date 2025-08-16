@@ -4,8 +4,10 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { setAuthCookies } from '@/apis/auth';
+import { getPets } from '@/apis/pets';
 import { IS_DEV } from '@/constants/env';
 import { setTokens, setIsNewUser } from '@/store/authSlice';
+import { setSelectedPetId } from '@/store/petSlice';
 import { setMemberId } from '@/store/userSlice';
 
 /**
@@ -49,8 +51,39 @@ export const TokenRedirectPage = () => {
         dispatch(setIsNewUser(isNewUser));
         localStorage.setItem('memberId', String(memberId));
 
-        // 4) 분기: 신규면 회원가입, 기존이면 홈
-        navigate(isNewUser ? '/signup/pet' : '/');
+        if (isNewUser) {
+          // 신규 유저 → 온보딩
+          localStorage.removeItem('selectedPetId');
+          navigate('/signup/pet');
+          return;
+        }
+
+        // ✅ 기존 유저: 펫 목록으로 selectedPetId 초기화
+        const pets = await getPets(memberId);
+
+        if (!pets || pets.length === 0) {
+          // 기존 유저지만 펫 없음 → 온보딩 유도
+          localStorage.removeItem('selectedPetId');
+          navigate('/signup/pet');
+          return;
+        }
+
+        // 1) 기존 저장된 selectedPetId가 목록에 존재하면 유지
+        const stored = localStorage.getItem('selectedPetId');
+        const storedId = stored ? Number(stored) : null;
+        const hasStored = storedId != null && pets.some(p => p.id === storedId);
+
+        // 2) 없거나 유효하지 않으면 대표(즐겨찾기) 우선, 그 외 첫 번째
+        const nextSelected = hasStored
+          ? storedId!
+          : pets.slice().sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite))[0].id;
+
+        // 상태/스토리지 동기화
+        dispatch(setSelectedPetId(nextSelected));
+        localStorage.setItem('selectedPetId', String(nextSelected));
+
+        // 홈으로 이동
+        navigate('/');
       } catch (err) {
         console.error('❌ memberId 조회/쿠키 설정 실패', err);
 
