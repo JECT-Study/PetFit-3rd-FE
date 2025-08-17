@@ -20,7 +20,7 @@ export const PetManagementPage: React.FC = () => {
     refetchOnMount: 'always',
     select: data => [...data].sort((a, b) => a.id - b.id),
   });
-  console.log(pets);
+
   return (
     <Container>
       <TitleHeader title="반려동물 정보 관리" showBack={true} />
