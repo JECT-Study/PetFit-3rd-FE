@@ -99,6 +99,14 @@ export const SlotSettingPage = () => {
     }
   };
 
+  const isValid = selectedIds.every(id => {
+    if (['feed', 'water', 'walk'].includes(id)) {
+      const value = inputValues[id];
+      return value !== undefined && value.trim() !== '' && Number(value) > 0;
+    }
+    return true;
+  });
+
   return (
     <Wrapper>
       <TitleHeader title="하루 루틴 설정" showBack={true} />
@@ -127,7 +135,7 @@ export const SlotSettingPage = () => {
           </>
         )}
       </ContentArea>
-      <CompleteButton disabled={!hasSelection} onClick={handleSubmit}>
+      <CompleteButton disabled={!hasSelection || !isValid} onClick={handleSubmit}>
         완료
       </CompleteButton>
     </Wrapper>
