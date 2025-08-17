@@ -54,7 +54,11 @@ export const PetManagementPage: React.FC = () => {
           <PetItem key={p.id}>
             {p.name}
             <button onClick={() => favoriteMutation.mutate(p.id)}>
-              {p.isFavorite ? <Star color="#FFC533" fill="#FFC533" /> : <Star strokeWidth={1.25} />}
+              {p.isFavorite ? (
+                <Star color="#FFC533" fill="#FFC533" />
+              ) : (
+                <Star strokeWidth={1.25} color="#000000" />
+              )}
             </button>
           </PetItem>
         ))}
