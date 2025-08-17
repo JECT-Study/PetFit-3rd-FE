@@ -17,7 +17,7 @@ export const MyPage = () => {
       <Profile />
       <MenuContainer>
         <MenuTitle>반려동물 설정</MenuTitle>
-        <Menu>
+        <Menu onClick={() => navigate('/manage')}>
           반려동물 정보 관리 <ChevronRight size={20} />
         </Menu>
 

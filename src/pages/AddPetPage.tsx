@@ -1,15 +1,14 @@
 import { useState } from 'react';
 
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { TitleHeader } from '@/components/common/TitleHeader';
 import { PetRegisterForm } from '@/components/PetRegisterForm';
 import { useRegisterPet } from '@/hooks/useRegisterPet';
-import { setSelectedPet, setSelectedPetId } from '@/store/petSlice';
 import type { PetForm } from '@/types/form';
 
-export const SignupPetRegisterPage = () => {
+export const AddPetPage = () => {
   const [form, setForm] = useState<PetForm>({
     name: '',
     species: '강아지',
@@ -19,18 +18,15 @@ export const SignupPetRegisterPage = () => {
   const [isPetFormValid, setIsPetFormValid] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { register, loading, error } = useRegisterPet();
 
-  const handleNextClick = async () => {
+  const handleRegisterClick = async () => {
     if (!isPetFormValid || loading) return;
 
     const petInfo = await register(form); // ✅ id 포함 결과
 
     if (petInfo) {
-      dispatch(setSelectedPet(petInfo)); // ✅ 전역 상태로 저장
-      dispatch(setSelectedPetId(petInfo.id)); // localStorage에 id만 따로 저장
-      navigate('/slot');
+      navigate('/manage');
     } else if (error) {
       alert(error);
     }
@@ -38,14 +34,14 @@ export const SignupPetRegisterPage = () => {
 
   return (
     <Container>
-      <Title>반려동물 정보 입력</Title>
+      <TitleHeader title="반려동물 정보 입력" showBack={true} />
 
       <PetRegisterForm form={form} setForm={setForm} onFormValidChange={setIsPetFormValid} />
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
 
-      <NextButton onClick={handleNextClick} disabled={!isPetFormValid || loading}>
-        {loading ? '등록 중...' : '다음'}
+      <NextButton onClick={handleRegisterClick} disabled={!isPetFormValid || loading}>
+        {loading ? '등록 중...' : '등록'}
       </NextButton>
     </Container>
   );
@@ -56,12 +52,6 @@ const Container = styled.div`
   flex-direction: column;
   min-height: 100vh;
   padding: 0 20px;
-`;
-
-const Title = styled.h2`
-  text-align: center;
-  padding: 18px 0;
-  font-size: 18px;
 `;
 
 const ErrorMessage = styled.p`

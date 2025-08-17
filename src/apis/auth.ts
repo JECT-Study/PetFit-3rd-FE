@@ -89,7 +89,7 @@ export const verifyAuth = async (): Promise<boolean> => {
 // /auth/accesscookie은 회원 정보를 가져올 때 이름, 닉네임, memberId까지 가져올 수 있음
 // /auth/accesscookie 적용 시 삭제될 api
 // 현재 memberId를 가져오는 api가 제대로 구현되어 있지 않아서 memberId = 2로 기능 구현
-export const getNickname = async (memberId: number) => {
+export const getNickname = async (memberId: number | null) => {
   try {
     const response = await axiosInstance.get(`members/${memberId}`);
     return response.data.content;

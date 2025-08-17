@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { RoutineItem } from '@/features/routine/RoutineItem';
+import { useDailyRoutine } from '@/hooks/useDailyRoutine';
 
 import { RoutineProgress } from './RoutineProgress';
 
@@ -12,6 +13,7 @@ interface RoutineProps {
 
 export const Routine = ({ petId }: RoutineProps) => {
   const navigate = useNavigate();
+  const { data: routineData } = useDailyRoutine(petId);
 
   return (
     <Container>
@@ -21,7 +23,7 @@ export const Routine = ({ petId }: RoutineProps) => {
           <Plus />
         </button>
       </RoutineTitleContainer>
-      <RoutineProgress petId={petId} />
+      {routineData && <RoutineProgress petId={petId} />}
 
       <RoutineItem petId={petId} />
     </Container>
