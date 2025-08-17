@@ -80,7 +80,7 @@ export const HomePage = () => {
   return (
     <Container>
       <Header>
-        <StyledLogo onClick={() => navigate('/signup/pet')} />
+        <StyledLogo onClick={() => navigate('/')} />
         <Backpack size={24} stroke="#444" />
       </Header>
 
