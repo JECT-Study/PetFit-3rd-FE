@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -40,6 +40,8 @@ const deleteNoteById = (list: Note[], targetId: number): Note[] =>
 
 // eslint-disable-next-line no-empty-pattern
 export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps) => {
+  const queryClient = useQueryClient();
+
   const [notes, setNotes] = useState<Note[]>([]);
   const [editingNote, setEditingNote] = useState<Note>(createEmptyNote());
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
@@ -49,6 +51,7 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
 
   const formattedDate = formatDate(selectedDate); // 'YYYY-MM-DD'
+  const monthKey = formattedDate.slice(0, 7); // 'YYYY-MM'
 
   // ✅ 일간 특이사항 + 루틴 조회 API 호출
   const { data } = useQuery({
@@ -108,6 +111,16 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
         })
       );
 
+      // ✅ 캐시 무효화로 상위 패널의 마킹(remarked) 즉시 반영
+      // 일간 상세 재조회
+      queryClient.invalidateQueries({
+        queryKey: ['dailyEntries', selectedPetId, formattedDate],
+      });
+      // 월간 마킹 재조회 (상위 Monthly/Weekly 패널에서 구독 중)
+      queryClient.invalidateQueries({
+        queryKey: ['monthlyEntries', selectedPetId, monthKey],
+      });
+
       closeModal();
     } catch (err) {
       console.error('특이사항 저장 실패', err);
@@ -124,6 +137,14 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
     try {
       await deleteRemark(deleteTargetId);
       setNotes(prev => deleteNoteById(prev, deleteTargetId));
+
+      // ✅ 삭제도 동일하게 무효화
+      queryClient.invalidateQueries({
+        queryKey: ['dailyEntries', selectedPetId, formattedDate],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['monthlyEntries', selectedPetId, monthKey],
+      });
     } catch (err) {
       console.error('특이사항 삭제 실패', err);
     } finally {
