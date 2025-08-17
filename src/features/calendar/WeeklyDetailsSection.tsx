@@ -14,9 +14,8 @@ import { RoutineItem } from '@/features/routine/RoutineItem';
 import { useModal } from '@/hooks/useModal';
 import type { RootState } from '@/store/store';
 import type { Note } from '@/types/note';
-import { formatDate } from '@/utils/calendar';
+import { formatDate, isSameDay } from '@/utils/calendar';
 import { toRemarkFormData } from '@/utils/transform/note';
-import { toRoutineModel } from '@/utils/transform/routine';
 
 interface WeeklyDetailsSectionProps {
   selectedDate: Date;
@@ -156,7 +155,8 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
     setDeleteTargetId(null);
   };
 
-  const routines = data?.routineResponseList?.map(toRoutineModel) ?? [];
+  // const routines = data?.routineResponseList?.map(toRoutineModel) ?? [];
+  const isToday = isSameDay(selectedDate, new Date());
 
   return (
     <Wrapper>
@@ -168,7 +168,7 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
           <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
         </MarginBottom>
 
-        <RoutineItem petId={selectedPetId ?? -1} routines={routines} />
+        {isToday && <RoutineItem petId={selectedPetId ?? -1} />}
         <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
       </MarginTop>
 
