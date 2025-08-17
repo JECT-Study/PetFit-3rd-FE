@@ -13,7 +13,7 @@ export const SlotButton = ({ selectedIds, onToggle }: Props) => {
       {SLOT_ITEMS.map(({ id, Icon, label }) => (
         <Button key={id} $isSelected={selectedIds.includes(id)} onClick={() => onToggle(id)}>
           <Icon />
-          {label}
+          <Label>{label}</Label>
         </Button>
       ))}
     </SlotContainer>
@@ -33,7 +33,6 @@ const Button = styled.button<{ $isSelected: boolean }>`
   padding: 8px 12px;
   gap: 5px;
 
-  color: black;
   background-color: ${({ $isSelected }) => ($isSelected ? '#FFC533' : '#ffffff')};
   border: #ffc533 1px solid;
   border-radius: 50px;
@@ -41,4 +40,8 @@ const Button = styled.button<{ $isSelected: boolean }>`
   transition:
     background-color 0.2s ease,
     color 0.15s ease;
+`;
+
+const Label = styled.div`
+  color: black;
 `;
