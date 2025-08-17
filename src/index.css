@@ -1,0 +1,28 @@
+@import './styles/reset.css';
+
+:root {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans KR", sans-serif;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* 모바일 뷰 가로 스크롤 해결*/
+html, body {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* 모바일 뷰 세로 스크롤 해결*/
+html{
+  height: max-content;
+}

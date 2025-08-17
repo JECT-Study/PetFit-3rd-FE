@@ -1,0 +1,85 @@
+import { useEffect, useState } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { editNickname, getNickname } from '@/apis/auth';
+import { FormInput } from '@/components/common/FormInput';
+import { TitleHeader } from '@/components/common/TitleHeader';
+import type { AppDispatch, RootState } from '@/store/store';
+import { setUser } from '@/store/userSlice';
+
+export const NicknameEditPage = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const user = useSelector((state: RootState) => state.user);
+  const memberId = useSelector((state: RootState) => state.user.memberId);
+
+  const { data: userInfo } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: () => getNickname(memberId),
+  });
+
+  const [nickname, setNickname] = useState('');
+  const [isValid, setIsValid] = useState(false);
+  const isDisabled = !nickname.trim() || !isValid;
+
+  useEffect(() => {
+    if (userInfo?.nickname) {
+      setNickname(userInfo.nickname);
+    }
+  }, [userInfo]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNickname(e.target.value);
+  };
+
+  const handleSave = async () => {
+    if (!isValid || !nickname.trim()) return;
+
+    await editNickname(2, nickname);
+    dispatch(setUser({ ...user, nickname }));
+    navigate(-1);
+  };
+  return (
+    <div>
+      <TitleHeader
+        title="마이페이지"
+        showBack={true}
+        right={
+          <SaveButton disabled={isDisabled} onClick={handleSave}>
+            저장
+          </SaveButton>
+        }
+      />
+      <InputContainer>
+        <FormInput
+          label="닉네임"
+          value={nickname}
+          onChange={handleChange}
+          validationType="nickname"
+          onFieldValidChange={setIsValid}
+          placeholder="닉네임을 입력하세요"
+        />
+      </InputContainer>
+    </div>
+  );
+};
+
+const SaveButton = styled.button`
+  white-space: nowrap;
+  font-size: 14px;
+  padding: 0;
+
+  &:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
+const InputContainer = styled.div`
+  margin: 20px;
+`;

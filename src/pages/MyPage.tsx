@@ -1,0 +1,67 @@
+import { useState } from 'react';
+
+import { ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { TitleHeader } from '@/components/common/TitleHeader';
+import { LogoutModal } from '@/features/mypage/LogoutModal';
+import { Profile } from '@/features/mypage/Profile';
+
+export const MyPage = () => {
+  const [logoutModal, setLogoutModal] = useState(false);
+  const navigate = useNavigate();
+  return (
+    <div>
+      <TitleHeader title="마이페이지" />
+      <Profile />
+      <MenuContainer>
+        <MenuTitle>반려동물 설정</MenuTitle>
+        <Menu onClick={() => navigate('/manage')}>
+          반려동물 정보 관리 <ChevronRight size={20} />
+        </Menu>
+
+        <MenuTitle>기타</MenuTitle>
+        <Menu>버전 정보</Menu>
+        <Menu onClick={() => setLogoutModal(true)}>
+          로그아웃 <ChevronRight size={20} />
+        </Menu>
+        <Menu onClick={() => navigate('/withdraw')}>
+          <DeleteButton>탈퇴하기</DeleteButton>
+          <ChevronRight size={20} />
+        </Menu>
+      </MenuContainer>
+
+      {/* 로그아웃 모달 */}
+      <LogoutModal isOpen={logoutModal} onClose={() => setLogoutModal(false)} />
+    </div>
+  );
+};
+
+const MenuContainer = styled.div`
+  margin-top: 20px;
+`;
+
+const MenuTitle = styled.div`
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666666;
+`;
+
+const Menu = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-bottom: 1px #f0f0f0 solid;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const DeleteButton = styled.div`
+  color: #ff5c33;
+`;
