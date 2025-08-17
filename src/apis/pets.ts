@@ -57,3 +57,18 @@ export const registerPet = async (memberId: number, form: PetForm): Promise<PetI
 
   return petInfo;
 };
+
+export const patchFavorite = async (petId: number) => {
+  try {
+    const response = await axiosInstance.patch('pets/favorites/batch-updates', [
+      {
+        petId: petId,
+        isFavorite: true,
+      },
+    ]);
+    console.log(response);
+  } catch (error) {
+    console.log('반려동물 즐겨찾기 수정 failed', error);
+    throw error;
+  }
+};

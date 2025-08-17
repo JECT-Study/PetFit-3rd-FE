@@ -1,21 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { Pencil } from 'lucide-react';
-// import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getNickname } from '@/apis/auth';
+import type { RootState } from '@/store/store';
 
-// import type { RootState } from '@/store/store';
 export const Profile = () => {
   const navigate = useNavigate();
-  // const nickname = useSelector((state: RootState) => state.user.nickname);
+  const memberId = useSelector((state: RootState) => state.user.memberId);
 
-  // redux에 저장된 nickname을 가져오는 로직으로 바뀔 수 있음
-  // 임의로 memberId = 2 로 요청 보냄
   const { data: userInfo } = useQuery({
     queryKey: ['userInfo'],
-    queryFn: () => getNickname(2),
+    queryFn: () => getNickname(memberId),
   });
 
   const handleEditClick = () => {

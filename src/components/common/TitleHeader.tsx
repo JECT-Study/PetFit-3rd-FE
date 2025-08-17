@@ -53,10 +53,10 @@ const HeaderBar = styled.header`
   z-index: 100;
 `;
 
-const Title = styled.h1`
+const Title = styled.div`
   flex: 1;
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 `;
 
