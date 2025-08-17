@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { MainLayout } from '@/layouts/MainLayout';
 import { PlainLayout } from '@/layouts/PlainLayout';
+import { AddPetPage } from '@/pages/AddPetPage';
 import { AlarmPage } from '@/pages/AlarmPage';
 import { AuthLoginRedirectPage } from '@/pages/AuthLoginRedirectPage';
 import { AuthLogoutRedirectPage } from '@/pages/AuthLogoutRedirectPage';
@@ -11,6 +12,7 @@ import InfoPage from '@/pages/InfoPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { NicknameEditPage } from '@/pages/NicknameEditPage';
+import { PetManagementPage } from '@/pages/PetManagementPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
 import { TokenRedirectPage } from '@/pages/TokenRedirectPage';
@@ -41,6 +43,8 @@ export const router = createBrowserRouter([
           { path: '/mypage', element: <MyPage /> },
           { path: '/withdraw', element: <WithdrawPage /> },
           { path: '/edit-nickname', element: <NicknameEditPage /> },
+          { path: '/manage', element: <PetManagementPage /> },
+          { path: '/add/pet', element: <AddPetPage /> },
         ],
       },
       {
