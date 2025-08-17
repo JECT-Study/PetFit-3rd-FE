@@ -8,7 +8,6 @@ import { AuthLoginRedirectPage } from '@/pages/AuthLoginRedirectPage';
 import { AuthLogoutRedirectPage } from '@/pages/AuthLogoutRedirectPage';
 import { CalendarPage } from '@/pages/CalendarPage';
 import { HomePage } from '@/pages/HomePage';
-import InfoPage from '@/pages/InfoPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { NicknameEditPage } from '@/pages/NicknameEditPage';
@@ -19,6 +18,7 @@ import { TokenRedirectPage } from '@/pages/TokenRedirectPage';
 import { WithdrawPage } from '@/pages/WithdrawPage';
 
 import { PrivateRouter } from './PrivateRouter';
+import { StateGuard } from './StateGuard';
 
 export const router = createBrowserRouter([
   {
@@ -33,26 +33,37 @@ export const router = createBrowserRouter([
   {
     element: <PrivateRouter />,
     children: [
+      // 전역 상태 모두 필요(메인 섹션)
       {
-        element: <MainLayout />,
+        element: <StateGuard requireMemberId requireSelectedPet />,
         children: [
-          { path: '/', element: <HomePage /> },
-          { path: '/alarm', element: <AlarmPage /> },
-          { path: '/calendar', element: <CalendarPage /> },
-          { path: '/info', element: <InfoPage /> },
-          { path: '/mypage', element: <MyPage /> },
-          { path: '/withdraw', element: <WithdrawPage /> },
-          { path: '/edit-nickname', element: <NicknameEditPage /> },
-          { path: '/manage', element: <PetManagementPage /> },
-          { path: '/add/pet', element: <AddPetPage /> },
+          {
+            element: <MainLayout />,
+            children: [
+              { path: '/', element: <HomePage /> },
+              { path: '/alarm', element: <AlarmPage /> },
+              { path: '/calendar', element: <CalendarPage /> },
+              // { path: '/info', element: <InfoPage /> },
+              { path: '/mypage', element: <MyPage /> },
+              { path: '/withdraw', element: <WithdrawPage /> },
+              { path: '/edit-nickname', element: <NicknameEditPage /> },
+              { path: '/manage', element: <PetManagementPage /> },
+              { path: '/add/pet', element: <AddPetPage /> },
+            ],
+          },
         ],
       },
+      // 신규 유저 플로우: memberId만 필요, selectedPetId는 불필요
       {
-        element: <PlainLayout />,
-
+        element: <StateGuard requireMemberId requireSelectedPet={false} />,
         children: [
-          { path: '/signup/pet', element: <SignupPetRegisterPage /> },
-          { path: '/slot', element: <SlotSettingPage /> },
+          {
+            element: <PlainLayout />,
+            children: [
+              { path: '/signup/pet', element: <SignupPetRegisterPage /> },
+              { path: '/slot', element: <SlotSettingPage /> },
+            ],
+          },
         ],
       },
     ],

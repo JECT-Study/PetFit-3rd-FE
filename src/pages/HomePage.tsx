@@ -133,6 +133,7 @@ const Header = styled.header`
 `;
 
 const StyledLogo = styled(Logo)`
+  width: 40px;
   height: 28px;
 `;
 
@@ -158,4 +159,5 @@ const SectionTitle = styled.h2`
 const CardRow = styled.div`
   display: flex;
   gap: 8px;
+  align-items: flex-start;
 `;
