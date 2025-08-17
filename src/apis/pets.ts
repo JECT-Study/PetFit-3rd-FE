@@ -69,3 +69,12 @@ export const putFavorite = async (petId: number) => {
     throw error;
   }
 };
+
+// 상세 조회 API
+export const getPetById = async (petId: number): Promise<PetApiResponse> => {
+  const res = await axiosInstance.get<ApiResponse<PetApiResponse>>(`/pets/${petId}`);
+  if (!res.data.success || !res.data.content) {
+    throw new Error(res.data.message || '반려동물 상세 조회 실패');
+  }
+  return res.data.content;
+};
