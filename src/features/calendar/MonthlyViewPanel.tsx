@@ -164,9 +164,6 @@ const PetTab = styled.button<{ $active: boolean }>`
   align-items: center;
   gap: 4px;
   padding: 6px;
-  border: none;
-  background: none;
-  cursor: pointer;
   color: ${({ $active }) => ($active ? '#000' : '#888')};
   font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
 `;

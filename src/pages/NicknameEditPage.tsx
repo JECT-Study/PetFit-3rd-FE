@@ -72,10 +72,7 @@ export const NicknameEditPage = () => {
 const SaveButton = styled.button`
   white-space: nowrap;
   font-size: 14px;
-  background: none;
-  border: none;
   padding: 0;
-  cursor: pointer;
 
   &:disabled {
     color: #ccc;

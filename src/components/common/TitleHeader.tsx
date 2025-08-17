@@ -73,7 +73,6 @@ const Right = styled(SlotBox)`
 
 const IconButton = styled.button`
   all: unset;
-  cursor: pointer;
   display: flex;
   align-items: center;
 `;

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import kakaoLoginButton from '@/assets/images/kakao_login_medium_wide.png';
+import { typo } from '@/styles/tokens';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
@@ -31,23 +32,17 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: white;
+  background-color: var(--color-white-0);
   gap: 30px;
 `;
 
 const Description = styled.p`
   text-align: center;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: #333;
+  ${typo.bodyMed18};
 `;
 
 const KakaoButton = styled.button`
   padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
 
   img {
     width: 250px;

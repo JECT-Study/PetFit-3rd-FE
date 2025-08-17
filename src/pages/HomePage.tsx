@@ -14,6 +14,7 @@ import { Routine } from '@/features/routine/Routine';
 import { useBriefCardData } from '@/hooks/useBriefCardData';
 import { setSelectedPet, type SelectedPetState } from '@/store/petSlice';
 import type { RootState } from '@/store/store';
+import { typo } from '@/styles/tokens';
 import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
@@ -95,7 +96,7 @@ export const HomePage = () => {
             <CardRow>
               <BriefCard
                 label="일정"
-                color="#4D9DE0"
+                color="var(--point-500)"
                 items={scheduleData.map((s: ScheduleProps) => ({
                   id: s.scheduleId,
                   title: s.title,
@@ -104,7 +105,7 @@ export const HomePage = () => {
               />
               <BriefCard
                 label="특이사항"
-                color="#FF5C33"
+                color="var(--warning-500)"
                 items={remarkData.map((r: RemarkProps) => ({
                   id: r.remarkId,
                   title: r.title,
@@ -152,8 +153,7 @@ const BriefingSection = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 18px;
-  font-weight: bold;
+  ${typo.titleSemi18};
 `;
 
 const CardRow = styled.div`

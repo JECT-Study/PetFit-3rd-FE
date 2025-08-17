@@ -113,8 +113,6 @@ const CloseButton = styled.button`
   top: 0;
   right: 0;
   background: transparent;
-  border: none;
-  cursor: pointer;
 
   svg {
     stroke: #333;
@@ -132,7 +130,6 @@ const SubmitButton = styled.button<{ $disabled: boolean }>`
   font-size: 16px;
   font-weight: 600;
   border-radius: 8px;
-  border: none;
   background-color: ${({ disabled }) => (disabled ? '#eee' : '#facc15')};
   color: ${({ disabled }) => (disabled ? '#999' : '#222')};
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
