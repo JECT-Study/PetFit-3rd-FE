@@ -7,6 +7,7 @@ import { BaseModal } from '@/components/common/BaseModal';
 import { FormInput } from '@/components/common/FormInput';
 import { FormTextarea } from '@/components/common/FormTextarea';
 import type { Note } from '@/types/note';
+import { validators } from '@/utils/validators';
 
 interface NoteModalProps {
   isOpen: boolean;
@@ -17,19 +18,23 @@ interface NoteModalProps {
 
 export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalProps) => {
   const [note, setNote] = useState<Note>(initialNote);
-  const [formValidity, setFormValidity] = useState({
-    title: false,
-    content: false,
-  });
+  const [formValidity, setFormValidity] = useState({ title: false, content: true });
 
   useEffect(() => {
-    if (isOpen) {
-      setNote(initialNote);
-      setFormValidity({
-        title: true,
-        content: true,
-      });
-    }
+    if (!isOpen) return;
+
+    setNote(initialNote);
+
+    // ✅ 실제 값으로 초기 유효성 계산 (과거처럼 true 고정 금지)
+    const titleOk = validators.title(initialNote.title ?? '').isValid;
+
+    const contentStr = initialNote.content ?? '';
+    const contentOk =
+      contentStr.trim() === '' // 본문은 선택 → 빈 값이면 통과
+        ? true
+        : validators.content(contentStr).isValid;
+
+    setFormValidity({ title: titleOk, content: contentOk });
   }, [isOpen, initialNote]);
 
   const isFormValid = useMemo(() => Object.values(formValidity).every(Boolean), [formValidity]);
@@ -51,7 +56,11 @@ export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalP
 
   const handleSubmit = () => {
     if (!isFormValid) return;
-    onSubmit(note);
+    onSubmit({
+      ...note,
+      title: (note.title ?? '').trim(),
+      content: (note.content ?? '').trim(),
+    });
     onClose();
   };
 
@@ -78,6 +87,7 @@ export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalP
           validationType="content"
           placeholder="내용을 입력해주세요."
           onFieldValidChange={contentValidHandler}
+          optional
         />
 
         <SaveButton onClick={handleSubmit} $disabled={!isFormValid}>
