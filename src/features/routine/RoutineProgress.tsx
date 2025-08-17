@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
+import { useSlot } from '@/hooks/useSlot';
 import type { Routine } from '@/types/routine';
 
 interface RoutineProps {
@@ -8,7 +9,10 @@ interface RoutineProps {
 }
 
 export const RoutineProgress = ({ petId }: RoutineProps) => {
-  const { data: routineData, isLoading } = useDailyRoutine(petId);
+  const { data: slot } = useSlot(petId);
+  const { data: routineData, isLoading } = useDailyRoutine(petId, {
+    enabled: !!slot,
+  });
 
   if (isLoading) return <div>로딩중</div>;
 
