@@ -99,9 +99,8 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
                       placeholder
                     )}
                   </AmountText>
+                  <MemoInfo>{rtn.content}</MemoInfo>
                 </MainInfo>
-
-                <MemoInfo>{rtn.content}</MemoInfo>
               </MainInfoContainer>
             </ItemContainer>
 
@@ -162,13 +161,14 @@ const MainInfo = styled.div`
 `;
 
 const MemoInfo = styled.div`
+  display: flex;
+  align-items: center;
   font-size: 14px;
   color: gray;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;
-  margin-left: 24px;
 `;
 
 const NoteButton = styled.div`
