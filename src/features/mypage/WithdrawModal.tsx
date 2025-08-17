@@ -1,8 +1,10 @@
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { kakaoWithdraw } from '@/apis/auth';
 import { BaseModal } from '@/components/common/BaseModal';
+import type { RootState } from '@/store/store';
 
 interface Props {
   isOpen: boolean;
@@ -11,20 +13,11 @@ interface Props {
 
 export const WithdrawModal = ({ isOpen, onClose }: Props) => {
   const navigate = useNavigate();
+  const memberId = useSelector((s: RootState) => s.user.memberId);
+
   const onConfirm = async () => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-
-      if (!refreshToken) {
-        alert('토큰이 없습니다.');
-        return;
-      }
-
-      await kakaoWithdraw();
-
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-
+      await kakaoWithdraw(memberId);
       navigate('/login');
     } catch (error) {
       console.log('회원 탈퇴 failed : ', error);

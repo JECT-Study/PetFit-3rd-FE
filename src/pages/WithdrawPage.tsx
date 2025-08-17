@@ -23,6 +23,7 @@ export const WithdrawPage = () => {
     setWithdrawModal(false);
     setAgreed(false);
   };
+
   return (
     <>
       <TitleHeader title="탈퇴하기" showBack={true} />
