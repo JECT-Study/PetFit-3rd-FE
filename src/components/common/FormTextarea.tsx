@@ -12,6 +12,7 @@ interface FormTextareaProps extends BaseFieldProps {
   validationType: ValidationType;
   placeholder?: string;
   onFieldValidChange: (isValid: boolean) => void;
+  optional?: boolean;
 }
 
 export const FormTextarea = ({
@@ -21,6 +22,7 @@ export const FormTextarea = ({
   validationType,
   placeholder,
   onFieldValidChange,
+  optional = false,
 }: FormTextareaProps) => {
   const [isTouched, setIsTouched] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -29,6 +31,16 @@ export const FormTextarea = ({
   const maxLength = MAX_LENGTH[validationType];
 
   useEffect(() => {
+    const trimmed = value?.trim() ?? '';
+
+    // ✅ optional & 빈 값 → 항상 통과(에러 숨김, 부모에 true 전달)
+    if (optional && trimmed === '') {
+      if (errorMessage !== null) setErrorMessage(null);
+      onFieldValidChange(true);
+      return;
+    }
+
+    // ✅ 값이 입력된 경우엔 기존 로직 유지(blur 이후에만 에러 표기/전달)
     if (!isTouched) return;
 
     const { isValid, message } = validators[validationType](value);
@@ -38,6 +50,14 @@ export const FormTextarea = ({
 
   const handleBlur = () => {
     setIsTouched(true);
+
+    // blur 시점에 값이 있으면 즉시 1회 검증(UX 보강)
+    const trimmed = value?.trim() ?? '';
+    if (!(optional && trimmed === '')) {
+      const { isValid, message } = validators[validationType](value);
+      setErrorMessage(!isValid ? message : null);
+      onFieldValidChange(isValid);
+    }
   };
 
   return (

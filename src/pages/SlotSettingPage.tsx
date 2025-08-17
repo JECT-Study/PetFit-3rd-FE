@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getSlot, patchSlot, initializeSlot } from '@/apis/slot';
@@ -20,6 +20,9 @@ export const SlotSettingPage = () => {
   const [defaultValues, setDefaultValues] = useState<Record<string, number>>({});
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const [isInitial, setIsInitial] = useState(false);
+
+  const [param] = useSearchParams();
+  const showBack = param.get('flow') !== 'signup';
 
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
 
@@ -99,9 +102,17 @@ export const SlotSettingPage = () => {
     }
   };
 
+  const isValid = selectedIds.every(id => {
+    if (['feed', 'water', 'walk'].includes(id)) {
+      const value = inputValues[id];
+      return value !== undefined && value.trim() !== '' && Number(value) > 0;
+    }
+    return true;
+  });
+
   return (
     <Wrapper>
-      <TitleHeader title="하루 루틴 설정" showBack={true} />
+      <TitleHeader title="하루 루틴 설정" showBack={showBack} />
       <ContentArea>
         <SlotButton selectedIds={selectedIds} onToggle={handleToggle} />
 
@@ -127,7 +138,7 @@ export const SlotSettingPage = () => {
           </>
         )}
       </ContentArea>
-      <CompleteButton disabled={!hasSelection} onClick={handleSubmit}>
+      <CompleteButton disabled={!hasSelection || !isValid} onClick={handleSubmit}>
         완료
       </CompleteButton>
     </Wrapper>

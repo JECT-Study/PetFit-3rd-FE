@@ -58,17 +58,23 @@ export const registerPet = async (memberId: number, form: PetForm): Promise<PetI
   return petInfo;
 };
 
-export const patchFavorite = async (petId: number) => {
+export const putFavorite = async (petId: number) => {
   try {
-    const response = await axiosInstance.patch('pets/favorites/batch-updates', [
-      {
-        petId: petId,
-        isFavorite: true,
-      },
-    ]);
-    console.log(response);
+    await axiosInstance.put('pets/favorites', {
+      petId: petId,
+      isFavorite: true,
+    });
   } catch (error) {
     console.log('반려동물 즐겨찾기 수정 failed', error);
     throw error;
   }
+};
+
+// 상세 조회 API
+export const getPetById = async (petId: number): Promise<PetApiResponse> => {
+  const res = await axiosInstance.get<ApiResponse<PetApiResponse>>(`/pets/${petId}`);
+  if (!res.data.success || !res.data.content) {
+    throw new Error(res.data.message || '반려동물 상세 조회 실패');
+  }
+  return res.data.content;
 };

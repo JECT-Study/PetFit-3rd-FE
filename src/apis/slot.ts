@@ -1,13 +1,20 @@
+import axios from 'axios';
+
 import type { SlotType } from '@/types/slot';
 
 import { axiosInstance } from './axiosInstance';
 
-export const getSlot = async (petId: number): Promise<SlotType> => {
+export const getSlot = async (petId: number): Promise<SlotType | null> => {
   try {
-    const response = await axiosInstance.get(`slots/${petId}`);
-    return response.data.content;
+    const response = await axiosInstance.get(`slots/${petId}`, {
+      validateStatus: s => (s >= 200 && s < 300) || s === 404,
+    });
+    return response.status === 404 ? null : response.data.content;
   } catch (error) {
-    console.error('slot 조회 failed: ', error);
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      throw error;
+    }
+    console.error('slot 조회 failed:', error);
     throw error;
   }
 };

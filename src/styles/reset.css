@@ -63,3 +63,17 @@ fieldset {
 legend {
   padding: 0;
 }
+
+/* iOS 버튼 기본 모양/색 제거 */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  -webkit-appearance: none; /* iOS 기본 그라데이션/파란색 제거 */
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: 0;         /* iOS 기본 라운드 제거 */
+  color: inherit;
+  font: inherit;
+}

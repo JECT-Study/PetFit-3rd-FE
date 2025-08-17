@@ -31,7 +31,7 @@ export const SignupPetRegisterPage = () => {
     if (petInfo) {
       dispatch(setSelectedPet(petInfo)); // ✅ 전역 상태로 저장
       dispatch(setSelectedPetId(petInfo.id)); // localStorage에 id만 따로 저장
-      navigate('/slot');
+      navigate('/slot?flow=signup');
     } else if (error) {
       alert(error);
     }

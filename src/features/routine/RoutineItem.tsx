@@ -8,6 +8,7 @@ import { checkRoutine, uncheckRoutine } from '@/apis/routine';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
+import { useSlot } from '@/hooks/useSlot';
 import type { Routine, SlotId } from '@/types/routine';
 import { formatDate } from '@/utils/calendar';
 
@@ -35,8 +36,10 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
     CHECKED: <Check width={24} color="#4D9DE0" />,
   } as const;
 
-  const { data: routineDataFromHook } = useDailyRoutine(petId);
-
+  const { data: slot } = useSlot(petId);
+  const { data: routineDataFromHook } = useDailyRoutine(petId, {
+    enabled: !!slot,
+  });
   const routineList = routines ?? routineDataFromHook;
 
   if (!routineList) {
@@ -96,9 +99,8 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
                       placeholder
                     )}
                   </AmountText>
+                  <MemoInfo>{rtn.content}</MemoInfo>
                 </MainInfo>
-
-                <MemoInfo>{rtn.content}</MemoInfo>
               </MainInfoContainer>
             </ItemContainer>
 
@@ -159,13 +161,14 @@ const MainInfo = styled.div`
 `;
 
 const MemoInfo = styled.div`
+  display: flex;
+  align-items: center;
   font-size: 14px;
   color: gray;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;
-  margin-left: 24px;
 `;
 
 const NoteButton = styled.div`

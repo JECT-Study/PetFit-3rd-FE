@@ -40,7 +40,8 @@ export const RoutineDetailModal = ({
     }
   }, [isOpen, slotId]);
 
-  const isValid = (hasAmount ? amount.trim() !== '' : true) && memo.length <= 200;
+  const isValid =
+    (hasAmount ? amount.trim() !== '' : true) && memo.trim() !== '' && memo.length <= 200;
 
   const handleSave = async () => {
     if (!isValid) return;
