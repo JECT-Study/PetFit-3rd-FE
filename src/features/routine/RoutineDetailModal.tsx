@@ -119,9 +119,6 @@ const Header = styled.div`
 
 const Close = styled.button`
   font-size: 20px;
-  background: none;
-  border: none;
-  cursor: pointer;
 `;
 
 const Content = styled.div`

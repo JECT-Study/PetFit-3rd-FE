@@ -66,8 +66,6 @@ const NextButton = styled.button<{ disabled?: boolean }>`
   padding: 16px 0;
   font-size: 16px;
   background-color: ${({ disabled }) => (disabled ? '#ccc' : '#facc15')};
-  color: #000;
-  border: none;
   border-radius: 12px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;

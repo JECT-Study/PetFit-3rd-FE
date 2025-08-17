@@ -198,5 +198,4 @@ const SectionAction = styled.button`
   font-size: 14px;
   color: #757575;
   text-decoration: none;
-  cursor: pointer;
 `;

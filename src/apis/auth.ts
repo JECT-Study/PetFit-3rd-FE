@@ -85,7 +85,6 @@ export const verifyAuth = async (): Promise<boolean> => {
   return res.data.content;
 };
 
-
 export const getNickname = async (memberId: number | null) => {
   try {
     const response = await axiosInstance.get(`members/${memberId}`);

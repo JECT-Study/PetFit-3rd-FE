@@ -46,10 +46,7 @@ const Wrapper = styled.div`
 `;
 
 const ToggleButton = styled.button`
-  background: none;
-  border: none;
   padding: 4px;
-  cursor: pointer;
 `;
 
 const Dropdown = styled.ul`

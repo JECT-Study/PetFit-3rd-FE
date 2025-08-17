@@ -110,7 +110,6 @@ const SaveButton = styled.button<{ $disabled: boolean }>`
   padding: 12px 0;
   background-color: ${({ $disabled }) => ($disabled ? '#eee' : '#facc15')};
   border-radius: 10px;
-  border: none;
   color: ${({ $disabled }) => ($disabled ? '#999' : '#222')};
   font-size: 16px;
   font-weight: bold;

@@ -201,7 +201,6 @@ const AddButton = styled.button<{ hasList?: boolean }>`
   padding: 8px 12px;
   background-color: #facc15;
   color: #222;
-  border: none;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;

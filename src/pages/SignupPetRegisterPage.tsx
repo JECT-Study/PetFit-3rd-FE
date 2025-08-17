@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { PetRegisterForm } from '@/components/PetRegisterForm';
 import { useRegisterPet } from '@/hooks/useRegisterPet';
 import { setSelectedPet, setSelectedPetId } from '@/store/petSlice';
+import { typo } from '@/styles/tokens';
 import type { PetForm } from '@/types/form';
 
 export const SignupPetRegisterPage = () => {
@@ -59,25 +60,32 @@ const Container = styled.div`
 `;
 
 const Title = styled.h2`
-  text-align: center;
   padding: 18px 0;
-  font-size: 18px;
+  text-align: center;
+  color: var(--grey-700);
+  ${typo.titleSemi18};
 `;
 
 const ErrorMessage = styled.p`
-  color: red;
-  font-size: 14px;
   margin: 8px 0;
   text-align: center;
+  color: var(--warning-500);
+  ${typo.bodyReg14};
 `;
 
-const NextButton = styled.button<{ disabled?: boolean }>`
+const NextButton = styled.button`
   margin-bottom: 24px;
   padding: 16px 0;
-  font-size: 16px;
-  background-color: ${({ disabled }) => (disabled ? '#ccc' : '#facc15')};
-  color: #000;
-  border: none;
   border-radius: 12px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  ${typo.titleSemi18};
+
+  background: var(--main-500);
+  color: var(--grey-700);
+
+  &:disabled {
+    background: var(--grey-100);
+    color: var(--grey-400);
+    border: 1px solid var(--grey-300);
+    cursor: not-allowed;
+  }
 `;

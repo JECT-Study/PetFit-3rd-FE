@@ -4,6 +4,8 @@ import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { typo } from '@/styles/tokens';
+
 interface BriefCardItem {
   id: number;
   title: string;
@@ -19,13 +21,17 @@ interface BriefCardProps {
   error?: string | null;
 }
 
+const COLLAPSED_COUNT = 2;
+
+const shouldShowToggle = (len: number) => len > COLLAPSED_COUNT;
+
 export const BriefCard = ({ label, color, items, loading, error }: BriefCardProps) => {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
 
   const hasContent = items.length > 0;
-  const showAccordion = items.length >= 3; // 2개 이상부터 토글 표시
-  const visibleItems = expanded ? items : items.slice(0, 2);
+  const showAccordion = shouldShowToggle(items.length);
+  const visibleItems = expanded ? items : items.slice(0, COLLAPSED_COUNT);
 
   const handleAddClick = () => {
     if (label === '일정') navigate('/alarm');
@@ -38,7 +44,7 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
         <ColorBar style={{ backgroundColor: color }} />
         <Title>{label}</Title>
         <AddButton type="button" onClick={handleAddClick} aria-label={`${label} 추가`}>
-          <Plus size={20} color="#999" />
+          <Plus size={20} color="var(--grey-700)" />
         </AddButton>
       </Header>
       <Content>
@@ -94,17 +100,12 @@ const ColorBar = styled.div`
 
 const Title = styled.span`
   flex: 1;
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: -0.4px;
+  ${typo.bodyMed16};
 `;
 
 const AddButton = styled.button`
   font-size: 20px;
-  color: #999;
-  background: none;
-  border: none;
-  cursor: pointer;
+  color: var(--grey-700);
 `;
 
 const Content = styled.div`
@@ -114,13 +115,13 @@ const Content = styled.div`
 `;
 
 const ErrorMessage = styled.div`
-  font-size: 14px;
-  color: #d32f2f;
+  color: var(--warning-500);
+  ${typo.bodyReg14};
 `;
 
 const LoadingMessage = styled.div`
-  font-size: 14px;
   color: #888;
+  ${typo.bodyReg14};
 `;
 
 const Item = styled.div`
@@ -140,9 +141,7 @@ const ToggleButton = styled.button`
   justify-content: center;
   width: 28px;
   height: 24px;
-  border: none;
   background: transparent;
-  cursor: pointer;
   border-radius: 6px;
 
   &:hover {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
+import { typo } from '@/styles/tokens';
 import type { BaseFieldProps } from '@/types/form';
 import { MAX_LENGTH, validators, type ValidationType } from '@/utils/validators';
 
@@ -68,18 +69,18 @@ const FieldGroup = styled.div`
 
 const Label = styled.label<{ $hasError?: boolean }>`
   padding-left: 8px;
-  font-size: 14px;
-  color: ${({ $hasError }) => ($hasError ? '#f87171' : '#333')};
+  color: ${({ $hasError }) => ($hasError ? 'var(--warning-500)' : 'var(--grey-600)')};
+  ${typo.bodyReg14};
 `;
 
 const StyledTextarea = styled.textarea<{ $hasError?: boolean }>`
   width: 100%;
   height: 100px;
   padding: 12px 20px;
-  font-size: 16px;
-  background-color: #fff8e7;
-  border: 1.5px solid ${({ $hasError }) => ($hasError ? '#f87171' : '#facc15')};
+  background-color: var(--main-100);
+  border: 1.5px solid ${({ $hasError }) => ($hasError ? 'var(--warning-500)' : 'var(--main-500)')};
   border-radius: 16px;
+  ${typo.bodySemi14};
   resize: none;
 `;
 
@@ -91,12 +92,12 @@ const HelperRow = styled.div`
 `;
 
 const CharCount = styled.span<{ $hasError?: boolean }>`
-  font-size: 12px;
-  color: ${({ $hasError }) => ($hasError ? '#f87171' : '#999')};
+  ${typo.captionMed12};
+  color: ${({ $hasError }) => ($hasError ? 'var(--warning-500)' : 'var(--grey-400)')};
 `;
 
 const ErrorMessage = styled.p<{ $isVisible?: boolean }>`
-  color: #f87171;
-  font-size: 12px;
+  color: var(--warning-500);
+  ${typo.captionMed12};
   visibility: ${({ $isVisible }) => ($isVisible ? 'visible' : 'hidden')};
 `;
