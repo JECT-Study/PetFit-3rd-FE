@@ -65,7 +65,7 @@ const refreshAccessToken = async () => {
   try {
     const body = IS_DEV ? { refreshToken: localStorage.getItem('refreshToken') } : undefined;
 
-    const response = await axiosInstance.post('/auth/refresh', body);
+    const response = await axios.post('/auth/refresh', body, { withCredentials: true });
 
     if (IS_DEV) {
       const newAccessToken = response.data.content.accessToken;
