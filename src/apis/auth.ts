@@ -46,11 +46,7 @@ export const kakaoLogout = async () => {
  */
 export const kakaoWithdraw = async (memberId: number | null) => {
   try {
-    await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/auth/kakao/withdraw`,
-      { memberId },
-      { withCredentials: true } // 쿠키도 같이 보내려면 꼭 필요
-    );
+    await axios.post(`/auth/kakao/withdraw`, { memberId }, { withCredentials: true });
   } catch (error) {
     console.error('user delete failed: ', error);
     throw error;
