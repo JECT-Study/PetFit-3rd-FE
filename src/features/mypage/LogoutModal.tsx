@@ -1,6 +1,15 @@
+import { useState } from 'react';
+
+import { useQueryClient } from '@tanstack/react-query';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { kakaoLogout } from '@/apis/auth';
+import { axiosInstance } from '@/apis/axiosInstance';
 import { BaseModal } from '@/components/common/BaseModal';
+import { IS_DEV } from '@/constants/env';
+import { logout } from '@/store/authSlice';
 
 interface Props {
   isOpen: boolean;
@@ -8,9 +17,38 @@ interface Props {
 }
 
 export const LogoutModal = ({ isOpen, onClose }: Props) => {
-  // api 연결 시 로그아웃 구현 예정
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const onConfirm = async () => {
-    window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${import.meta.env.VITE_APP_KAKAO_APP_KEY}&logout_redirect_uri=${import.meta.env.VITE_KAKAO_LOGOUT_REDIRECT_URI}`;
+    if (loading) return;
+    setLoading(true);
+    try {
+      // 1) 백엔드 로그아웃 API 호출(Prod: 쿠키 제거, Dev: body로 RT 전달)
+      await kakaoLogout();
+
+      // 2) 개발환경이면 로컬 토큰 정리
+      if (IS_DEV) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        delete axiosInstance.defaults.headers.common.Authorization;
+      }
+
+      // 3) 전역 상태/캐시 초기화
+      dispatch(logout());
+      await queryClient.cancelQueries(); // 진행중 요청 중단
+      queryClient.removeQueries({ predicate: () => true }); // 민감 캐시 제거
+
+      // 4) 로그인 화면으로 이동
+      navigate('/login', { replace: true });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+      onClose();
+    }
   };
 
   return (

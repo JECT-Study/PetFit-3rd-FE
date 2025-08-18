@@ -1,9 +1,15 @@
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
+
+import { useQueryClient } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { kakaoWithdraw } from '@/apis/auth';
+import { axiosInstance } from '@/apis/axiosInstance';
 import { BaseModal } from '@/components/common/BaseModal';
+import { IS_DEV } from '@/constants/env';
+import { logout } from '@/store/authSlice';
 import type { RootState } from '@/store/store';
 
 interface Props {
@@ -13,14 +19,43 @@ interface Props {
 
 export const WithdrawModal = ({ isOpen, onClose }: Props) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+
   const memberId = useSelector((s: RootState) => s.user.memberId);
+  const [loading, setLoading] = useState(false);
 
   const onConfirm = async () => {
+    if (loading) return;
+    setLoading(true);
+
     try {
+      // 0) 필수 파라미터 가드
+      if (!memberId && memberId !== 0) {
+        throw new Error('memberId가 없습니다.');
+      }
+
+      // 1) 회원 탈퇴 요청 (서버에서 계정 삭제 + 세션/쿠키 무효화 권장)
       await kakaoWithdraw(memberId);
-      navigate('/login');
+
+      // 2) 클라이언트 상태/캐시 정리
+      if (IS_DEV) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        delete axiosInstance.defaults.headers.common.Authorization;
+      }
+
+      dispatch(logout());
+      await queryClient.cancelQueries();
+      queryClient.removeQueries({ predicate: () => true });
+
+      // 3) 라우팅
+      navigate('/login', { replace: true });
     } catch (error) {
-      console.log('회원 탈퇴 failed : ', error);
+      console.error('회원 탈퇴 failed:', error);
+    } finally {
+      setLoading(false);
+      onClose();
     }
   };
 
