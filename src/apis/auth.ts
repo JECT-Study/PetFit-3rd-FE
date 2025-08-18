@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import { IS_DEV } from '@/constants/env';
 
 import { axiosInstance } from './axiosInstance';
@@ -44,7 +46,15 @@ export const kakaoLogout = async () => {
  */
 export const kakaoWithdraw = async (memberId: number | null) => {
   try {
+<<<<<<< Updated upstream
     await axiosInstance.post('/auth/kakao/withdraw', { memberId });
+=======
+    await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/auth/kakao/withdraw`,
+      { memberId },
+      { withCredentials: true } // 쿠키도 같이 보내려면 꼭 필요
+    );
+>>>>>>> Stashed changes
   } catch (error) {
     console.error('user delete failed: ', error);
     throw error;
