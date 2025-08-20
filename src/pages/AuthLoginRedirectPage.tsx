@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { IS_DEV } from '@/constants/env';
 
 export const AuthLoginRedirectPage = () => {
@@ -31,5 +32,9 @@ export const AuthLoginRedirectPage = () => {
     // getToken();
   }, []);
 
-  return <div>로그인 중</div>;
+  return (
+    <div>
+      <LoadingSpinner />
+    </div>
+  );
 };
