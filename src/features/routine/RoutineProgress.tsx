@@ -18,7 +18,7 @@ export const RoutineProgress = ({ petId }: RoutineProps) => {
 
   const totalRoutineCount = (routineData ?? []).length;
   const doneRoutineCount = (routineData ?? []).filter(
-    (rtn: Routine) => rtn.status === 'CHECKED'
+    (rtn: Routine) => rtn.status === 'CHECKED' || rtn.status === 'MEMO'
   ).length;
   const completedPercent = ((doneRoutineCount / totalRoutineCount) * 100).toFixed(1);
 
