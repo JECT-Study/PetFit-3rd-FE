@@ -116,6 +116,10 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
           slotId={modal.slotId}
           isOpen={modal.open}
           petId={petId}
+          initial={{
+            amount: sortedRoutineData.find(r => r.category === modal.slotId)?.actualAmount,
+            memo: sortedRoutineData.find(r => r.category === modal.slotId)?.content ?? '',
+          }}
           onClose={() => setModal({ open: false, slotId: null })}
         />
       )}

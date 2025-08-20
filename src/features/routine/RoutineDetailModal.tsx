@@ -14,7 +14,7 @@ interface Props {
   isOpen: boolean;
   petId: number;
   onClose: () => void;
-  initial?: { amount?: number; memo?: string | '' };
+  initial?: { amount?: number | null; memo?: string | '' };
 }
 
 export const RoutineDetailModal = ({
@@ -35,10 +35,10 @@ export const RoutineDetailModal = ({
   // 모달이 열릴 때마다 초기값 세팅
   useEffect(() => {
     if (isOpen) {
-      setAmount(initial.amount?.toString() ?? '');
+      setAmount(initial.amount !== 0 ? String(initial.amount) : '');
       setMemo(initial.memo ?? '');
     }
-  }, [isOpen, slotId]);
+  }, [isOpen, slotId, initial.amount, initial.memo]);
 
   const isValid = hasAmount
     ? amount.trim() !== '' && memo.length <= 200
