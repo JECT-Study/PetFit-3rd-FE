@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -25,7 +25,7 @@ export const Routine = ({ petId }: RoutineProps) => {
         <RoutineTitle>오늘의 루틴</RoutineTitle>
         <Actions>
           <button onClick={() => navigate('/slot')}>
-            <Plus />
+            <Settings />
           </button>
           {!routineData && <Notice>슬롯 설정하기</Notice>}
         </Actions>

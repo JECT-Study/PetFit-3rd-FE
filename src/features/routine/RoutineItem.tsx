@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { Ellipsis, Check } from 'lucide-react';
+import { Pencil, Check } from 'lucide-react';
 import styled from 'styled-components';
 
 import { checkRoutine, uncheckRoutine } from '@/apis/routine';
@@ -105,7 +105,7 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
             </ItemContainer>
 
             <NoteButton onClick={() => setModal({ open: true, slotId: id })}>
-              <Ellipsis width={16} />
+              <Pencil width={14} />
             </NoteButton>
           </Container>
         );
