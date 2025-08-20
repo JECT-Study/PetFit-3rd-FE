@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
 import { useSlot } from '@/hooks/useSlot';
 import type { Routine } from '@/types/routine';
@@ -14,7 +15,12 @@ export const RoutineProgress = ({ petId }: RoutineProps) => {
     enabled: !!slot,
   });
 
-  if (isLoading) return <div>로딩중</div>;
+  if (isLoading)
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
 
   const totalRoutineCount = (routineData ?? []).length;
   const doneRoutineCount = (routineData ?? []).filter(

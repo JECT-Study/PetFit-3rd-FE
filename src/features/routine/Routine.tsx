@@ -2,6 +2,7 @@ import { Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { RoutineItem } from '@/features/routine/RoutineItem';
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
 import { useSlot } from '@/hooks/useSlot';
@@ -14,10 +15,12 @@ interface RoutineProps {
 
 export const Routine = ({ petId }: RoutineProps) => {
   const navigate = useNavigate();
-  const { data: slot } = useSlot(petId);
-  const { data: routineData } = useDailyRoutine(petId, {
+  const { data: slot, isLoading: isSlotLoading } = useSlot(petId);
+  const { data: routineData, isLoading: isRoutineLoading } = useDailyRoutine(petId, {
     enabled: !!slot,
   });
+
+  if (isSlotLoading || isRoutineLoading) return <LoadingSpinner />;
 
   return (
     <Container>
@@ -60,8 +63,8 @@ const Notice = styled.div`
   &::before {
     content: '';
     position: absolute;
-    top: -6px;
-    right: 9px;
+    top: -5px;
+    right: 6px;
     border-width: 0 6px 6px 6px;
     border-style: solid;
     border-color: transparent transparent #ffc533 transparent;
