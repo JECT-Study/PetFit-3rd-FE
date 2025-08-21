@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { setAuthCookies } from '@/apis/auth';
 import { getPets } from '@/apis/pets';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { IS_DEV } from '@/constants/env';
 import { setTokens, setIsNewUser } from '@/store/authSlice';
 import { setSelectedPetId } from '@/store/petSlice';
@@ -102,5 +103,9 @@ export const TokenRedirectPage = () => {
     fetchMemberAndRoute();
   }, [dispatch, navigate, searchParams]);
 
-  return <p>로그인 처리 중입니다...</p>;
+  return (
+    <p>
+      <LoadingSpinner />
+    </p>
+  );
 };
