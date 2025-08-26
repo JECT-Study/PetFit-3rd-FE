@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
               // { path: '/info', element: <InfoPage /> },
               { path: '/mypage', element: <MyPage /> },
               { path: '/withdraw', element: <WithdrawPage /> },
-              { path: '/edit-nickname', element: <NicknameEditPage /> },
+              { path: '/edit/nickname', element: <NicknameEditPage /> },
               { path: '/manage', element: <PetManagementPage /> },
               { path: '/add/pet', element: <PetAddPage /> },
               { path: '/edit/pet/:petId', element: <PetEditPage /> },
