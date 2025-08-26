@@ -8,7 +8,7 @@ import { PetRegisterForm } from '@/components/PetRegisterForm';
 import { useRegisterPet } from '@/hooks/useRegisterPet';
 import type { PetForm } from '@/types/form';
 
-export const AddPetPage = () => {
+export const PetAddPage = () => {
   const [form, setForm] = useState<PetForm>({
     name: '',
     species: '강아지',
