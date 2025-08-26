@@ -10,12 +10,14 @@ import { createRemark, deleteRemark, updateRemark, type RemarkResponse } from '@
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
 import { NoteItemList } from '@/features/calendar/NoteItemList';
 import { NoteModal } from '@/features/calendar/NoteModal';
-import { RoutineItem } from '@/features/routine/RoutineItem';
 import { useModal } from '@/hooks/useModal';
 import type { RootState } from '@/store/store';
 import type { Note } from '@/types/note';
 import { formatDate, isSameDay } from '@/utils/calendar';
 import { toRemarkFormData } from '@/utils/transform/note';
+
+import { CalendarRoutineList } from './CalendarRoutineList';
+import { RoutineItem } from '../routine/RoutineItem';
 
 interface WeeklyDetailsSectionProps {
   selectedDate: Date;
@@ -168,7 +170,12 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
           <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
         </MarginBottom>
 
-        {isToday && <RoutineItem petId={selectedPetId ?? -1} />}
+        {isToday ? (
+          <RoutineItem petId={selectedPetId ?? -1} />
+        ) : (
+          <CalendarRoutineList petId={selectedPetId ?? -1} selectedDate={selectedDate} />
+        )}
+
         <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
       </MarginTop>
 

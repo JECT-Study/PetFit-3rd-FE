@@ -12,7 +12,7 @@ export const toRoutineModel = (routine: APIRoutine): UiRoutine => {
     id: routine.category as SlotId, // SLOT_ITEMS에서 유효한 값인지 보장 필요
     category: routine.category,
     status: statusMap[routine.status],
-    targetAmount: routine.targetAmount ?? '',
+    targetAmount: routine.targetAmount,
     actualAmount: routine.actualAmount,
     content: routine.content,
     date: routine.date,
