@@ -23,6 +23,11 @@ export const PetRegisterForm = ({ form, setForm, onFormValidChange }: PetRegiste
   });
 
   useEffect(() => {
+    const valid = form.name.trim().length > 0;
+    setFormValidity(prev => ({ ...prev, name: valid }));
+  }, [form.name]);
+
+  useEffect(() => {
     const isValid = Object.values(formValidity).every(Boolean);
     onFormValidChange(isValid);
   }, [formValidity, onFormValidChange]);

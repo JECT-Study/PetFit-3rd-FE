@@ -58,6 +58,22 @@ export const registerPet = async (memberId: number, form: PetForm): Promise<PetI
   return petInfo;
 };
 
+export const putPetsInfo = async (petId: number, memberId: number | null, form: PetForm) => {
+  const payload = {
+    memberId,
+    name: form.name,
+    type: form.species,
+    gender: form.gender,
+    birthDate: formatDate(form.birthDate), // string (YYYY-MM-DD)
+    isFavorite: true,
+  };
+  try {
+    await axiosInstance.put(`pets/${petId}`, payload);
+  } catch (error) {
+    console.log('반려동물 정보 수정 failed', error);
+  }
+};
+
 export const putFavorite = async (petId: number) => {
   try {
     await axiosInstance.put('pets/favorites', {

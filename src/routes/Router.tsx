@@ -11,6 +11,7 @@ import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { NicknameEditPage } from '@/pages/NicknameEditPage';
+import { PetEditPage } from '@/pages/PetEditPage';
 import { PetManagementPage } from '@/pages/PetManagementPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
               { path: '/edit-nickname', element: <NicknameEditPage /> },
               { path: '/manage', element: <PetManagementPage /> },
               { path: '/add/pet', element: <AddPetPage /> },
+              { path: '/edit/pet/:petId', element: <PetEditPage /> },
             ],
           },
         ],
