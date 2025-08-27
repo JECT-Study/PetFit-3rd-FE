@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { fetchDailyEntries } from '@/apis/calendar';
@@ -10,12 +10,16 @@ import { createRemark, deleteRemark, updateRemark, type RemarkResponse } from '@
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
 import { NoteItemList } from '@/features/calendar/NoteItemList';
 import { NoteModal } from '@/features/calendar/NoteModal';
-import { RoutineItem } from '@/features/routine/RoutineItem';
 import { useModal } from '@/hooks/useModal';
+import { setMode } from '@/store/calendarSlice';
 import type { RootState } from '@/store/store';
 import type { Note } from '@/types/note';
 import { formatDate, isSameDay } from '@/utils/calendar';
 import { toRemarkFormData } from '@/utils/transform/note';
+
+import { CalendarRoutineList } from './CalendarRoutineList';
+import { DragSwitchHandle } from './DragSwitchHandle';
+import { RoutineItem } from '../routine/RoutineItem';
 
 interface WeeklyDetailsSectionProps {
   selectedDate: Date;
@@ -39,6 +43,11 @@ const deleteNoteById = (list: Note[], targetId: number): Note[] =>
 
 // eslint-disable-next-line no-empty-pattern
 export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps) => {
+  const dispatch = useDispatch();
+
+  const [dragY, setDragY] = useState(0);
+  const [dragging, setDragging] = useState(false);
+
   const queryClient = useQueryClient();
 
   const [notes, setNotes] = useState<Note[]>([]);
@@ -160,42 +169,60 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
 
   return (
     <Wrapper>
-      <Divider />
+      <SlidingContent
+        style={{
+          transform: `translateY(${dragY}px)`,
+          transition: dragging ? 'none' : 'transform 180ms ease-out',
+        }}
+      >
+        <DragSwitchHandle
+          threshold={100}
+          onExpandToMonth={() => dispatch(setMode('month'))}
+          onDragChange={(dy, isDragging) => {
+            setDragY(dy);
+            setDragging(isDragging);
+          }}
+        />
 
-      <MarginTop>
-        <MarginBottom>
-          <SectionTitle>하루 루틴</SectionTitle>
-          <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
-        </MarginBottom>
+        <MarginTop>
+          <MarginBottom>
+            <SectionTitle>하루 루틴</SectionTitle>
+            <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
+          </MarginBottom>
 
-        {isToday && <RoutineItem petId={selectedPetId ?? -1} />}
-        <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
-      </MarginTop>
+          {isToday ? (
+            <RoutineItem petId={selectedPetId ?? -1} />
+          ) : (
+            <CalendarRoutineList petId={selectedPetId ?? -1} selectedDate={selectedDate} />
+          )}
 
-      <NoteModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        initialNote={editingNote} // 추가 시엔 빈 객체, 수정 시엔 기존 특이사항
-        onSubmit={handleSubmitNote}
-      />
+          <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
+        </MarginTop>
 
-      <ConfirmDeleteModal
-        isOpen={deleteTargetId !== null}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-      />
+        <NoteModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          initialNote={editingNote} // 추가 시엔 빈 객체, 수정 시엔 기존 특이사항
+          onSubmit={handleSubmitNote}
+        />
+
+        <ConfirmDeleteModal
+          isOpen={deleteTargetId !== null}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
+      </SlidingContent>
     </Wrapper>
   );
 };
 
+const SlidingContent = styled.div`
+  will-change: transform; /* GPU 합성으로 부드럽게 */
+`;
 const Wrapper = styled.div`
   margin-top: 20px;
   padding: 0 20px;
-`;
-
-const Divider = styled.div`
-  height: 10px;
-  background-color: #e0e0e0;
+  overscroll-behavior: contain;
 `;
 
 const MarginTop = styled.div`
