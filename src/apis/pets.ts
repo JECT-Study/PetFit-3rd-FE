@@ -65,7 +65,6 @@ export const putPetsInfo = async (petId: number, memberId: number | null, form: 
     type: form.species,
     gender: form.gender,
     birthDate: formatDate(form.birthDate), // string (YYYY-MM-DD)
-    isFavorite: true,
   };
   try {
     await axiosInstance.put(`pets/${petId}`, payload);
