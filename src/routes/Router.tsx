@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { MainLayout } from '@/layouts/MainLayout';
 import { PlainLayout } from '@/layouts/PlainLayout';
-import { AddPetPage } from '@/pages/AddPetPage';
 import { AlarmPage } from '@/pages/AlarmPage';
 import { AuthLoginRedirectPage } from '@/pages/AuthLoginRedirectPage';
 import { AuthLogoutRedirectPage } from '@/pages/AuthLogoutRedirectPage';
@@ -11,6 +10,8 @@ import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { NicknameEditPage } from '@/pages/NicknameEditPage';
+import { PetAddPage } from '@/pages/PetAddPage';
+import { PetEditPage } from '@/pages/PetEditPage';
 import { PetManagementPage } from '@/pages/PetManagementPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
@@ -46,9 +47,10 @@ export const router = createBrowserRouter([
               // { path: '/info', element: <InfoPage /> },
               { path: '/mypage', element: <MyPage /> },
               { path: '/withdraw', element: <WithdrawPage /> },
-              { path: '/edit-nickname', element: <NicknameEditPage /> },
+              { path: '/edit/nickname', element: <NicknameEditPage /> },
               { path: '/manage', element: <PetManagementPage /> },
-              { path: '/add/pet', element: <AddPetPage /> },
+              { path: '/add/pet', element: <PetAddPage /> },
+              { path: '/edit/pet/:petId', element: <PetEditPage /> },
             ],
           },
         ],

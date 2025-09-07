@@ -52,7 +52,7 @@ export const PetManagementPage: React.FC = () => {
       <CardList>
         {pets.map(p => (
           <PetItem key={p.id}>
-            {p.name}
+            <button onClick={() => navigate(`/edit/pet/${p.id}`)}>{p.name}</button>
             <button onClick={() => favoriteMutation.mutate(p.id)}>
               {p.isFavorite ? (
                 <Star color="#FFC533" fill="#FFC533" />

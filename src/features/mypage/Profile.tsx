@@ -17,7 +17,7 @@ export const Profile = () => {
   });
 
   const handleEditClick = () => {
-    navigate('/edit-nickname');
+    navigate('/edit/nickname');
   };
   return (
     <Container>
