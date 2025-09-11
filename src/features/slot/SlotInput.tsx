@@ -46,7 +46,7 @@ export const SlotInput = ({ selectedIds, mode, defaultValues = {}, onChange }: P
           <InputContainer key={id}>
             <InputHeader>
               <InputTitle>
-                <Icon width={16} color="#4D9DE0" /> {label}
+                <Icon width={16} color="#373737" /> {label}
               </InputTitle>
               {unit ? <InputSubtitle>(단위: {unit})</InputSubtitle> : null}
             </InputHeader>
