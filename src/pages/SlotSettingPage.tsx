@@ -73,8 +73,11 @@ export const SlotSettingPage = () => {
   }, []);
 
   const hasSelection = selectedIds.length > 0;
-  const handleToggle = (id: string) =>
-    setSelectedIds(prev => (prev.includes(id) ? prev.filter(k => k !== id) : [...prev, id]));
+
+  const handleSelect = (id: string) =>
+    setSelectedIds(prev => (prev.includes(id) ? prev : [...prev, id]));
+
+  const handleDeselect = (id: string) => setSelectedIds(prev => prev.filter(k => k !== id));
 
   const handleSubmit = async () => {
     const payload = {
@@ -114,7 +117,7 @@ export const SlotSettingPage = () => {
     <Wrapper>
       <TitleHeader title="하루 루틴 설정" showBack={showBack} />
       <ContentArea>
-        <SlotButton selectedIds={selectedIds} onToggle={handleToggle} />
+        <SlotButton selectedIds={selectedIds} onSelect={handleSelect} onDeselect={handleDeselect} />
 
         {!hasSelection && (
           <>

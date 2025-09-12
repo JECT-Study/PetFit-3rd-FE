@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Menu } from 'lucide-react';
+// import { Menu } from 'lucide-react';
 import styled from 'styled-components';
 
 import { SLOT_ITEMS } from '@/constants/slot';
@@ -61,7 +61,7 @@ export const SlotInput = ({ selectedIds, mode, defaultValues = {}, onChange }: P
                 <NonUnitInput onClick={handleClickNonUnit}>{placeholder}</NonUnitInput>
               )}
 
-              <Menu color={'#A5A5A5'} />
+              {/* <Menu color={'#A5A5A5'} /> */}
             </InputContent>
           </InputContainer>
         )
