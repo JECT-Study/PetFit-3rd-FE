@@ -46,13 +46,13 @@ describe('[BriefCard][shared] 공통 행위', () => {
 
   test('로딩 메시지 표시', () => {
     renderWithDeps(<BriefCard label="일정" color="#3b82f6" items={[]} loading />);
-    expect(screen.getByText(/불러오는 중/i)).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
     expect(screen.queryAllByTestId('brief-item')).toHaveLength(0);
   });
 
   test('실패 메시지 표시', () => {
     renderWithDeps(<BriefCard label="일정" color="#3b82f6" items={[]} error="요청 실패" />);
-    expect(screen.getByText(/요청 실패/i)).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('요청 실패');
     expect(screen.queryAllByTestId('brief-item')).toHaveLength(0);
   });
 });

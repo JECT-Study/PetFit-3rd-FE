@@ -54,9 +54,13 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
       </Header>
       <Content>
         {error ? (
-          <ErrorMessage>{error}</ErrorMessage>
+          <ErrorMessage role="alert" data-testid="brief-status">
+            {error}
+          </ErrorMessage>
         ) : loading ? (
-          <LoadingMessage>불러오는 중...</LoadingMessage>
+          <LoadingMessage role="status" aria-live="polite" data-testid="brief-status">
+            불러오는 중...
+          </LoadingMessage>
         ) : hasContent ? (
           <>
             {visibleItems.map(item => (
@@ -79,7 +83,7 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
             )}
           </>
         ) : (
-          <NoContent>{label}이 없습니다.</NoContent>
+          <NoContent data-testid="brief-empty">{label}이 없습니다.</NoContent>
         )}
       </Content>
     </Card>
