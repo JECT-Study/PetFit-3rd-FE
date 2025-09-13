@@ -66,7 +66,7 @@ export const ScheduleRegisterModal = ({
 
   return (
     <BaseModal isOpen={isOpen} onClose={handleClose}>
-      <ModalWrapper>
+      <ModalWrapper role="dialog" aria-label="알람 추가">
         <CloseButton onClick={handleClose}>
           <X size={24} />
         </CloseButton>
@@ -94,7 +94,7 @@ export const ScheduleRegisterModal = ({
             onFieldValidChange={fieldValidHandlers.content}
           />
 
-          <SubmitButton onClick={handleSubmit} $disabled={!isFormValid}>
+          <SubmitButton onClick={handleSubmit} disabled={!isFormValid} $disabled={!isFormValid}>
             저장
           </SubmitButton>
         </Form>
@@ -130,7 +130,7 @@ const SubmitButton = styled.button<{ $disabled: boolean }>`
   font-size: 16px;
   font-weight: 600;
   border-radius: 8px;
-  background-color: ${({ disabled }) => (disabled ? '#eee' : '#facc15')};
-  color: ${({ disabled }) => (disabled ? '#999' : '#222')};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  background-color: ${({ $disabled }) => ($disabled ? '#eee' : '#facc15')};
+  color: ${({ $disabled }) => ($disabled ? '#999' : '#222')};
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 `;
