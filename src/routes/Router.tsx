@@ -44,7 +44,6 @@ export const router = createBrowserRouter([
               { path: '/', element: <HomePage /> },
               { path: '/alarm', element: <AlarmPage /> },
               { path: '/calendar', element: <CalendarPage /> },
-              // { path: '/info', element: <InfoPage /> },
               { path: '/mypage', element: <MyPage /> },
               { path: '/withdraw', element: <WithdrawPage /> },
               { path: '/edit/nickname', element: <NicknameEditPage /> },
