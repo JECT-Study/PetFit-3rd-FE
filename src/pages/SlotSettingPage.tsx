@@ -113,9 +113,17 @@ export const SlotSettingPage = () => {
     return true;
   });
 
+  const handleSkip = async () => {
+    navigate('/');
+  };
+
   return (
     <Wrapper>
-      <TitleHeader title="하루 루틴 설정" showBack={showBack} />
+      <TitleHeader
+        title="루틴 설정"
+        showBack={showBack}
+        right={<SkipButton onClick={handleSkip}>건너뛰기</SkipButton>}
+      />
       <ContentArea>
         <SlotButton selectedIds={selectedIds} onSelect={handleSelect} onDeselect={handleDeselect} />
 
@@ -152,6 +160,17 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+`;
+
+const SkipButton = styled.button`
+  white-space: nowrap;
+  font-size: 14px;
+  padding: 0;
+
+  &:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 const ContentArea = styled.div`
