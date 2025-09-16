@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -16,6 +17,7 @@ import EmptyRoutine from '@/assets/icons/empty-routine.svg?react';
 
 export const SlotSettingPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [defaultValues, setDefaultValues] = useState<Record<string, number>>({});
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
@@ -25,6 +27,7 @@ export const SlotSettingPage = () => {
   const showBack = param.get('flow') !== 'signup';
 
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
+  const memberId = useSelector((s: RootState) => s.user.memberId);
 
   // 슬롯 설정 가져오기
   useEffect(() => {
@@ -98,6 +101,7 @@ export const SlotSettingPage = () => {
       } else {
         await patchSlot(selectedPetId ?? 0, payload);
       }
+      queryClient.invalidateQueries({ queryKey: ['pets', memberId] });
       navigate('/');
     } catch (err) {
       console.error(err);
@@ -114,6 +118,7 @@ export const SlotSettingPage = () => {
   });
 
   const handleSkip = async () => {
+    queryClient.invalidateQueries({ queryKey: ['pets', memberId] });
     navigate('/');
   };
 

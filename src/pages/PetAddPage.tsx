@@ -1,11 +1,13 @@
 import { useState } from 'react';
 
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { PetRegisterForm } from '@/components/PetRegisterForm';
 import { useRegisterPet } from '@/hooks/useRegisterPet';
+import { setSelectedPetId } from '@/store/petSlice';
 import type { PetForm } from '@/types/form';
 
 export const PetAddPage = () => {
@@ -18,6 +20,7 @@ export const PetAddPage = () => {
   const [isPetFormValid, setIsPetFormValid] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { register, loading, error } = useRegisterPet();
 
   const handleRegisterClick = async () => {
@@ -26,7 +29,9 @@ export const PetAddPage = () => {
     const petInfo = await register(form); // ✅ id 포함 결과
 
     if (petInfo) {
-      navigate('/manage');
+      dispatch(setSelectedPetId(petInfo.id));
+      localStorage.setItem('selectedPetId', String(petInfo.id));
+      navigate('/slot');
     } else if (error) {
       alert(error);
     }
@@ -41,7 +46,7 @@ export const PetAddPage = () => {
       {error && <ErrorMessage>{error}</ErrorMessage>}
 
       <NextButton onClick={handleRegisterClick} disabled={!isPetFormValid || loading}>
-        {loading ? '등록 중...' : '등록'}
+        {loading ? '등록 중...' : '다음'}
       </NextButton>
     </Container>
   );
