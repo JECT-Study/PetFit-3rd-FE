@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import kakaoLoginButton from '@/assets/images/kakao_login_medium_wide.png';
-import { typo } from '@/styles/tokens';
+import { tx } from '@/styles/typography';
 
 import Logo from '@/assets/icons/logo.svg?react';
 
@@ -32,13 +32,13 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: var(--color-white-0);
+  background: ${({ theme }) => theme.color.white};
   gap: 30px;
 `;
 
 const Description = styled.p`
   text-align: center;
-  ${typo.bodyMed18};
+  ${tx.body('med18')};
 `;
 
 const KakaoButton = styled.button`

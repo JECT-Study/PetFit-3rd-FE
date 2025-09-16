@@ -10,7 +10,7 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { PetRegisterForm } from '@/components/PetRegisterForm';
 import type { RootState } from '@/store/store';
-import { typo } from '@/styles/tokens';
+import { tx } from '@/styles/typography';
 import type { PetForm, PetGender, PetType } from '@/types/form';
 
 export const PetEditPage = () => {
@@ -97,15 +97,15 @@ const NextButton = styled.button`
   margin-bottom: 24px;
   padding: 16px 0;
   border-radius: 12px;
-  ${typo.titleSemi18};
+  ${tx.title('semi18')};
 
-  background: var(--main-500);
-  color: var(--grey-700);
+  background: ${({ theme }) => theme.color.main[500]};
+  color: ${({ theme }) => theme.color.gray[700]};
 
   &:disabled {
-    background: var(--grey-100);
-    color: var(--grey-400);
-    border: 1px solid var(--grey-300);
+    background: ${({ theme }) => theme.color.gray[100]};
+    color: ${({ theme }) => theme.color.gray[400]};
+    border: 1px solid ${({ theme }) => theme.color.gray[300]};
     cursor: not-allowed;
   }
 `;

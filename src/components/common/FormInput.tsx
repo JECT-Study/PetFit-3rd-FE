@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 
-import { typo } from '@/styles/tokens';
+import { tx } from '@/styles/typography';
 import type { BaseFieldProps } from '@/types/form';
 import { MAX_LENGTH, validators, type ValidationType } from '@/utils/validators';
 
@@ -69,17 +69,19 @@ const FieldGroup = styled.div`
 
 const Label = styled.label<{ $hasError?: boolean }>`
   padding-left: 8px;
-  color: ${({ $hasError }) => ($hasError ? 'var(--warning-500)' : 'var(--grey-600)')};
-  ${typo.bodyReg14};
+  color: ${({ theme, $hasError }) =>
+    $hasError ? theme.color.warning[500] : theme.color.gray[600]};
+  ${tx.body('reg14')};
 `;
 
 const StyledInput = styled.input<{ $hasError?: boolean }>`
   width: 100%;
   padding: 12px 20px;
-  background-color: var(--main-100);
-  border: 1.5px solid ${({ $hasError }) => ($hasError ? 'var(--warning-500)' : 'var(--main-500)')};
+  background: ${({ theme }) => theme.color.main[100]};
+  border: 1.5px solid
+    ${({ theme, $hasError }) => ($hasError ? theme.color.warning[500] : theme.color.main[500])};
   border-radius: 8px;
-  ${({ $hasError }) => ($hasError ? typo.bodySemi14 : typo.bodyReg14)};
+  ${({ $hasError }) => ($hasError ? tx.body('semi14') : tx.body('reg14'))};
 `;
 
 const HelperRow = styled.div`
@@ -90,12 +92,12 @@ const HelperRow = styled.div`
 `;
 
 const CharCount = styled.span<{ $hasError?: boolean }>`
-  color: ${({ $hasError }) => ($hasError ? 'var(--warning-500)' : 'var(--grey-400)')};
-  ${typo.captionMed12};
+  ${({ theme, $hasError }) => ($hasError ? theme.color.warning[500] : theme.color.gray[400])};
+  ${tx.caption('med12')};
 `;
 
 const ErrorMessage = styled.p<{ $isVisible?: boolean }>`
-  color: var(--warning-500);
-  ${typo.captionMed12};
+  color: ${({ theme }) => theme.color.warning[500]};
+  ${tx.caption('med12')};
   visibility: ${({ $isVisible }) => ($isVisible ? 'visible' : 'hidden')};
 `;

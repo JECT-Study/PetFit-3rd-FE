@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { PetRegisterForm } from '@/components/PetRegisterForm';
 import { useRegisterPet } from '@/hooks/useRegisterPet';
 import { setSelectedPet, setSelectedPetId } from '@/store/petSlice';
-import { typo } from '@/styles/tokens';
+import { tx } from '@/styles/typography';
 import type { PetForm } from '@/types/form';
 
 export const SignupPetRegisterPage = () => {
@@ -62,30 +62,30 @@ const Container = styled.div`
 const Title = styled.h2`
   padding: 18px 0;
   text-align: center;
-  color: var(--grey-700);
-  ${typo.titleSemi18};
+  color: ${({ theme }) => theme.color.gray[700]};
+  ${tx.title('semi18')};
 `;
 
 const ErrorMessage = styled.p`
   margin: 8px 0;
   text-align: center;
-  color: var(--warning-500);
-  ${typo.bodyReg14};
+  color: ${({ theme }) => theme.color.warning[500]};
+  ${tx.body('reg14')};
 `;
 
 const NextButton = styled.button`
   margin-bottom: 24px;
   padding: 16px 0;
   border-radius: 12px;
-  ${typo.titleSemi18};
+  ${tx.title('semi18')};
 
-  background: var(--main-500);
-  color: var(--grey-700);
+  background: ${({ theme }) => theme.color.main[500]};
+  color: ${({ theme }) => theme.color.gray[700]};
 
   &:disabled {
-    background: var(--grey-100);
-    color: var(--grey-400);
-    border: 1px solid var(--grey-300);
+    background: ${({ theme }) => theme.color.gray[100]};
+    color: ${({ theme }) => theme.color.gray[400]};
+    border: 1px solid ${({ theme }) => theme.color.gray[300]};
     cursor: not-allowed;
   }
 `;

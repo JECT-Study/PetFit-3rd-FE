@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { typo } from '@/styles/tokens';
+import { tx } from '@/styles/typography';
 
 interface BriefCardItem {
   id: number;
@@ -44,7 +44,7 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
         <ColorBar style={{ backgroundColor: color }} />
         <Title>{label}</Title>
         <AddButton type="button" onClick={handleAddClick} aria-label={`${label} 추가`}>
-          <Plus size={20} color="var(--grey-700)" />
+          <Plus size={20} color="var(--gray-700)" />
         </AddButton>
       </Header>
       <Content>
@@ -81,7 +81,7 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
 const Card = styled.div`
   flex: 1;
   padding: 8px;
-  background-color: #ffffff;
+  background: ${({ theme }) => theme.color.white};
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 `;
@@ -100,12 +100,12 @@ const ColorBar = styled.div`
 
 const Title = styled.span`
   flex: 1;
-  ${typo.bodyMed16};
+  ${tx.body('med16')};
 `;
 
 const AddButton = styled.button`
   font-size: 20px;
-  color: var(--grey-700);
+  color: ${({ theme }) => theme.color.gray[700]};
 `;
 
 const Content = styled.div`
@@ -115,19 +115,19 @@ const Content = styled.div`
 `;
 
 const ErrorMessage = styled.div`
-  color: var(--warning-500);
-  ${typo.bodyReg14};
+  color: ${({ theme }) => theme.color.warning[500]};
+  ${tx.body('reg14')};
 `;
 
 const LoadingMessage = styled.div`
-  color: #888;
-  ${typo.bodyReg14};
+  color: ${({ theme }) => theme.color.gray[500]};
+  ${tx.body('reg14')};
 `;
 
 const Item = styled.div`
   padding-left: 5px;
   font-size: 14px;
-  color: #333;
+  color: ${({ theme }) => theme.color.gray[700]};
 `;
 
 const ToggleWrap = styled.div`
@@ -145,11 +145,11 @@ const ToggleButton = styled.button`
   border-radius: 6px;
 
   &:hover {
-    background: #f5f5f5;
+    background: ${({ theme }) => theme.color.gray[50]};
   }
 `;
 
 const NoContent = styled.div`
   font-size: 14px;
-  color: #aaa;
+  color: ${({ theme }) => theme.color.gray[400]};
 `;
