@@ -1,114 +1,62 @@
-// theme.ts
+// src/styles/theme.ts
+
+const fontFamily = 'Pretendard, system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+
 export const theme = {
-  colors: {
+  color: {
     main: {
-      100: '#FFF8E5',
-      200: '#FFF1CC',
-      300: '#FFE299',
-      400: '#FFD56B',
-      500: '#FFC533',
-      600: '#FFB700',
-      700: '#B28000',
-      800: '#996E00',
-      900: '#805B00',
+      100: 'var(--main-100)',
+      200: 'var(--main-200)',
+      300: 'var(--main-300)',
+      400: 'var(--main-400)',
+      500: 'var(--main-500)',
+      600: 'var(--main-600)',
+      700: 'var(--main-700)',
+      800: 'var(--main-800)',
+      900: 'var(--main-900)',
     },
-    sub: {
-      500: '#A7E9C3',
+    gray: {
+      50: 'var(--gray-50)',
+      100: 'var(--gray-100)',
+      200: 'var(--gray-200)',
+      300: 'var(--gray-300)',
+      400: 'var(--gray-400)',
+      500: 'var(--gray-500)',
+      600: 'var(--gray-600)',
+      700: 'var(--gray-700)',
+      800: 'var(--gray-800)',
+      900: 'var(--gray-900)',
     },
-    point: {
-      500: '#4D9DE0',
-    },
-    grey: {
-      100: '#F0F0F0',
-      200: '#E8E8E8',
-      300: '#DDDDDD',
-      400: '#A5A5A5',
-      500: '#666666',
-      600: '#4D4D4D',
-      700: '#373737',
-      800: '#2E2E2E',
-      900: '#191919',
-    },
-    white: {
-      0: '#FFFFFF',
-      100: '#FFFDF8',
-      200: '#FDF6EC',
-    },
-    black: {
-      0: '#000000',
-    },
-    warning: {
-      500: '#FF5C33',
-    },
+    white: 'var(--white)',
+    black: 'var(--black)',
+    sub: { 500: 'var(--sub-500)' },
+    warning: { 500: 'var(--warning-500)' },
   },
 
+  radius: { sm: '8px', md: '12px', lg: '16px' },
+  space: { xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px' },
+
+  // Figma 텍스트 스타일을 shorthand로 고정
   typography: {
-    // Title
-    titleBold22: {
-      fontSize: '22px',
-      lineHeight: '32px',
-      fontWeight: 700,
-      letterSpacing: '-0.025em',
+    title: {
+      bold22: { font: `700 1.375rem/145% ${fontFamily}`, letterSpacing: '-0.03438rem' },
+      semi18: { font: `600 1.125rem/135% ${fontFamily}`, letterSpacing: '-0.02813rem' },
+      semi14: { font: `600 0.875rem/145% ${fontFamily}`, letterSpacing: '-0.02188rem' },
     },
-    titleSemi18: {
-      fontSize: '18px',
-      lineHeight: '24px',
-      fontWeight: 600,
-      letterSpacing: '-0.025em',
+    body: {
+      semi14: { font: `600 0.8125rem/150% ${fontFamily}`, letterSpacing: '-0.02031rem' },
+      semi13: { font: `600 0.8rem/150% ${fontFamily}`, letterSpacing: '-0.02031rem' },
+      med18: { font: `500 1.125rem/135% ${fontFamily}`, letterSpacing: '-0.02813rem' },
+      med16: { font: `500 1rem/150% ${fontFamily}`, letterSpacing: '-0.025rem' },
+      med13: { font: `500 0.8125rem/150% ${fontFamily}`, letterSpacing: '-0.02031rem' },
+      reg18: { font: `400 1.125rem/150% ${fontFamily}`, letterSpacing: '-0.02813rem' },
+      reg14: { font: `400 0.875rem/145% ${fontFamily}`, letterSpacing: '-0.02188rem' },
     },
-    titleSemi14: {
-      fontSize: '14px',
-      lineHeight: '20px',
-      fontWeight: 600,
-      letterSpacing: '-0.025em',
-    },
-
-    // Body / Semibold
-    bodySemi14: {
-      fontSize: '14px',
-      lineHeight: '20px',
-      fontWeight: 600,
-      letterSpacing: '-0.025em',
-    },
-    bodySemi13: {
-      fontSize: '13px',
-      lineHeight: '20px',
-      fontWeight: 600,
-      letterSpacing: '-0.025em',
-    },
-
-    // Body / Medium
-    bodyMed18: { fontSize: '18px', lineHeight: '24px', fontWeight: 500, letterSpacing: '-0.025em' },
-    bodyMed16: { fontSize: '16px', lineHeight: '24px', fontWeight: 500, letterSpacing: '-0.025em' },
-    bodyMed13: { fontSize: '13px', lineHeight: '20px', fontWeight: 500, letterSpacing: '-0.025em' },
-
-    // Body / Regular
-    bodyReg18: { fontSize: '18px', lineHeight: '27px', fontWeight: 400, letterSpacing: '-0.025em' },
-    bodyReg14: { fontSize: '14px', lineHeight: '20px', fontWeight: 400, letterSpacing: '-0.025em' },
-
-    // Caption
-    captionMed12: {
-      fontSize: '12px',
-      lineHeight: '18px',
-      fontWeight: 500,
-      letterSpacing: '-0.025em',
-    },
-    captionBold11: {
-      fontSize: '11px',
-      lineHeight: '16px',
-      fontWeight: 700,
-      letterSpacing: '-0.025em',
+    caption: {
+      med12: { font: `500 0.75rem/150% ${fontFamily}`, letterSpacing: '-0.01875rem' },
+      bold11: { font: `700 0.6875rem/145% ${fontFamily}`, letterSpacing: '-0.01719rem' },
     },
   },
-
-  // spacing scale (추천)
-  space: [0, 2, 4, 8, 12, 16, 24, 32, 48, 64],
-
-  radius: {},
-
-  shadow: {},
-
-  breakpoint: {},
 } as const;
 
 export type AppTheme = typeof theme;
