@@ -187,16 +187,20 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
         <MarginTop>
           <MarginBottom>
             <SectionTitle>하루 루틴</SectionTitle>
-            <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
+            <SectionAction onClick={handleAddNote} data-testid="note-add">
+              특이사항 추가
+            </SectionAction>
           </MarginBottom>
 
-          {isToday ? (
-            <RoutineItem petId={selectedPetId ?? -1} />
-          ) : (
-            <CalendarRoutineList petId={selectedPetId ?? -1} selectedDate={selectedDate} />
-          )}
+          <section role="region" aria-label="하루 루틴">
+            {isToday ? (
+              <RoutineItem petId={selectedPetId ?? -1} />
+            ) : (
+              <CalendarRoutineList petId={selectedPetId ?? -1} selectedDate={selectedDate} />
+            )}
 
-          <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
+            <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
+          </section>
         </MarginTop>
 
         <NoteModal
