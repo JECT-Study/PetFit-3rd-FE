@@ -43,19 +43,30 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
       <Header>
         <ColorBar style={{ backgroundColor: color }} />
         <Title>{label}</Title>
-        <AddButton type="button" onClick={handleAddClick} aria-label={`${label} 추가`}>
+        <AddButton
+          type="button"
+          onClick={handleAddClick}
+          aria-label={`${label} 추가`}
+          data-testid="brief-add-button"
+        >
           <Plus size={20} color="var(--gray-700)" />
         </AddButton>
       </Header>
       <Content>
         {error ? (
-          <ErrorMessage>{error}</ErrorMessage>
+          <ErrorMessage role="alert" data-testid="brief-status">
+            {error}
+          </ErrorMessage>
         ) : loading ? (
-          <LoadingMessage>불러오는 중...</LoadingMessage>
+          <LoadingMessage role="status" aria-live="polite" data-testid="brief-status">
+            불러오는 중...
+          </LoadingMessage>
         ) : hasContent ? (
           <>
             {visibleItems.map(item => (
-              <Item key={item.id}>• {item.title}</Item>
+              <Item key={item.id} data-testid="brief-item">
+                • {item.title}
+              </Item>
             ))}
             {showAccordion && (
               <ToggleWrap>
@@ -64,6 +75,7 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
                   onClick={() => setExpanded(p => !p)}
                   aria-expanded={expanded}
                   aria-label={expanded ? `${label} 접기` : `${label} 더 보기`}
+                  data-testid="brief-toggle"
                 >
                   {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </ToggleButton>
@@ -71,7 +83,7 @@ export const BriefCard = ({ label, color, items, loading, error }: BriefCardProp
             )}
           </>
         ) : (
-          <NoContent>{label}이 없습니다.</NoContent>
+          <NoContent data-testid="brief-empty">{label}이 없습니다.</NoContent>
         )}
       </Content>
     </Card>

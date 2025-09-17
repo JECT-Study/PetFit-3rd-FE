@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type InputHTMLAttributes } from 'react';
 
 import styled from 'styled-components';
 
@@ -6,7 +6,9 @@ import { tx } from '@/styles/typography';
 import type { BaseFieldProps } from '@/types/form';
 import { MAX_LENGTH, validators, type ValidationType } from '@/utils/validators';
 
-interface FormInputProps extends BaseFieldProps {
+type NativeInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'>;
+
+interface FormInputProps extends BaseFieldProps, NativeInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // 입력값 자체를 상위 컴포넌트로 전달 → 상태 업데이트 용도
   validationType: ValidationType;
@@ -21,6 +23,7 @@ export const FormInput = ({
   validationType,
   placeholder,
   onFieldValidChange,
+  ...rest
 }: FormInputProps) => {
   const [isTouched, setIsTouched] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -44,6 +47,7 @@ export const FormInput = ({
     <FieldGroup>
       {label && <Label $hasError={hasError}>{label}</Label>}
       <StyledInput
+        {...rest}
         $hasError={hasError}
         value={value}
         onChange={onChange}

@@ -33,11 +33,17 @@ export const MonthView = ({
           isInCurrentMonth ? LEGEND_MAP[type].color : '#ddd';
 
         return (
-          <Cell key={formatted} $selected={isSelected} onClick={() => onDateClick(date)}>
+          <Cell
+            key={formatted}
+            role="button"
+            aria-label={String(day)}
+            $selected={isSelected}
+            onClick={() => onDateClick(date)}
+          >
             <DateNumber $dimmed={!isInCurrentMonth}>{day}</DateNumber>
             <DotRow $hasDots={dots.length > 0}>
               {dots.map(type => (
-                <Dot key={type} $color={dotColor(type)} />
+                <Dot key={type} data-testid={`dot-${type}`} $color={dotColor(type)} />
               ))}
             </DotRow>
           </Cell>

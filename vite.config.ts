@@ -1,12 +1,19 @@
-import { defineConfig } from "vite";
+/// <reference types="vitest" />
+
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import path from 'path';
 import svgr from "vite-plugin-svgr";
+import { defineConfig } from 'vitest/config';
 
-// https://vite.dev/config/
 export default defineConfig({
   base: "/",
+  test: {
+    environment: 'jsdom',              // RTL 실행 환경
+    setupFiles: './src/setupTests.ts',  // jest-dom, MSW 훅
+    globals: true,
+    css: true
+  },
   plugins: [
     react(),
     svgr(),

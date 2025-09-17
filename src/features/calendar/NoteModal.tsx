@@ -66,8 +66,8 @@ export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalP
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      <ModalContainer>
-        <CloseButton onClick={onClose}>
+      <ModalContainer role="dialog" aria-modal="true">
+        <CloseButton onClick={onClose} aria-label="닫기">
           <X size={20} />
         </CloseButton>
 
