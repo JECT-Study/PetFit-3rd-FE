@@ -1,3 +1,4 @@
+/*
 import { useEffect } from 'react';
 
 import { useDispatch } from 'react-redux';
@@ -11,12 +12,6 @@ import { setTokens, setIsNewUser } from '@/store/authSlice';
 import { setSelectedPetId } from '@/store/petSlice';
 import { setMemberId } from '@/store/userSlice';
 
-/**
- * 카카오 인증 후, 서버에서 리디렉션 되는 페이지
- * - 개발환경: 토큰을 localStorage에 저장 + (공통) memberId 조회 요청
- * - 운영환경: (공통) 쿠키 설정/조회 요청
- * - 공통: memberId/isNewUser를 기반으로 라우팅
- */
 export const TokenRedirectPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -109,3 +104,4 @@ export const TokenRedirectPage = () => {
     </p>
   );
 };
+*/

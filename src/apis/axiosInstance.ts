@@ -1,30 +1,21 @@
-import axios, { type InternalAxiosRequestConfig } from 'axios';
-
-import { IS_DEV } from '@/constants/env';
-import { store } from '@/store/store';
+import axios, { AxiosError, type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
 
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
   withCredentials: true,
 });
 
+// AxiosRequestConfig 확장: 재시도/리프레시 마커
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    __isRetry?: boolean;
+    __isRefreshCall?: boolean;
+  }
+}
+
+// Request: 토큰 헤더 주입 금지(쿠키만 사용)
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 개발환경일 때만 accessToken 헤더 추가
-    if (IS_DEV) {
-      const accessToken = localStorage.getItem('accessToken');
-      if (accessToken) {
-        config.headers['Authorization'] = `Bearer ${accessToken}`;
-      }
-    }
-    const state = store.getState();
-    const tokenFromRedux = state.auth.accessToken;
-    const tokenFromLocal = IS_DEV ? localStorage.getItem('accessToken') : null;
-    const accessToken = tokenFromRedux ?? tokenFromLocal;
-
-    if (accessToken) {
-      config.headers['Authorization'] = `Bearer ${accessToken}`;
-    }
     return config;
   },
   error => {
@@ -33,22 +24,24 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+// Response: 401 → refresh(단일) → 원 요청 1회 재시도
 axiosInstance.interceptors.response.use(
   response => response,
-  async error => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as AxiosRequestConfig | undefined;
+    if (!error.response || !originalRequest) return Promise.reject(error);
 
-    if (error.response?.status === 401) {
+    const is401 = error.response.status === 401;
+    const isRefreshCall = !!originalRequest.__isRefreshCall;
+
+    if (is401 && !isRefreshCall && !originalRequest.__isRetry) {
       try {
-        const newAccessToken = await refreshAccessToken();
-
-        if (IS_DEV && newAccessToken) {
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-        }
-
-        return axiosInstance(originalRequest); // 요청 재시도
+        await refreshAccessToken(); // ★ 단일 실행 보장
+        originalRequest.__isRetry = true; // 루프 방지 마커
+        return axiosInstance(originalRequest); // 갱신 후 1회 재시도
       } catch (e) {
-        console.error('토큰 갱신 실패:', e);
+        // 리프레시 실패 → 상위에서 하드 로그아웃/리다이렉트 처리
+        return Promise.reject(e);
       }
     }
 
@@ -56,27 +49,27 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+// Refresh: 단일 실행(Single-Flight) 함수
+let refreshPromise: Promise<void> | null = null;
 /**
- * Access Token 재발급 요청 (401 대응용)
- * - dev: refreshToken을 body로 포함
- * - prod: 쿠키에서 자동 전달 (HttpOnly)
+ * 쿠키 기반 AT 갱신 (응답 바디의 accessToken은 무시; 쿠키만 신뢰)
  */
-const refreshAccessToken = async () => {
-  try {
-    const body = IS_DEV ? { refreshToken: localStorage.getItem('refreshToken') } : undefined;
+export async function refreshAccessToken(): Promise<void> {
+  // 이미 진행 중이면 그 프라미스 재사용
+  if (refreshPromise) return refreshPromise;
 
-    const response = await axios.post('/auth/refresh', body, { withCredentials: true });
-
-    if (IS_DEV) {
-      const newAccessToken = response.data.content.accessToken;
-      localStorage.setItem('accessToken', newAccessToken);
-      return newAccessToken;
+  // 즉시 실행 async IIFE로 프라미스 생성
+  refreshPromise = (async () => {
+    try {
+      const cfg: AxiosRequestConfig = {
+        __isRefreshCall: true,
+      };
+      await axiosInstance.post('/auth/refresh', null, cfg);
+    } finally {
+      // 성공/실패 관계없이 단일 실행 락 해제
+      refreshPromise = null;
     }
+  })();
 
-    // prod: 서버가 쿠키로 재설정 → 별도 처리 없음
-    return null;
-  } catch (error) {
-    console.error('refresh token failed:', error);
-    throw error;
-  }
-};
+  return refreshPromise;
+}
