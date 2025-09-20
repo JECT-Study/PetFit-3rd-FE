@@ -1,48 +1,63 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-import { useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-import { verifyAuth } from '@/apis/auth';
-import { IS_DEV } from '@/constants/env';
+import { getAuthMe } from '@/apis/auth';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import {
+  setAuthenticated,
+  setOnboarding,
+  setUnauthenticated,
+  startAuthCheck,
+} from '@/store/authSlice';
 import type { RootState } from '@/store/store';
+import { setUser } from '@/store/userSlice';
 
 export const PrivateRouter = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const status = useSelector((s: RootState) => s.auth.status);
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (IS_DEV) {
-        // 1. 개발환경: localStorage에 accessToken이 있으면 로그인으로 간주
-        const accessToken = localStorage.getItem('accessToken');
-        setIsAuthenticated(!!accessToken);
-      } else {
-        // 2. 운영환경: 서버에 쿠키가 존재하는지 verifyAuth로 확인
-        try {
-          const result = await verifyAuth(); // boolean 응답 예상
-          setIsAuthenticated(result);
-        } catch (e) {
-          console.error('❌ 인증 검증 실패', e);
+      dispatch(startAuthCheck());
+      try {
+        const { memberId, isNewUser } = await getAuthMe();
+        // 전역 유저 상태 저장
+        dispatch(setUser({ memberId, email: null, nickname: null }));
 
-          // 임시로 Redux 상태에 accessToken이 있으면 인증된 것으로 간주
-          if (accessToken) {
-            console.warn('Redux에 accessToken 존재 → 인증된 것으로 간주');
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-          }
+        if (isNewUser) {
+          dispatch(setOnboarding());
+        } else {
+          dispatch(setAuthenticated());
         }
+      } catch (e) {
+        console.error('❌ /auth/me 실패', e);
+        dispatch(setUnauthenticated());
       }
     };
 
-    checkAuth();
-  }, []);
+    if (status === 'idle') {
+      checkAuth();
+    }
+  }, [dispatch, status]);
 
-  if (isAuthenticated === null) {
-    return <div>로그인 검사 중...</div>; // 필요 시 Skeleton 처리 가능
+  // --- 분기 처리 ---
+  if (status === 'checking') {
+    return <LoadingSpinner />;
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  if (status === 'onboarding') {
+    // 신규 유저 → 온보딩 페이지
+    return <Navigate to="/signup/pet" replace />;
+  }
+
+  if (status === 'authenticated') {
+    // 인증 성공 → 보호 라우트 컴포넌트 렌더
+    return <Outlet />;
+  }
+
+  // unauthenticated (또는 초기화 실패) → 로그인 페이지로
+  return <Navigate to="/login" replace state={{ from: location }} />;
 };

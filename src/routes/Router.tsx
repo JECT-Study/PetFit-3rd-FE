@@ -15,26 +15,34 @@ import { PetEditPage } from '@/pages/PetEditPage';
 import { PetManagementPage } from '@/pages/PetManagementPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
-import { TokenRedirectPage } from '@/pages/TokenRedirectPage';
 import { WithdrawPage } from '@/pages/WithdrawPage';
 
 import { PrivateRouter } from './PrivateRouter';
+import { PublicRouter } from './PublicRouter';
 import { StateGuard } from './StateGuard';
 
 export const router = createBrowserRouter([
+  // ── Public 영역: 로그인/리다이렉트 등 ─────────────────────────────
   {
-    element: <PlainLayout />,
+    element: <PublicRouter />, // ★ 인증 상태에 따라 /login 접근 차단
     children: [
-      { path: '/login', element: <LoginPage /> },
-      { path: '/oauth/redirect', element: <AuthLoginRedirectPage /> },
-      { path: '/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
-      { path: '/token', element: <TokenRedirectPage /> },
+      {
+        element: <PlainLayout />,
+        children: [
+          { path: '/login', element: <LoginPage /> },
+          { path: '/oauth/redirect', element: <AuthLoginRedirectPage /> },
+          { path: '/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
+          // { path: '/token', element: <TokenRedirectPage /> }, // 사용하지 않음
+        ],
+      },
     ],
   },
+
+  // ── Private 영역: 보호 라우트 ────────────────────────────────────
   {
     element: <PrivateRouter />,
     children: [
-      // 전역 상태 모두 필요(메인 섹션)
+      // 메인 섹션: memberId & selectedPetId 모두 필요
       {
         element: <StateGuard requireMemberId requireSelectedPet />,
         children: [
@@ -54,7 +62,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      // 신규 유저 플로우: memberId만 필요, selectedPetId는 불필요
+      // 온보딩 섹션: memberId만 필요, selectedPetId 불필요
       {
         element: <StateGuard requireMemberId requireSelectedPet={false} />,
         children: [
