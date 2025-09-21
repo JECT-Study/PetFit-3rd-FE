@@ -2,9 +2,9 @@
 
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-import path from 'path';
 import svgr from "vite-plugin-svgr";
 import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from "url";
 
 export default defineConfig({
   base: "/",
@@ -48,7 +48,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
 });

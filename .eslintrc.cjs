@@ -23,15 +23,7 @@ module.exports = {
       },
     },
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:react-hooks/recommended', 'plugin:@typescript-eslint/recommended', 'plugin:import/recommended', 'plugin:import/typescript', 'plugin:prettier/recommended', 'plugin:storybook/recommended'],
   plugins: ['react', 'react-hooks', '@typescript-eslint', 'import', 'prettier'],
   rules: {
     'react/react-in-jsx-scope': 'off', // ✅ React 17+에서 불필요
