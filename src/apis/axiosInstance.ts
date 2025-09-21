@@ -54,7 +54,7 @@ let refreshPromise: Promise<void> | null = null;
 /**
  * 쿠키 기반 AT 갱신 (응답 바디의 accessToken은 무시; 쿠키만 신뢰)
  */
-export async function refreshAccessToken(): Promise<void> {
+export const refreshAccessToken = async (): Promise<void> => {
   // 이미 진행 중이면 그 프라미스 재사용
   if (refreshPromise) return refreshPromise;
 
@@ -72,4 +72,4 @@ export async function refreshAccessToken(): Promise<void> {
   })();
 
   return refreshPromise;
-}
+};

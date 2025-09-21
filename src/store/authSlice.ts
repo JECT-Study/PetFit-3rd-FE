@@ -14,25 +14,23 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     /** 부팅/새로고침 시, /auth/me 호출 전 */
-    startAuthCheck(state) {
+    startAuthCheck: state => {
       state.status = 'checking';
     },
     /** /auth/me 성공 (기존 유저) */
-    setAuthenticated(state) {
+    setAuthenticated: state => {
       state.status = 'authenticated';
     },
     /** /auth/me 성공 (신규 유저 → 온보딩) */
-    setOnboarding(state) {
+    setOnboarding: state => {
       state.status = 'onboarding';
     },
     /** /auth/me 실패(리프레시 실패 포함) */
-    setUnauthenticated(state) {
+    setUnauthenticated: state => {
       state.status = 'unauthenticated';
     },
     /** 명시적 로그아웃/탈퇴 */
-    logout() {
-      return initialState;
-    },
+    logout: () => initialState,
   },
 });
 
