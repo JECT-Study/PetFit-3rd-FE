@@ -5,7 +5,7 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import type { RootState } from '@/store/store';
 
 /**
- * 로그인 상태일 때는 접근 불가한 라우트 (예: /login, /signup)
+ * 로그인 상태일 때는 접근 불가한 라우트 (예: /login)
  * - authenticated → 홈(/)으로 리디렉션
  * - onboarding → 온보딩 페이지(/signup/pet)로 이동
  * - checking → 로딩 스피너
