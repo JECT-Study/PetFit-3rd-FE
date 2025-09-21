@@ -11,12 +11,8 @@ import { axiosInstance } from './axiosInstance';
  */
 export const kakaoLogin = async (code: string) => {
   const endpoint = IS_DEV ? '/auth/kakao/login/dev' : '/auth/kakao/login';
-
   try {
-    // 302 redirect 목적의 요청만 수행 (개발 환경만 실행)
-    await axiosInstance.get(endpoint, {
-      params: { code },
-    });
+    await axiosInstance.get(endpoint, { params: { code } });
   } catch (error) {
     console.error('kakao login failed:', error);
     throw error;
@@ -57,7 +53,7 @@ export const kakaoWithdraw = async (memberId: number | null) => {
  * 서버에 쿠키 기반 인증 상태 확인 요청
  */
 export const getAuthMe = async () => {
-  const res = await axiosInstance.post('/auth/auth/me'); // 서버에서 쿠키 기반 검증
+  const res = await axiosInstance.post('/auth/me'); // 서버에서 쿠키 기반 검증
   const { memberId, newUser } = res.data.content;
   return { memberId, isNewUser: newUser };
 };

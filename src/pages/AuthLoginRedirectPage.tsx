@@ -3,11 +3,9 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { getAuthMe } from '@/apis/auth';
-import { axiosInstance } from '@/apis/axiosInstance';
+import { getAuthMe, kakaoLogin } from '@/apis/auth';
 import { getPets } from '@/apis/pets';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { IS_DEV } from '@/constants/env';
 import { setAuthenticated, setOnboarding } from '@/store/authSlice';
 import { setSelectedPetId } from '@/store/petSlice';
 import { setUser } from '@/store/userSlice';
@@ -31,8 +29,7 @@ export const AuthLoginRedirectPage = () => {
     (async () => {
       try {
         // 1) 백엔드 로그인 교환(XHR) → 쿠키 Set-Cookie 수신
-        const loginUrl = `/auth/kakao/login${IS_DEV ? '/dev' : ''}`;
-        await axiosInstance.get(loginUrl, { params: { code } });
+        await kakaoLogin(code);
 
         // 2) Who am I
         const { memberId, isNewUser } = await getAuthMe();
