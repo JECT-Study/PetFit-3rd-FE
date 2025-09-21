@@ -32,7 +32,6 @@ export const router = createBrowserRouter([
           { path: '/login', element: <LoginPage /> },
           { path: '/oauth/redirect', element: <AuthLoginRedirectPage /> },
           { path: '/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
-          // { path: '/token', element: <TokenRedirectPage /> }, // 사용하지 않음
         ],
       },
     ],
