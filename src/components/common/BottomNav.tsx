@@ -45,19 +45,6 @@ export const BottomNav = () => {
             </>
           )}
         </StyledLink>
-        {/* <StyledLink to="/info">
-          {({ isActive }) => (
-            <>
-              <Play
-                size={24}
-                strokeWidth={2}
-                color={isActive ? '#facc15' : '#6b7280'}
-                aria-hidden="true"
-              />
-              <Label $active={isActive}>정보</Label>
-            </>
-          )}
-        </StyledLink> */}
         <StyledLink to="/mypage">
           {({ isActive }) => (
             <>

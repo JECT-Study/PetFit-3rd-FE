@@ -66,39 +66,53 @@ export const ScheduleRegisterModal = ({
 
   return (
     <BaseModal isOpen={isOpen} onClose={handleClose}>
-      <ModalWrapper>
-        <CloseButton onClick={handleClose}>
-          <X size={24} />
-        </CloseButton>
+      {isOpen && (
+        <ModalWrapper
+          role="dialog"
+          aria-label="알람 추가"
+          aria-modal="true"
+          data-testid="schedule-modal"
+        >
+          <CloseButton onClick={handleClose} aria-label="닫기" type="button">
+            <X size={24} />
+          </CloseButton>
 
-        <Form>
-          <CustomDatePicker
-            label="시작 날짜"
-            value={alarm.startDate}
-            onChange={startDate => setAlarm({ ...alarm, startDate })}
-          />
+          <Form>
+            <CustomDatePicker
+              label="시작 날짜"
+              value={alarm.startDate}
+              onChange={startDate => setAlarm({ ...alarm, startDate })}
+            />
 
-          <FormInput
-            value={alarm.title}
-            onChange={e => setAlarm(prev => ({ ...prev, title: e.target.value }))}
-            validationType="title"
-            placeholder="할 일의 제목을 입력해주세요."
-            onFieldValidChange={fieldValidHandlers.title}
-          />
+            <FormInput
+              aria-label="제목"
+              value={alarm.title}
+              onChange={e => setAlarm(prev => ({ ...prev, title: e.target.value }))}
+              validationType="title"
+              placeholder="할 일의 제목을 입력해주세요."
+              onFieldValidChange={fieldValidHandlers.title}
+            />
 
-          <FormTextarea
-            value={alarm.description}
-            onChange={e => setAlarm(prev => ({ ...prev, description: e.target.value }))}
-            validationType="content"
-            placeholder="내용을 입력해주세요."
-            onFieldValidChange={fieldValidHandlers.content}
-          />
+            <FormTextarea
+              aria-label="내용"
+              value={alarm.description}
+              onChange={e => setAlarm(prev => ({ ...prev, description: e.target.value }))}
+              validationType="content"
+              placeholder="내용을 입력해주세요."
+              onFieldValidChange={fieldValidHandlers.content}
+            />
 
-          <SubmitButton onClick={handleSubmit} $disabled={!isFormValid}>
-            저장
-          </SubmitButton>
-        </Form>
-      </ModalWrapper>
+            <SubmitButton
+              onClick={handleSubmit}
+              type="button"
+              disabled={!isFormValid}
+              $disabled={!isFormValid}
+            >
+              저장
+            </SubmitButton>
+          </Form>
+        </ModalWrapper>
+      )}
     </BaseModal>
   );
 };
@@ -130,7 +144,7 @@ const SubmitButton = styled.button<{ $disabled: boolean }>`
   font-size: 16px;
   font-weight: 600;
   border-radius: 8px;
-  background-color: ${({ disabled }) => (disabled ? '#eee' : '#facc15')};
-  color: ${({ disabled }) => (disabled ? '#999' : '#222')};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  background-color: ${({ $disabled }) => ($disabled ? '#eee' : '#facc15')};
+  color: ${({ $disabled }) => ($disabled ? '#999' : '#222')};
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 `;

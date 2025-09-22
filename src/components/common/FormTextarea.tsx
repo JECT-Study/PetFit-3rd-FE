@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type TextareaHTMLAttributes } from 'react';
 
 import styled from 'styled-components';
 
@@ -6,7 +6,9 @@ import { typo } from '@/styles/tokens';
 import type { BaseFieldProps } from '@/types/form';
 import { MAX_LENGTH, validators, type ValidationType } from '@/utils/validators';
 
-interface FormTextareaProps extends BaseFieldProps {
+type NativeTextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'value' | 'onChange'>;
+
+interface FormTextareaProps extends BaseFieldProps, NativeTextareaProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   validationType: ValidationType;
@@ -23,6 +25,7 @@ export const FormTextarea = ({
   placeholder,
   onFieldValidChange,
   optional = false,
+  ...rest
 }: FormTextareaProps) => {
   const [isTouched, setIsTouched] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -64,6 +67,7 @@ export const FormTextarea = ({
     <FieldGroup>
       {label && <Label $hasError={hasError}>{label}</Label>}
       <StyledTextarea
+        {...rest}
         $hasError={hasError}
         value={value}
         onChange={onChange}
