@@ -15,6 +15,7 @@ export const MyPage = () => {
     <div>
       <TitleHeader title="마이페이지" />
       <Profile />
+      <LineBar></LineBar>
       <MenuContainer>
         <MenuTitle>반려동물 설정</MenuTitle>
         <Menu onClick={() => navigate('/manage')}>
@@ -38,6 +39,12 @@ export const MyPage = () => {
   );
 };
 
+const LineBar = styled.div`
+  width: 100%;
+  height: 4px;
+  margin: 30px 0;
+  background: #e0e0e0;
+`;
 const MenuContainer = styled.div`
   margin-top: 20px;
 `;
