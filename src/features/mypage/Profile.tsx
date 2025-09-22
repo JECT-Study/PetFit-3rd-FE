@@ -1,21 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChevronRight } from 'lucide-react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getNickname } from '@/apis/auth';
-import type { RootState } from '@/store/store';
 
 import DefaultProfile from '@/assets/icons/default-profile.svg?react';
 
 export const Profile = () => {
   const navigate = useNavigate();
-  const memberId = useSelector((state: RootState) => state.user.memberId);
 
   const { data: userInfo } = useQuery({
     queryKey: ['userInfo'],
-    queryFn: () => getNickname(memberId),
+    queryFn: () => getNickname(),
   });
 
   const handleEditClick = () => {
