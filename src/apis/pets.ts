@@ -11,9 +11,9 @@ export interface Pet {
   isFavorite: boolean;
 }
 
-export const getPets = async (memberId: number): Promise<Pet[]> => {
+export const getPets = async (): Promise<Pet[]> => {
   try {
-    const response = await axiosInstance.get<ApiResponse<Pet[]>>(`/pets/list/${memberId}`);
+    const response = await axiosInstance.get<ApiResponse<Pet[]>>(`/pets/list`);
     return response.data.content;
   } catch (error) {
     console.log('pets', error);
