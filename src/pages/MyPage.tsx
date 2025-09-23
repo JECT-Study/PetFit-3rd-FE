@@ -5,12 +5,22 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { TitleHeader } from '@/components/common/TitleHeader';
+import { ToggleButton } from '@/components/common/ToggleButton';
 import { LogoutModal } from '@/features/mypage/LogoutModal';
 import { Profile } from '@/features/mypage/Profile';
 
 export const MyPage = () => {
   const [logoutModal, setLogoutModal] = useState(false);
   const navigate = useNavigate();
+
+  const handleAlarmToggle = (isOn: boolean) => {
+    if (isOn) {
+      console.log('알람 on');
+    } else {
+      console.log('알람 off');
+    }
+  };
+
   return (
     <div>
       <TitleHeader title="마이페이지" />
@@ -23,6 +33,9 @@ export const MyPage = () => {
         </Menu>
 
         <MenuTitle>기타</MenuTitle>
+        <Menu>
+          알림 <ToggleButton onToggle={handleAlarmToggle} />
+        </Menu>
         <Menu>버전 정보</Menu>
         <Menu onClick={() => setLogoutModal(true)}>
           로그아웃 <ChevronRight size={20} />
