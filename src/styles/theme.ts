@@ -44,8 +44,8 @@ export const theme = {
       semi14: { font: `600 0.875rem/145% ${fontFamily}`, letterSpacing: '-0.02188rem' },
     },
     body: {
-      semi14: { font: `600 0.8125rem/150% ${fontFamily}`, letterSpacing: '-0.02031rem' },
-      semi13: { font: `600 0.8rem/150% ${fontFamily}`, letterSpacing: '-0.02031rem' },
+      semi14: { font: `600 0.875rem/145% ${fontFamily}`, letterSpacing: '-0.02188rem' },
+      semi13: { font: `600 0.8125rem/150% ${fontFamily}`, letterSpacing: '-0.02031rem' },
       med18: { font: `500 1.125rem/135% ${fontFamily}`, letterSpacing: '-0.02813rem' },
       med16: { font: `500 1rem/150% ${fontFamily}`, letterSpacing: '-0.025rem' },
       med13: { font: `500 0.8125rem/150% ${fontFamily}`, letterSpacing: '-0.02031rem' },
