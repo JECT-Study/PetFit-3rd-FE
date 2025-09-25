@@ -2,14 +2,13 @@ import React from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Star, Plus } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getPets, putFavorite, type Pet } from '@/apis/pets';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { setSelectedPet, type SelectedPetState } from '@/store/petSlice';
-import type { RootState } from '@/store/store';
 import type { PetListType } from '@/types/pets';
 
 const convertToSelectedPet = (pet: Pet): SelectedPetState => ({
@@ -25,10 +24,9 @@ export const PetManagementPage: React.FC = () => {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
-  const memberId = useSelector((s: RootState) => s.user.memberId);
   const { data: pets = [] } = useQuery({
-    queryKey: ['pets', memberId],
-    queryFn: () => getPets(memberId as number),
+    queryKey: ['pets'],
+    queryFn: () => getPets(),
     refetchOnMount: 'always',
     select: data => [...data].sort((a, b) => a.id - b.id),
   });
@@ -36,7 +34,7 @@ export const PetManagementPage: React.FC = () => {
   const favoriteMutation = useMutation({
     mutationFn: (petId: number) => putFavorite(petId),
     onSuccess: (_, petId) => {
-      queryClient.invalidateQueries({ queryKey: ['pets', memberId] });
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
       const pet = pets.find((p: PetListType) => p.id === petId);
       if (pet) {
         dispatch(setSelectedPet(convertToSelectedPet(pet)));
@@ -57,7 +55,7 @@ export const PetManagementPage: React.FC = () => {
               {p.isFavorite ? (
                 <Star color="#FFC533" fill="#FFC533" />
               ) : (
-                <Star strokeWidth={1.25} color="#000000" />
+                <Star strokeWidth={1.25} color="#FFC533" />
               )}
             </button>
           </PetItem>
@@ -84,8 +82,7 @@ const Item = styled.div`
   border-radius: 16px;
   border-width: 1px;
   padding: 16px 20px;
-  background: #fff8e5;
-  border: 1px solid #ffc533;
+  border: 1px solid var(--main-500);
   font-size: 14px;
 `;
 

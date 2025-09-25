@@ -16,11 +16,10 @@ export const NicknameEditPage = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state: RootState) => state.user);
-  const memberId = useSelector((state: RootState) => state.user.memberId);
 
   const { data: userInfo } = useQuery({
     queryKey: ['userInfo'],
-    queryFn: () => getNickname(memberId),
+    queryFn: () => getNickname(),
   });
 
   const [nickname, setNickname] = useState('');
@@ -40,7 +39,7 @@ export const NicknameEditPage = () => {
   const handleSave = async () => {
     if (!isValid || !nickname.trim()) return;
 
-    await editNickname(2, nickname);
+    await editNickname(nickname);
     dispatch(setUser({ ...user, nickname }));
     navigate(-1);
   };

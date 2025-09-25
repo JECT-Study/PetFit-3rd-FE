@@ -1,68 +1,52 @@
 import { useQuery } from '@tanstack/react-query';
-import { Pencil } from 'lucide-react';
-import { useSelector } from 'react-redux';
+import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getNickname } from '@/apis/auth';
-import type { RootState } from '@/store/store';
+
+import DefaultProfile from '@/assets/icons/default-profile.svg?react';
 
 export const Profile = () => {
   const navigate = useNavigate();
-  const memberId = useSelector((state: RootState) => state.user.memberId);
 
   const { data: userInfo } = useQuery({
     queryKey: ['userInfo'],
-    queryFn: () => getNickname(memberId),
+    queryFn: () => getNickname(),
   });
 
   const handleEditClick = () => {
     navigate('/edit/nickname');
   };
+
   return (
-    <Container>
-      <ProfilePicture></ProfilePicture>
-      <UserName>{userInfo?.nickname}</UserName>
-      <EditButton onClick={handleEditClick}>
-        <Pencil size={16} />
-        프로필 편집
-      </EditButton>
+    <Container onClick={handleEditClick}>
+      <UserProfile>
+        <DefaultProfile onClick={e => e.stopPropagation()} />
+        <UserName>{userInfo?.nickname}</UserName>
+      </UserProfile>
+      <ChevronRight size={20} />
     </Container>
   );
 };
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin: 20px 0;
+  margin: 16px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
-const ProfilePicture = styled.div`
-  height: 62px;
-  width: 62px;
-  border-radius: 999px;
-  background-color: #d9d9d9;
+const UserProfile = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
 `;
 
 const UserName = styled.div`
   font-size: 16px;
-`;
-
-const EditButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  gap: 6px;
-  width: 178px;
-  height: 32px;
-  border-radius: 4px;
-  padding-top: 6px;
-  padding-right: 20px;
-  padding-bottom: 6px;
-  padding-left: 20px;
-  background: #fff8e5;
-  border: 1px solid #ffc533;
 `;

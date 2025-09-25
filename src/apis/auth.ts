@@ -58,18 +58,18 @@ export const getAuthMe = async () => {
   return { memberId, isNewUser: newUser };
 };
 
-export const getNickname = async (memberId: number | null) => {
+export const getNickname = async () => {
   try {
-    const response = await axiosInstance.get(`members/${memberId}`);
+    const response = await axiosInstance.get(`members`);
     return response.data.content;
   } catch (error) {
     console.error('get nickname failed: ', error);
   }
 };
 
-export const editNickname = async (memberId: number, nickname: string) => {
+export const editNickname = async (nickname: string) => {
   try {
-    await axiosInstance.put(`members/${memberId}`, { nickname });
+    await axiosInstance.put(`members`, { nickname });
   } catch (error) {
     console.error('edit nickname failed: ', error);
   }
