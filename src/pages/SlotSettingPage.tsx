@@ -27,7 +27,6 @@ export const SlotSettingPage = () => {
   const showBack = param.get('flow') !== 'signup';
 
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
-  const memberId = useSelector((s: RootState) => s.user.memberId);
 
   // 슬롯 설정 가져오기
   useEffect(() => {
@@ -101,7 +100,7 @@ export const SlotSettingPage = () => {
       } else {
         await patchSlot(selectedPetId ?? 0, payload);
       }
-      queryClient.invalidateQueries({ queryKey: ['pets', memberId] });
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
       navigate('/');
     } catch (err) {
       console.error(err);
@@ -118,7 +117,7 @@ export const SlotSettingPage = () => {
   });
 
   const handleSkip = async () => {
-    queryClient.invalidateQueries({ queryKey: ['pets', memberId] });
+    queryClient.invalidateQueries({ queryKey: ['pets'] });
     navigate('/');
   };
 
