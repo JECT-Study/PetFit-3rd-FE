@@ -1,19 +1,29 @@
+import { X } from 'lucide-react';
 import styled from 'styled-components';
 
 import { SLOT_ITEMS } from '@/constants/slot';
 
 interface Props {
   selectedIds: string[];
-  onToggle: (id: string) => void;
+  onSelect: (id: string) => void;
+  onDeselect: (id: string) => void;
 }
 
-export const SlotButton = ({ selectedIds, onToggle }: Props) => {
+export const SlotButton = ({ selectedIds, onSelect, onDeselect }: Props) => {
   return (
     <SlotContainer>
-      {SLOT_ITEMS.map(({ id, Icon, label }) => (
-        <Button key={id} $isSelected={selectedIds.includes(id)} onClick={() => onToggle(id)}>
-          <Icon />
+      {SLOT_ITEMS.map(({ id, label }) => (
+        <Button key={id} $isSelected={selectedIds.includes(id)} onClick={() => onSelect(id)}>
           <Label>{label}</Label>
+          {selectedIds.includes(id) && (
+            <X
+              size={16}
+              onClick={e => {
+                e.stopPropagation();
+                onDeselect(id);
+              }}
+            />
+          )}
         </Button>
       ))}
     </SlotContainer>

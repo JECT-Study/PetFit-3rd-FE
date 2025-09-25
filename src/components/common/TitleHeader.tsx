@@ -75,6 +75,7 @@ const IconButton = styled.button`
   all: unset;
   display: flex;
   align-items: center;
+  cursor: pointer;
 `;
 
 const Spacer = styled.div`
