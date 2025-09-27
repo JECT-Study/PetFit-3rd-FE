@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import { MemoryRouter } from 'react-router-dom';
 import { GlobalStyle } from '../src/styles/GlobalStyle';
 import { theme } from '../src/styles/theme';
-import { ToastProvider } from '../src/ui/ToastProvider';
+import { ToastProvider } from '../src/ds/ToastProvider';
 import '../src/styles/color-vars.declare.css';
 
 const withProviders: Decorator = (Story, context) => (

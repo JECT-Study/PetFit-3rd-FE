@@ -1,4 +1,4 @@
-// src/ui/Button.stories.tsx
+// src/ds/Button.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
 import { within, userEvent, expect, fn } from '@storybook/test';
 import { Link } from 'react-router-dom';

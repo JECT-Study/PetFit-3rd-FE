@@ -1,4 +1,4 @@
-// src/ui/Modal.tsx
+// src/ds/Modal.tsx
 import {
   forwardRef,
   useEffect,

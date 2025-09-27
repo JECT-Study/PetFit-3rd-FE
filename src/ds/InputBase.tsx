@@ -1,4 +1,4 @@
-// src/ui/InputBase.tsx
+// src/ds/InputBase.tsx
 import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 
 import styled from 'styled-components';

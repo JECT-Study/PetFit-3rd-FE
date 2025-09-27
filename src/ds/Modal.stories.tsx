@@ -1,4 +1,4 @@
-// src/ui/Modal.stories.tsx
+// src/ds/Modal.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
 import { userEvent, expect, screen, waitFor } from '@storybook/test';
 import { useRef, useState } from 'react';

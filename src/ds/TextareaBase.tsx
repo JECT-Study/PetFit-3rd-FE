@@ -1,4 +1,4 @@
-// src/ui/TextareaBase.tsx
+// src/ds/TextareaBase.tsx
 import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 import styled from 'styled-components';
 import { tx } from '@/styles/typography';

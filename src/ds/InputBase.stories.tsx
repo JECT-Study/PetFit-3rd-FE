@@ -1,4 +1,4 @@
-// src/ui/InputBase.stories.tsx
+// src/ds/InputBase.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
 import { within, userEvent, expect } from '@storybook/test';
 import { InputBase } from './InputBase';
