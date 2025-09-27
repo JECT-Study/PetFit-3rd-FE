@@ -14,7 +14,7 @@ import { Routine } from '@/features/routine/Routine';
 import { useBriefCardData } from '@/hooks/useBriefCardData';
 import { setSelectedPet, type SelectedPetState } from '@/store/petSlice';
 import type { RootState } from '@/store/store';
-import { typo } from '@/styles/tokens';
+import { tx } from '@/styles/typography';
 import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
@@ -153,7 +153,7 @@ const BriefingSection = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  ${typo.titleSemi18};
+  ${tx.title('semi18')};
 `;
 
 const CardRow = styled.div`

@@ -30,5 +30,11 @@
     }
   },
   "include": ["src"],
-  "exclude": ["**/*.test.*", "**/*.spec.*", "**/__tests__/**", "src/setupTests.ts"]
+  "exclude": [
+    "**/*.stories.*", // 🔹 앱 빌드에서는 스토리 제외
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/__tests__/**",
+    "src/setupTests.ts"
+  ]
 }

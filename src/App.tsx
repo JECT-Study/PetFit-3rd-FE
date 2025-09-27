@@ -6,8 +6,8 @@ import { ThemeProvider } from 'styled-components';
 
 import { router } from './routes/Router';
 import { setSelectedPetId } from './store/petSlice';
+import { GlobalStyle } from './styles/GlobalStyle';
 import type { RootState } from './store/store';
-import { ColorVars } from './styles/ColorVars';
 import { theme } from './styles/theme';
 
 const AppInitializer = () => {
@@ -30,7 +30,7 @@ const AppInitializer = () => {
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
-      <ColorVars />
+      <GlobalStyle />
       <AppInitializer />
       <RouterProvider router={router} />
     </ThemeProvider>

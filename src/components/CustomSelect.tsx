@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import styled from 'styled-components';
 
-import { typo } from '@/styles/tokens';
+import { tx } from '@/styles/typography';
 import type { BaseFieldProps } from '@/types/form';
 
 interface CustomSelectProps extends BaseFieldProps {
@@ -25,7 +25,7 @@ export const CustomSelect = ({ label, value, onChange, options }: CustomSelectPr
       {label && <Label>{label}</Label>}
       <SelectTrigger onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
         <SelectSpan>{value}</SelectSpan>
-        <ChevronDown size={18} color="var(--grey-700)" />
+        <ChevronDown size={18} color="var(--gray-700)" />
       </SelectTrigger>
       {isDropdownOpen && (
         <SelectDropdown>
@@ -48,8 +48,8 @@ const FieldGroup = styled.div`
 
 const Label = styled.label`
   padding-left: 8px;
-  color: var(--grey-600);
-  ${typo.bodyReg14};
+  color: ${({ theme }) => theme.color.gray[600]};
+  ${tx.body('reg14')};
 `;
 
 const SelectTrigger = styled.div`
@@ -57,15 +57,15 @@ const SelectTrigger = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background-color: var(--main-100);
-  border: 1.5px solid var(--main-500);
+  background: ${({ theme }) => theme.color.main[100]};
+  border: 1.5px solid ${({ theme }) => theme.color.main[500]};
   border-radius: 8px;
   cursor: pointer;
 `;
 
 const SelectSpan = styled.span`
-  color: var(--grey-700);
-  ${typo.bodySemi14};
+  color: ${({ theme }) => theme.color.gray[700]};
+  ${tx.body('semi14')};
 `;
 
 const SelectDropdown = styled.ul`
@@ -74,13 +74,13 @@ const SelectDropdown = styled.ul`
   gap: 10px;
   margin-top: -4px;
   padding: 10px 20px;
-  background-color: var(--main-100);
-  border: 1.5px solid var(--main-500);
+  background: ${({ theme }) => theme.color.main[100]};
+  border: 1.5px solid ${({ theme }) => theme.color.main[500]};
   border-radius: 8px;
 `;
 
 const SelectOption = styled.li`
-  color: var(--grey-500);
-  ${typo.bodySemi14};
+  color: ${({ theme }) => theme.color.gray[500]};
+  ${tx.body('semi14')};
   cursor: pointer;
 `;

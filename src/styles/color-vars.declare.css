@@ -1,9 +1,5 @@
-/* src/styles/color-vars.declare.css */
-/* DEV-ONLY: 에디터 인텔리센스/오타 방지용 선언.
-   ColorVars(createGlobalStyle)에서 주입하는 변수 이름과 1:1로 맞춘다. */
-
 :root {
-  /* Palette */
+  /* Main (Yellow scale) */
   --main-100: #FFF8E5;
   --main-200: #FFF1CC;
   --main-300: #FFE299;
@@ -14,41 +10,23 @@
   --main-800: #996E00;
   --main-900: #805B00;
 
-  --sub-500: #A7E9C3;
+  /* Gray scale */
+  --gray-50:  #F7F7F7;
+  --gray-100: #F0F0F0;
+  --gray-200: #E8E8E8;
+  --gray-300: #DDDDDD;
+  --gray-400: #A5A5A5;
+  --gray-500: #666666;
+  --gray-600: #4D4D4D;
+  --gray-700: #373737;
+  --gray-800: #2E2E2E;
+  --gray-900: #191919;
 
-  --point-500: #4D9DE0;
+  /* Sub / Warning */
+  --sub-500:    #4D9DE0;
+  --warning-500:#FF5C33;
 
-  --grey-100: #F0F0F0;
-  --grey-200: #E8E8E8;
-  --grey-300: #DDDDDD;
-  --grey-400: #A5A5A5;
-  --grey-500: #666666;
-  --grey-600: #4D4D4D;
-  --grey-700: #373737;
-  --grey-800: #2E2E2E;
-  --grey-900: #191919;
-
-  --white-0: #FFFFFF;
-  --white-100: #FFFDF8;
-  --white-200: #FDF6EC;
-
-  --black-0: #000000;
-
-  --warning-500: #FF5C33;
-
-  /* Semantic aliases (필요 시 확장) */
-  /* --color-text-primary: var(--color-grey-900);
-  --color-text-secondary: var(--color-grey-700);
-  --color-text-inverse: var(--color-white-0);
-
-  --color-bg-surface: var(--color-white-0);
-  --color-bg-muted: var(--color-grey-100);
-
-  --color-border-default: var(--color-grey-300);
-
-  --color-action-primary: var(--color-main-500);
-  --color-action-primary-hover: var(--color-main-600);
-  --color-action-disabled: var(--color-grey-300);
-
-  --color-status-warning: var(--color-warning-500); */
+  /* White / Black */
+  --white: #FFFFFF;
+  --black: #000000;
 }

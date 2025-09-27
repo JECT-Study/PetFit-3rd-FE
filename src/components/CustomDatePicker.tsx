@@ -4,7 +4,7 @@ import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
 import { DAYS_OF_WEEK } from '@/constants/calendar';
-import { typo } from '@/styles/tokens';
+import { tx } from '@/styles/typography';
 import type { BaseFieldProps } from '@/types/form';
 import {
   formatDate,
@@ -69,13 +69,13 @@ export const CustomDatePicker = ({
       {label && <Label>{label}</Label>}
       <TriggerButton onClick={handleToggleCalendar}>
         <TriggerSpan>{formatDate(selectedDate)}</TriggerSpan>
-        <Calendar size={18} color="var(--grey-700)" />
+        <Calendar size={18} color="var(--gray-700)" />
       </TriggerButton>
       {isCalendarOpen && (
         <CalendarPanel>
           <CalendarHeaderRow>
             <button onClick={handlePrevMonth}>
-              <ChevronLeft size={18} color="var(--grey-700)" />
+              <ChevronLeft size={18} color="var(--gray-700)" />
             </button>
             <CalendarHeaderCenter>
               <span>
@@ -83,12 +83,12 @@ export const CustomDatePicker = ({
               </span>
               {withYearSelect && (
                 <YearToggleButton onClick={handleToggleYearSelect}>
-                  <ChevronDown size={18} color="var(--grey-700)" />
+                  <ChevronDown size={18} color="var(--gray-700)" />
                 </YearToggleButton>
               )}
             </CalendarHeaderCenter>
             <button onClick={handleNextMonth}>
-              <ChevronRight size={18} color="var(--grey-700)" />
+              <ChevronRight size={18} color="var(--gray-700)" />
             </button>
           </CalendarHeaderRow>
 
@@ -151,8 +151,8 @@ const FieldGroup = styled.div`
 
 const Label = styled.label`
   padding-left: 8px;
-  color: var(--grey-600);
-  ${typo.bodyReg14};
+  color: ${({ theme }) => theme.color.gray[600]};
+  ${tx.body('reg14')};
 `;
 
 const TriggerButton = styled.div`
@@ -160,22 +160,22 @@ const TriggerButton = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background-color: var(--main-100);
-  border: 1.5px solid var(--main-500);
+  background: ${({ theme }) => theme.color.main[100]};
+  border: 1.5px solid ${({ theme }) => theme.color.main[500]};
   border-radius: 8px;
   cursor: pointer;
 `;
 
 const TriggerSpan = styled.span`
-  color: var(--grey-700);
-  ${typo.bodySemi14};
+  color: ${({ theme }) => theme.color.gray[700]};
+  ${tx.body('semi14')};
 `;
 
 const CalendarPanel = styled.div`
   margin-top: -4px;
   padding: 16px;
-  background-color: var(--main-100);
-  border: 1.5px solid var(--main-500);
+  background: ${({ theme }) => theme.color.main[100]};
+  border: 1.5px solid ${({ theme }) => theme.color.main[500]};
   border-radius: 8px;
 `;
 
@@ -190,7 +190,7 @@ const CalendarHeaderCenter = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
-  ${typo.bodySemi14};
+  ${tx.body('semi14')};
 `;
 
 const YearToggleButton = styled.button`
@@ -213,8 +213,8 @@ const CalendarHeaderCell = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 48px;
-  color: var(--grey-700);
-  ${typo.bodyMed16};
+  color: ${({ theme }) => theme.color.gray[700]};
+  ${tx.body('med16')};
 `;
 
 const DayOfWeekRow = styled.div`
@@ -225,7 +225,7 @@ const DayOfWeekRow = styled.div`
 const CalendarGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  border: 1px solid var(--white-0);
+  border: 1px solid ${({ theme }) => theme.color.white};
 `;
 
 const DateCell = styled.div<{
@@ -238,13 +238,15 @@ const DateCell = styled.div<{
   align-items: center;
   min-height: 48px;
   font-weight: normal;
-  color: ${({ $dimmed }) => ($dimmed ? 'var(--grey-300)' : '#000')};
-  background-color: ${({ $dimmed, $isSelected }) =>
-    $isSelected ? 'var(--main-300)' : $dimmed ? 'var(--white-0)' : 'transparent'};
-  border: 2px solid var(--white-0);
+
+  color: ${({ theme, $dimmed }) => ($dimmed ? theme.color.gray[300] : theme.color.black)};
+  background: ${({ theme, $dimmed, $isSelected }) =>
+    $isSelected ? theme.color.main[300] : $dimmed ? theme.color.white : 'transparent'};
+
+  border: 2px solid ${({ theme }) => theme.color.white};
   cursor: pointer;
 
   &:hover {
-    background-color: #fde68a;
+    background: ${({ theme }) => theme.color.main[200]};
   }
 `;
