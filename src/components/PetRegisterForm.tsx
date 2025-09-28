@@ -1,64 +1,52 @@
-import { useEffect, useMemo, useState } from 'react';
-
 import styled from 'styled-components';
 
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import type { PetForm, PetGender, PetType } from '@/types/form';
 
-import { FormInput } from './common/FormInput';
 import { CustomSelect } from './CustomSelect';
+import InputBase from '@/ds/InputBase';
+import { Field } from '@/ds/Field';
+import { useImeMaxLength } from '@/hooks/useImeMaxLength';
+import { PET_NAME_INPUT_MAX, PET_NAME_VALIDATE_MAX } from '@/constants/pet';
 
 interface PetRegisterFormProps {
   form: PetForm;
-  setForm: (val: PetForm) => void;
-  onFormValidChange: (isValid: boolean) => void;
+  errors: Partial<Record<keyof PetForm, string | null>>;
+  onChange: <K extends keyof PetForm>(k: K, v: PetForm[K]) => void;
+  onBlurField: (field: keyof PetForm) => void;
 }
 
-export const PetRegisterForm = ({ form, setForm, onFormValidChange }: PetRegisterFormProps) => {
-  const [formValidity, setFormValidity] = useState({
-    name: false,
-    species: true,
-    gender: true,
-    birthDate: true,
+export const PetRegisterForm = ({ form, errors, onChange, onBlurField }: PetRegisterFormProps) => {
+  const { imeOnChange, imeOnCompositionEnd, imeOnPaste } = useImeMaxLength({
+    setValue: v => onChange('name', v), // ✅ Controlled: 페이지 소유 상태로 반영
+    max: PET_NAME_INPUT_MAX,
   });
-
-  useEffect(() => {
-    const valid = form.name.trim().length > 0;
-    setFormValidity(prev => ({ ...prev, name: valid }));
-  }, [form.name]);
-
-  useEffect(() => {
-    const isValid = Object.values(formValidity).every(Boolean);
-    onFormValidChange(isValid);
-  }, [formValidity, onFormValidChange]);
-
-  // 렌더링마다 함수 재생성 방지
-  const fieldValidHandlers = useMemo(
-    () => ({
-      name: (isValid: boolean) => {
-        setFormValidity(prev => ({ ...prev, name: isValid }));
-      },
-      // 필요 시 다른 필드도 정의 가능
-      // species: ...
-    }),
-    []
-  );
 
   return (
     <FormSection>
-      <FormInput
+      <Field
         label="이름"
-        value={form.name}
-        onChange={e => setForm({ ...form, name: e.target.value })}
-        validationType="petName"
-        placeholder="반려동물의 이름을 입력해주세요."
-        onFieldValidChange={fieldValidHandlers.name}
-      />
+        hint={errors.name ?? null}
+        invalid={!!errors.name}
+        count={form.name.length}
+        max={PET_NAME_VALIDATE_MAX}
+      >
+        <InputBase
+          id="pet-name"
+          placeholder="반려동물의 이름을 입력해주세요."
+          value={form.name}
+          onChange={imeOnChange} // ✅ IME 안전 onChange
+          onCompositionEnd={imeOnCompositionEnd} // ✅ 조합 종료 보정
+          onPaste={imeOnPaste} // ✅ 붙여넣기 보정
+          onBlur={() => onBlurField('name')}
+          maxLength={PET_NAME_INPUT_MAX}
+        />
+      </Field>
 
       <CustomSelect
         label="종류"
         value={form.species}
-        onChange={val => setForm({ ...form, species: val as PetType })}
+        onChange={val => onChange('species', val as PetType)}
         options={[
           { label: '강아지', value: '강아지' },
           { label: '고양이', value: '고양이' },
@@ -72,7 +60,7 @@ export const PetRegisterForm = ({ form, setForm, onFormValidChange }: PetRegiste
       <CustomSelect
         label="성별"
         value={form.gender}
-        onChange={val => setForm({ ...form, gender: val as PetGender })}
+        onChange={val => onChange('gender', val as PetGender)}
         options={[
           { label: '남아', value: '남아' },
           { label: '여아', value: '여아' },
@@ -83,7 +71,7 @@ export const PetRegisterForm = ({ form, setForm, onFormValidChange }: PetRegiste
       <CustomDatePicker
         label="생일"
         value={form.birthDate}
-        onChange={birthDate => setForm({ ...form, birthDate })}
+        onChange={d => onChange('birthDate', d)}
         withYearSelect
       />
     </FormSection>

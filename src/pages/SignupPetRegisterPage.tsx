@@ -9,6 +9,7 @@ import { useRegisterPet } from '@/hooks/useRegisterPet';
 import { setSelectedPet, setSelectedPetId } from '@/store/petSlice';
 import { tx } from '@/styles/typography';
 import type { PetForm } from '@/types/form';
+import { usePetForm } from '@/hooks/usePetForm';
 
 export const SignupPetRegisterPage = () => {
   const [form, setForm] = useState<PetForm>({
@@ -17,14 +18,15 @@ export const SignupPetRegisterPage = () => {
     gender: '남아',
     birthDate: new Date(),
   });
-  const [isPetFormValid, setIsPetFormValid] = useState(false);
+
+  const { errors, isValid, setField, onBlurField } = usePetForm(form, setForm);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { register, loading, error } = useRegisterPet();
 
   const handleNextClick = async () => {
-    if (!isPetFormValid || loading) return;
+    if (!isValid || loading) return;
 
     const petInfo = await register(form); // ✅ id 포함 결과
 
@@ -41,11 +43,10 @@ export const SignupPetRegisterPage = () => {
     <Container>
       <Title>반려동물 정보 입력</Title>
 
-      <PetRegisterForm form={form} setForm={setForm} onFormValidChange={setIsPetFormValid} />
+      <PetRegisterForm form={form} errors={errors} onChange={setField} onBlurField={onBlurField} />
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
-
-      <NextButton onClick={handleNextClick} disabled={!isPetFormValid || loading}>
+      <NextButton onClick={handleNextClick} disabled={!isValid || loading}>
         {loading ? '등록 중...' : '다음'}
       </NextButton>
     </Container>
