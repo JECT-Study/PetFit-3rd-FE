@@ -55,5 +55,3 @@ const Root = styled.input`
     border-color: ${({ theme }) => theme.color.warning[500]};
   }
 `;
-
-export default InputBase;
