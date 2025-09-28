@@ -10,6 +10,8 @@ import { setSelectedPet, setSelectedPetId } from '@/store/petSlice';
 import { tx } from '@/styles/typography';
 import type { PetForm } from '@/types/form';
 import { usePetForm } from '@/hooks/usePetForm';
+import { Button } from '@/ds/Button';
+import { TitleHeader } from '@/components/common/TitleHeader';
 
 export const SignupPetRegisterPage = () => {
   const [form, setForm] = useState<PetForm>({
@@ -41,14 +43,16 @@ export const SignupPetRegisterPage = () => {
 
   return (
     <Container>
-      <Title>반려동물 정보 입력</Title>
+      <TitleHeader title="반려동물 정보 입력" />
 
       <PetRegisterForm form={form} errors={errors} onChange={setField} onBlurField={onBlurField} />
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
-      <NextButton onClick={handleNextClick} disabled={!isValid || loading}>
-        {loading ? '등록 중...' : '다음'}
-      </NextButton>
+      <Footer>
+        <Button size="lg" fullWidth disabled={!isValid || loading} onClick={handleNextClick}>
+          {loading ? '등록 중...' : '다음'}
+        </Button>
+      </Footer>
     </Container>
   );
 };
@@ -60,13 +64,6 @@ const Container = styled.div`
   padding: 0 20px;
 `;
 
-const Title = styled.h2`
-  padding: 18px 0;
-  text-align: center;
-  color: ${({ theme }) => theme.color.gray[700]};
-  ${tx.title('semi18')};
-`;
-
 const ErrorMessage = styled.p`
   margin: 8px 0;
   text-align: center;
@@ -74,19 +71,6 @@ const ErrorMessage = styled.p`
   ${tx.body('reg14')};
 `;
 
-const NextButton = styled.button`
+const Footer = styled.div`
   margin-bottom: 24px;
-  padding: 16px 0;
-  border-radius: 12px;
-  ${tx.title('semi18')};
-
-  background: ${({ theme }) => theme.color.main[500]};
-  color: ${({ theme }) => theme.color.gray[700]};
-
-  &:disabled {
-    background: ${({ theme }) => theme.color.gray[100]};
-    color: ${({ theme }) => theme.color.gray[400]};
-    border: 1px solid ${({ theme }) => theme.color.gray[300]};
-    cursor: not-allowed;
-  }
 `;
