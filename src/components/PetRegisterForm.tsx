@@ -4,7 +4,7 @@ import { CustomDatePicker } from '@/components/CustomDatePicker';
 import type { PetForm, PetGender, PetType } from '@/types/form';
 
 import { CustomSelect } from './CustomSelect';
-import InputBase from '@/ds/InputBase';
+import { InputBase } from '@/ds/InputBase';
 import { Field } from '@/ds/Field';
 import { useImeMaxLength } from '@/hooks/useImeMaxLength';
 import { PET_NAME_INPUT_MAX, PET_NAME_VALIDATE_MAX } from '@/constants/pet';
