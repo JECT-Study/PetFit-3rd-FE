@@ -1,6 +1,6 @@
 import { useMemo, useState, type Dispatch, type SetStateAction } from 'react';
-import type { PetForm } from '@/types/form';
 import { validators } from '@/utils/validators';
+import type { PetForm } from '@/types/pet';
 
 type Errors = Partial<Record<keyof PetForm, string | null>>;
 
