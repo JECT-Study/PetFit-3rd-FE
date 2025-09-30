@@ -1,39 +1,26 @@
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { fetchMonthlyEntries } from '@/apis/calendar';
-import { getPets } from '@/apis/pets';
-import { DAYS_OF_WEEK, LEGEND, PET_TYPE_ICON_MAP } from '@/constants/calendar';
+import { DAYS_OF_WEEK, LEGEND } from '@/constants/calendar';
 import { MonthView } from '@/features/calendar/MonthView';
-import { setSelectedPetId } from '@/store/petSlice';
 import type { RootState } from '@/store/store';
 import type { CalendarMarkType } from '@/types/calendar';
 import { getMonthNumber, getSurroundingMonths, getYear, isSameMonth } from '@/utils/calendar';
+import { useState } from 'react';
 
 interface MonthlyViewPanelProps {
-  viewDate: Date;
   selectedDate: Date;
-  onChangeViewDate: (newDate: Date) => void;
   onDateClick: (date: Date) => void;
 }
 
-export const MonthlyViewPanel = ({
-  viewDate,
-  selectedDate,
-  onChangeViewDate,
-  onDateClick,
-}: MonthlyViewPanelProps) => {
-  const dispatch = useDispatch();
-  const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
+export const MonthlyViewPanel = ({ selectedDate, onDateClick }: MonthlyViewPanelProps) => {
+  // ✅ 로컬 뷰 상태(현재 보고 있는 월)
+  const [viewMonth, setViewMonth] = useState<Date>(new Date(selectedDate));
 
-  const memberId = useSelector((s: RootState) => s.user.memberId);
-  const { data: pets = [] } = useQuery({
-    queryKey: ['pets', memberId],
-    queryFn: () => getPets(memberId as number),
-    staleTime: 1000 * 60 * 5, // 5분 캐시 유지
-  });
+  const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
 
   const formattedMonths = getSurroundingMonths(viewDate);
 
@@ -92,26 +79,6 @@ export const MonthlyViewPanel = ({
 
   return (
     <>
-      {/* 동물 종류 탭 */}
-      <PetTabs>
-        {pets.map(pet => {
-          const Icon = PET_TYPE_ICON_MAP[pet.type];
-
-          return (
-            <PetTab
-              key={pet.id}
-              $active={selectedPetId === pet.id}
-              onClick={() => dispatch(setSelectedPetId(pet.id))}
-            >
-              <PetIconWrapper $active={selectedPetId === pet.id}>
-                <Icon width={36} height={36} />
-              </PetIconWrapper>
-              <span>{pet.name}</span>
-            </PetTab>
-          );
-        })}
-      </PetTabs>
-
       {/* 달력 뷰 영역 */}
       <CalendarMonthWrapper>
         <MonthNav>
@@ -150,35 +117,6 @@ export const MonthlyViewPanel = ({
     </>
   );
 };
-
-const PetTabs = styled.div`
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  padding-left: 20px;
-`;
-
-const PetTab = styled.button<{ $active: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 6px;
-  color: ${({ $active }) => ($active ? '#000' : '#888')};
-  font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
-`;
-
-const PetIconWrapper = styled.div<{ $active: boolean }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: ${({ $active }) => ($active ? '#E3F2FD' : '#eee')};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: ${({ $active }) => ($active ? '2px solid #2196F3' : 'none')};
-  color: ${({ $active }) => ($active ? '#2196F3' : '#999')};
-`;
 
 const CalendarMonthWrapper = styled.div`
   margin-top: 20px;

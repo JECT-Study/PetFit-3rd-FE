@@ -1,21 +1,4 @@
 import type { CalendarMarkType } from '@/types/calendar';
-import type { PetType } from '@/types/form';
-
-import BirdIcon from '@/assets/icons/bird.svg?react';
-import CatIcon from '@/assets/icons/cat.svg?react';
-import DogIcon from '@/assets/icons/dog.svg?react';
-import FishIcon from '@/assets/icons/fish.svg?react';
-import HamsterIcon from '@/assets/icons/hamster.svg?react';
-import LizardIcon from '@/assets/icons/lizard.svg?react';
-
-export const PET_TYPE_ICON_MAP: Record<PetType, React.FC<React.SVGProps<SVGSVGElement>>> = {
-  강아지: DogIcon,
-  고양이: CatIcon,
-  햄스터: HamsterIcon,
-  조류: BirdIcon,
-  어류: FishIcon,
-  파충류: LizardIcon,
-};
 
 export const DAYS_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'] as const;
 
