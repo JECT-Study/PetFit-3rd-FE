@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 
 import { CustomDatePicker } from '@/components/CustomDatePicker';
-import type { PetForm, PetGender, PetType } from '@/types/form';
 
 import { CustomSelect } from './CustomSelect';
 import { InputBase } from '@/ds/InputBase';
 import { Field } from '@/ds/Field';
 import { useImeMaxLength } from '@/hooks/useImeMaxLength';
 import { PET_NAME_INPUT_MAX, PET_NAME_VALIDATE_MAX } from '@/constants/pet';
+import { PET_GENDERS_KO, PET_SPECIES_KO, type PetForm } from '@/types/pet';
 
 interface PetRegisterFormProps {
   form: PetForm;
@@ -44,32 +44,21 @@ export const PetRegisterForm = ({ form, errors, onChange, onBlurField }: PetRegi
       </Field>
 
       <CustomSelect
-        label="종류"
+        fieldLabel="종류"
+        options={PET_SPECIES_KO}
         value={form.species}
-        onChange={val => onChange('species', val as PetType)}
-        options={[
-          { label: '강아지', value: '강아지' },
-          { label: '고양이', value: '고양이' },
-          { label: '햄스터', value: '햄스터' },
-          { label: '조류', value: '조류' },
-          { label: '어류', value: '어류' },
-          { label: '파충류', value: '파충류' },
-        ]}
+        onChange={val => onChange('species', val)}
       />
 
       <CustomSelect
-        label="성별"
+        fieldLabel="성별"
+        options={PET_GENDERS_KO}
         value={form.gender}
-        onChange={val => onChange('gender', val as PetGender)}
-        options={[
-          { label: '남아', value: '남아' },
-          { label: '여아', value: '여아' },
-          { label: '중성', value: '중성' },
-        ]}
+        onChange={val => onChange('gender', val)}
       />
 
       <CustomDatePicker
-        label="생일"
+        fieldLabel="생일"
         value={form.birthDate}
         onChange={d => onChange('birthDate', d)}
         withYearSelect

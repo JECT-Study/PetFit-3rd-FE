@@ -80,11 +80,7 @@ export const Field = ({
 
   return (
     <Wrap>
-      {label && (
-        <LabelRow as="label" htmlFor={resolvedId}>
-          {label}
-        </LabelRow>
-      )}
+      {label && <LabelRow htmlFor={resolvedId}>{label}</LabelRow>}
 
       {enhancedChild}
 

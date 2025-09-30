@@ -1,41 +1,65 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { ChevronDown } from 'lucide-react';
 import styled from 'styled-components';
 
 import { tx } from '@/styles/typography';
-import type { BaseFieldProps } from '@/types/form';
+import { useClickOutside } from '@/hooks/useClickOutside';
 
-interface CustomSelectProps extends BaseFieldProps {
-  options: { label: string; value: string }[];
-  value: string;
-  onChange: (value: string) => void;
+interface CustomSelectProps<T extends string> {
+  fieldLabel?: string;
+  options: readonly T[];
+  value: T;
+  onChange: (value: T) => void;
 }
 
-export const CustomSelect = ({ label, value, onChange, options }: CustomSelectProps) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+export const CustomSelect = <T extends string>({
+  fieldLabel,
+  options,
+  value,
+  onChange,
+}: CustomSelectProps<T>) => {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
-  const handleSelectOption = (val: string) => {
-    onChange(val);
-    setIsDropdownOpen(false);
+  // ✅ 외부 클릭 닫기: 훅 적용 (mousedown + touchstart)
+  useClickOutside<HTMLDivElement>(rootRef, open, () => setOpen(false));
+
+  const selectOption = (v: T) => {
+    onChange(v);
+    setOpen(false);
   };
 
   return (
     <FieldGroup>
-      {label && <Label>{label}</Label>}
-      <SelectTrigger onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-        <SelectSpan>{value}</SelectSpan>
-        <ChevronDown size={18} color="var(--gray-700)" />
-      </SelectTrigger>
-      {isDropdownOpen && (
-        <SelectDropdown>
-          {options.map(opt => (
-            <SelectOption key={opt.value} onClick={() => handleSelectOption(opt.value)}>
-              {opt.label}
-            </SelectOption>
-          ))}
-        </SelectDropdown>
-      )}
+      {fieldLabel && <Label>{fieldLabel}</Label>}
+
+      <SelectBlock ref={rootRef}>
+        <SelectTrigger
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => setOpen(o => !o)}
+        >
+          <SelectSpan>{value}</SelectSpan>
+          <ChevronDown size={20} />
+        </SelectTrigger>
+
+        {open && (
+          <SelectDropdown role="listbox">
+            {options.map(opt => (
+              <SelectOption
+                key={opt}
+                role="option"
+                aria-selected={opt === value}
+                onClick={() => selectOption(opt)}
+              >
+                {opt}
+              </SelectOption>
+            ))}
+          </SelectDropdown>
+        )}
+      </SelectBlock>
     </FieldGroup>
   );
 };
@@ -46,41 +70,45 @@ const FieldGroup = styled.div`
   gap: 8px;
 `;
 
+const SelectBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
 const Label = styled.label`
   padding-left: 8px;
-  color: ${({ theme }) => theme.color.gray[600]};
+  color: ${({ theme }) => theme.color.gray[500]};
   ${tx.body('reg14')};
 `;
 
-const SelectTrigger = styled.div`
+const SelectTrigger = styled.button`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background: ${({ theme }) => theme.color.main[100]};
-  border: 1.5px solid ${({ theme }) => theme.color.main[500]};
+  padding: 14px 20px;
+  background: ${({ theme }) => theme.color.white};
+  border: 1px solid ${({ theme }) => theme.color.gray[300]};
+  color: ${({ theme }) => theme.color.gray[700]};
   border-radius: 8px;
-  cursor: pointer;
 `;
 
 const SelectSpan = styled.span`
-  color: ${({ theme }) => theme.color.gray[700]};
-  ${tx.body('semi14')};
+  ${tx.body('reg14')};
 `;
 
 const SelectDropdown = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: -4px;
-  padding: 10px 20px;
-  background: ${({ theme }) => theme.color.main[100]};
-  border: 1.5px solid ${({ theme }) => theme.color.main[500]};
+  padding: 20px;
+  background: ${({ theme }) => theme.color.white};
+  border: 1px solid ${({ theme }) => theme.color.gray[300]};
+  color: ${({ theme }) => theme.color.gray[500]};
   border-radius: 8px;
 `;
 
 const SelectOption = styled.li`
-  color: ${({ theme }) => theme.color.gray[500]};
-  ${tx.body('semi14')};
+  ${tx.body('reg14')};
   cursor: pointer;
 `;
