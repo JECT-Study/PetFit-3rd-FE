@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { fetchDailyEntries } from '@/apis/calendar';
@@ -11,17 +11,15 @@ import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
 import { NoteItemList } from '@/features/calendar/NoteItemList';
 import { NoteModal } from '@/features/calendar/NoteModal';
 import { useModal } from '@/hooks/useModal';
-import { setMode } from '@/store/calendarSlice';
 import type { RootState } from '@/store/store';
 import type { Note } from '@/types/note';
 import { formatDate, isSameDay } from '@/utils/calendar';
 import { toRemarkFormData } from '@/utils/transform/note';
 
 import { CalendarRoutineList } from './CalendarRoutineList';
-import { DragSwitchHandle } from './DragSwitchHandle';
 import { RoutineItem } from '../routine/RoutineItem';
 
-interface WeeklyDetailsSectionProps {
+interface DailyDetailsSectionProps {
   selectedDate: Date;
 }
 
@@ -41,13 +39,7 @@ const addOrUpdateNoteList = (list: Note[], target: Note): Note[] =>
 const deleteNoteById = (list: Note[], targetId: number): Note[] =>
   list.filter(note => note.id !== targetId);
 
-// eslint-disable-next-line no-empty-pattern
-export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps) => {
-  const dispatch = useDispatch();
-
-  const [dragY, setDragY] = useState(0);
-  const [dragging, setDragging] = useState(false);
-
+export const DailyDetailsSection = ({ selectedDate }: DailyDetailsSectionProps) => {
   const queryClient = useQueryClient();
 
   const [notes, setNotes] = useState<Note[]>([]);
@@ -169,75 +161,55 @@ export const WeeklyDetailsSection = ({ selectedDate }: WeeklyDetailsSectionProps
 
   return (
     <Wrapper>
-      <SlidingContent
-        style={{
-          transform: `translateY(${dragY}px)`,
-          transition: dragging ? 'none' : 'transform 180ms ease-out',
-        }}
-      >
-        <DragSwitchHandle
-          threshold={100}
-          onExpandToMonth={() => dispatch(setMode('month'))}
-          onDragChange={(dy, isDragging) => {
-            setDragY(dy);
-            setDragging(isDragging);
-          }}
-        />
+      <MarginBottom>
+        <SectionTitle>하루 루틴</SectionTitle>
+        <SectionAction onClick={handleAddNote} data-testid="note-add">
+          특이사항 추가
+        </SectionAction>
+      </MarginBottom>
 
-        <MarginTop>
-          <MarginBottom>
-            <SectionTitle>하루 루틴</SectionTitle>
-            <SectionAction onClick={handleAddNote} data-testid="note-add">
-              특이사항 추가
-            </SectionAction>
-          </MarginBottom>
+      <Section role="region" aria-label="하루 루틴">
+        {isToday ? (
+          <RoutineItem petId={selectedPetId ?? -1} />
+        ) : (
+          <CalendarRoutineList petId={selectedPetId ?? -1} selectedDate={selectedDate} />
+        )}
 
-          <section role="region" aria-label="하루 루틴">
-            {isToday ? (
-              <RoutineItem petId={selectedPetId ?? -1} />
-            ) : (
-              <CalendarRoutineList petId={selectedPetId ?? -1} selectedDate={selectedDate} />
-            )}
+        <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
+      </Section>
 
-            <NoteItemList notes={notes} onEdit={handleEditNote} onDelete={handleDeleteRequest} />
-          </section>
-        </MarginTop>
+      <NoteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        initialNote={editingNote} // 추가 시엔 빈 객체, 수정 시엔 기존 특이사항
+        onSubmit={handleSubmitNote}
+      />
 
-        <NoteModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          initialNote={editingNote} // 추가 시엔 빈 객체, 수정 시엔 기존 특이사항
-          onSubmit={handleSubmitNote}
-        />
-
-        <ConfirmDeleteModal
-          isOpen={deleteTargetId !== null}
-          onClose={handleCancelDelete}
-          onConfirm={handleConfirmDelete}
-        />
-      </SlidingContent>
+      <ConfirmDeleteModal
+        isOpen={deleteTargetId !== null}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </Wrapper>
   );
 };
 
-const SlidingContent = styled.div`
-  will-change: transform; /* GPU 합성으로 부드럽게 */
-`;
 const Wrapper = styled.div`
-  margin-top: 20px;
-  padding: 0 20px;
-  overscroll-behavior: contain;
-`;
-
-const MarginTop = styled.div`
-  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0;
 `;
 
 const MarginBottom = styled.div`
-  margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 20px;
+`;
+
+const Section = styled.section`
+  padding: 0 20px;
 `;
 
 const SectionTitle = styled.span`

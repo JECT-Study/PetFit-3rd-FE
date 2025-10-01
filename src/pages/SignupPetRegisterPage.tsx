@@ -8,10 +8,10 @@ import { PetRegisterForm } from '@/components/PetRegisterForm';
 import { useRegisterPet } from '@/hooks/useRegisterPet';
 import { setSelectedPet, setSelectedPetId } from '@/store/petSlice';
 import { tx } from '@/styles/typography';
-import type { PetForm } from '@/types/form';
 import { usePetForm } from '@/hooks/usePetForm';
 import { Button } from '@/ds/Button';
 import { TitleHeader } from '@/components/common/TitleHeader';
+import type { PetForm } from '@/types/pet';
 
 export const SignupPetRegisterPage = () => {
   const [form, setForm] = useState<PetForm>({

@@ -4,7 +4,6 @@ import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { tx } from '@/styles/typography';
-import { theme } from '@/styles/theme';
 
 interface HeaderProps {
   title: string;

@@ -1,41 +1,30 @@
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { fetchMonthlyEntries } from '@/apis/calendar';
-import { getPets } from '@/apis/pets';
-import { DAYS_OF_WEEK, LEGEND, PET_TYPE_ICON_MAP } from '@/constants/calendar';
+import { CALENDAR_LEGEND, CALENDAR_LEGEND_ORDER } from '@/constants/calendar';
 import { MonthView } from '@/features/calendar/MonthView';
-import { setSelectedPetId } from '@/store/petSlice';
 import type { RootState } from '@/store/store';
-import type { CalendarMarkType } from '@/types/calendar';
-import { getMonthNumber, getSurroundingMonths, getYear, isSameMonth } from '@/utils/calendar';
+import type { CalendarMarksByDate, MonthlyEntryDto } from '@/types/calendar';
+import { getMonthNumber, getSurroundingMonths, getYear } from '@/utils/calendar';
+import { useMemo, useState } from 'react';
+import { tx } from '@/styles/typography';
+import { toCalendarMarks } from '@/utils/transform/calendar';
 
 interface MonthlyViewPanelProps {
-  viewDate: Date;
   selectedDate: Date;
-  onChangeViewDate: (newDate: Date) => void;
   onDateClick: (date: Date) => void;
 }
 
-export const MonthlyViewPanel = ({
-  viewDate,
-  selectedDate,
-  onChangeViewDate,
-  onDateClick,
-}: MonthlyViewPanelProps) => {
-  const dispatch = useDispatch();
+export const MonthlyViewPanel = ({ selectedDate, onDateClick }: MonthlyViewPanelProps) => {
+  // ✅ 로컬 뷰 상태(현재 보고 있는 월)
+  const [viewMonth, setViewMonth] = useState<Date>(new Date(selectedDate));
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
 
-  const memberId = useSelector((s: RootState) => s.user.memberId);
-  const { data: pets = [] } = useQuery({
-    queryKey: ['pets', memberId],
-    queryFn: () => getPets(memberId as number),
-    staleTime: 1000 * 60 * 5, // 5분 캐시 유지
-  });
-
-  const formattedMonths = getSurroundingMonths(viewDate);
+  // ✅ 주변 3개월(이전/현재/다음) 키 생성 — viewMonth 기준
+  const formattedMonths = useMemo(() => getSurroundingMonths(viewMonth), [viewMonth]);
 
   const results = useQueries({
     queries: formattedMonths.map(month => ({
@@ -43,178 +32,96 @@ export const MonthlyViewPanel = ({
       queryFn: () => fetchMonthlyEntries(selectedPetId ?? -1, month),
       enabled: !!selectedPetId,
       staleTime: 1000 * 60 * 5,
+      keepPreviousData: true,
     })),
   });
 
-  const allEntries = results.flatMap(r => r.data ?? []);
+  // DTO 합치기
+  const allEntries: MonthlyEntryDto[] = results.flatMap(r => r.data ?? []);
 
-  // 📌 CalendarMarkType으로 변환 (scheduled 제외)
-  const calendarMarks: Record<string, CalendarMarkType[]> = allEntries.reduce(
-    (acc, entry) => {
-      const types: CalendarMarkType[] = [];
-
-      if (entry.completed) types.push('completed');
-      if (entry.memo) types.push('memo');
-      if (entry.remarked) types.push('note'); // 👈 renamed
-
-      if (types.length > 0) {
-        acc[entry.entryDate] = types;
-      }
-      return acc;
-    },
-    {} as Record<string, CalendarMarkType[]>
+  // ✅ 매퍼로 UI 마킹 생성
+  const calendarMarks: CalendarMarksByDate = useMemo(
+    () => toCalendarMarks(allEntries),
+    [allEntries]
   );
 
-  const handlePrevMonth = () => {
-    const newDate = new Date(viewDate);
-    newDate.setMonth(viewDate.getMonth() - 1);
-
-    // 이동한 달이 selectedDate와 동일한 달이면 selectedDate 기준으로 viewDate 설정
-    if (isSameMonth(newDate, selectedDate)) {
-      onChangeViewDate(selectedDate);
-    } else {
-      const lastDate = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0);
-      onChangeViewDate(lastDate);
-    }
+  const handleClickPrevMonth = () => {
+    const d = new Date(viewMonth);
+    d.setMonth(d.getMonth() - 1);
+    setViewMonth(d);
   };
 
-  const handleNextMonth = () => {
-    const newDate = new Date(viewDate);
-    newDate.setMonth(viewDate.getMonth() + 1);
-
-    if (isSameMonth(newDate, selectedDate)) {
-      onChangeViewDate(selectedDate);
-    } else {
-      const firstDate = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
-      onChangeViewDate(firstDate);
-    }
+  const handleClickNextMonth = () => {
+    const d = new Date(viewMonth);
+    d.setMonth(d.getMonth() + 1);
+    setViewMonth(d);
   };
 
   return (
     <>
-      {/* 동물 종류 탭 */}
-      <PetTabs>
-        {pets.map(pet => {
-          const Icon = PET_TYPE_ICON_MAP[pet.type];
-
-          return (
-            <PetTab
-              key={pet.id}
-              $active={selectedPetId === pet.id}
-              onClick={() => dispatch(setSelectedPetId(pet.id))}
-            >
-              <PetIconWrapper $active={selectedPetId === pet.id}>
-                <Icon width={36} height={36} />
-              </PetIconWrapper>
-              <span>{pet.name}</span>
-            </PetTab>
-          );
-        })}
-      </PetTabs>
-
       {/* 달력 뷰 영역 */}
       <CalendarMonthWrapper>
-        <MonthNav>
-          <button onClick={handlePrevMonth}>
-            <ChevronLeft size={20} />
-          </button>
-          <MonthLabel>{`${getYear(viewDate)}년 ${getMonthNumber(viewDate)}월`}</MonthLabel>
-          <button onClick={handleNextMonth}>
-            <ChevronRight size={20} />
-          </button>
-        </MonthNav>
-
-        <DayHeaderRow>
-          {DAYS_OF_WEEK.map(day => (
-            <DayHeader key={day}>{day}</DayHeader>
-          ))}
-        </DayHeaderRow>
+        <MonthToolbar aria-label="월 탐색">
+          <IconBtn type="button" aria-label="이전 달" onClick={handleClickPrevMonth}>
+            <ChevronLeft size={16} />
+          </IconBtn>
+          <MonthTitle>{`${getYear(viewMonth)}년 ${getMonthNumber(viewMonth)}월`}</MonthTitle>
+          <IconBtn type="button" aria-label="다음 달" onClick={handleClickNextMonth}>
+            <ChevronRight size={16} />
+          </IconBtn>
+        </MonthToolbar>
 
         <MonthView
-          viewDate={viewDate}
+          viewDate={viewMonth}
           selectedDate={selectedDate}
           onDateClick={onDateClick}
           calendarMarks={calendarMarks}
         />
-      </CalendarMonthWrapper>
 
-      {/* 범례 영역 */}
-      <LegendRow>
-        {LEGEND.map(({ key, label, color }) => (
-          <LegendItem key={key}>
-            <Dot $color={color} />
-            <LegendLabel>{label}</LegendLabel>
-          </LegendItem>
-        ))}
-      </LegendRow>
+        {/* 범례 영역 */}
+        <LegendRow>
+          {CALENDAR_LEGEND_ORDER.map(key => (
+            <LegendItem key={key}>
+              <Dot $color={CALENDAR_LEGEND[key].color} />
+              <LegendLabel>{CALENDAR_LEGEND[key].label}</LegendLabel>
+            </LegendItem>
+          ))}
+        </LegendRow>
+      </CalendarMonthWrapper>
     </>
   );
 };
 
-const PetTabs = styled.div`
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  padding-left: 20px;
-`;
-
-const PetTab = styled.button<{ $active: boolean }>`
+const CalendarMonthWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 6px;
-  color: ${({ $active }) => ($active ? '#000' : '#888')};
-  font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
+  gap: 10px;
+  padding: 12px 20px;
 `;
 
-const PetIconWrapper = styled.div<{ $active: boolean }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: ${({ $active }) => ($active ? '#E3F2FD' : '#eee')};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: ${({ $active }) => ($active ? '2px solid #2196F3' : 'none')};
-  color: ${({ $active }) => ($active ? '#2196F3' : '#999')};
-`;
-
-const CalendarMonthWrapper = styled.div`
-  margin-top: 20px;
-  padding: 0 20px;
-`;
-
-const MonthNav = styled.div`
+const MonthToolbar = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
 `;
 
-const MonthLabel = styled.div`
-  font-weight: bold;
-`;
-
-const DayHeaderRow = styled.div`
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 10px;
-`;
-
-const DayHeader = styled.div`
-  display: flex;
-  justify-content: center;
+const IconBtn = styled.button`
+  display: inline-flex;
   align-items: center;
-  height: 48px;
-  text-align: center;
-  font-weight: bold;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: ${({ theme }) => theme.color.gray[700]};
+`;
+
+const MonthTitle = styled.h2`
+  ${tx.body('med16')};
+  color: ${({ theme }) => theme.color.gray[700]};
 `;
 
 const LegendRow = styled.div`
   display: flex;
-  margin-top: 10px;
-  padding-left: 32px;
+  padding-left: 12px;
   gap: 8px;
 `;
 
@@ -225,12 +132,13 @@ const LegendItem = styled.div`
 `;
 
 const Dot = styled.div<{ $color: string }>`
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   background-color: ${({ $color }) => $color};
   border-radius: 50%;
 `;
 
 const LegendLabel = styled.span`
-  font-size: 14px;
+  ${tx.caption('med12')};
+  color: ${({ theme }) => theme.color.gray[600]};
 `;

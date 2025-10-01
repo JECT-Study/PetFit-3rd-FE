@@ -43,10 +43,9 @@ export const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const memberId = useSelector((s: RootState) => s.user.memberId);
   const { data: pets = [] } = useQuery({
-    queryKey: ['pets', memberId],
-    queryFn: () => getPets(memberId as number),
+    queryKey: ['pets'],
+    queryFn: () => getPets(),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -89,6 +88,7 @@ export const HomePage = () => {
         <NameTagBar names={sortedPets} selectedPetId={selectedPetId} onSelect={handleSelectPet} />
         <TodayBar />
       </TopSection>
+
       {selectedPet && (
         <>
           <BriefingSection>
