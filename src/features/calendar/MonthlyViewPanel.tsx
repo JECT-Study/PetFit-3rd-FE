@@ -45,13 +45,13 @@ export const MonthlyViewPanel = ({ selectedDate, onDateClick }: MonthlyViewPanel
     [allEntries]
   );
 
-  const goPrevMonth = () => {
+  const handleClickPrevMonth = () => {
     const d = new Date(viewMonth);
     d.setMonth(d.getMonth() - 1);
     setViewMonth(d);
   };
 
-  const goNextMonth = () => {
+  const handleClickNextMonth = () => {
     const d = new Date(viewMonth);
     d.setMonth(d.getMonth() + 1);
     setViewMonth(d);
@@ -62,11 +62,11 @@ export const MonthlyViewPanel = ({ selectedDate, onDateClick }: MonthlyViewPanel
       {/* 달력 뷰 영역 */}
       <CalendarMonthWrapper>
         <MonthToolbar aria-label="월 탐색">
-          <IconBtn type="button" aria-label="이전 달" onClick={goPrevMonth}>
+          <IconBtn type="button" aria-label="이전 달" onClick={handleClickPrevMonth}>
             <ChevronLeft size={16} />
           </IconBtn>
           <MonthTitle>{`${getYear(viewMonth)}년 ${getMonthNumber(viewMonth)}월`}</MonthTitle>
-          <IconBtn type="button" aria-label="다음 달" onClick={goNextMonth}>
+          <IconBtn type="button" aria-label="다음 달" onClick={handleClickNextMonth}>
             <ChevronRight size={16} />
           </IconBtn>
         </MonthToolbar>

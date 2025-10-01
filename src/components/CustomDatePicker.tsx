@@ -39,30 +39,30 @@ export const CustomDatePicker = ({
   useClickOutside<HTMLDivElement>(rootRef, open, () => setOpen(false));
 
   // 열 때 현재 선택 월로 스냅
-  const toggleCalendar = () => {
+  const handleToggleCalendar = () => {
     if (!open) setVisibleDate(new Date(selectedDate));
     setOpen(o => !o);
     setSelectingYear(false);
   };
 
-  const prevMonth = () => {
+  const handleClickPrevMonth = () => {
     const prev = new Date(visibleDate);
     prev.setMonth(prev.getMonth() - 1);
     setVisibleDate(prev);
   };
-  const nextMonth = () => {
+  const handleClickNextMonth = () => {
     const next = new Date(visibleDate);
     next.setMonth(next.getMonth() + 1);
     setVisibleDate(next);
   };
 
-  const selectDate = (date: Date) => {
+  const handleSelectDate = (date: Date) => {
     onChange(date);
     setOpen(false);
     setSelectingYear(false);
   };
 
-  const toggleYearSelect = () => {
+  const handleToggleYear = () => {
     if (withYearSelect) setSelectingYear(v => !v);
   };
 
@@ -81,7 +81,7 @@ export const CustomDatePicker = ({
           type="button"
           aria-haspopup="dialog"
           aria-expanded={open}
-          onClick={toggleCalendar}
+          onClick={handleToggleCalendar}
         >
           <TriggerSpan>{formatDate(selectedDate)}</TriggerSpan>
           <Calendar size={20} />
@@ -90,13 +90,13 @@ export const CustomDatePicker = ({
         {open && (
           <CalendarPanel role="dialog" aria-label="달력">
             <CalendarHeaderRow>
-              <IconBtn type="button" onClick={prevMonth} aria-label="이전 달">
+              <IconBtn type="button" onClick={handleClickPrevMonth} aria-label="이전 달">
                 <ChevronLeft size={16} />
               </IconBtn>
 
               <HeaderToggleButton
                 type="button"
-                onClick={toggleYearSelect}
+                onClick={handleToggleYear}
                 aria-label="연도 선택 전환"
                 aria-expanded={selectingYear}
               >
@@ -106,7 +106,7 @@ export const CustomDatePicker = ({
                 {withYearSelect && <ChevronDown size={16} />}
               </HeaderToggleButton>
 
-              <IconBtn type="button" onClick={nextMonth} aria-label="다음 달">
+              <IconBtn type="button" onClick={handleClickNextMonth} aria-label="다음 달">
                 <ChevronRight size={16} />
               </IconBtn>
             </CalendarHeaderRow>
@@ -147,7 +147,7 @@ export const CustomDatePicker = ({
                         key={date.toISOString()}
                         $dimmed={!isCurrentMonth}
                         $isSelected={isSelected}
-                        onClick={() => selectDate(date)}
+                        onClick={() => handleSelectDate(date)}
                       >
                         {day}
                       </DateCell>

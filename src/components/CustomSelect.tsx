@@ -25,7 +25,7 @@ export const CustomSelect = <T extends string>({
   // ✅ 외부 클릭 닫기: 훅 적용 (mousedown + touchstart)
   useClickOutside<HTMLDivElement>(rootRef, open, () => setOpen(false));
 
-  const selectOption = (v: T) => {
+  const handleSelectOption = (v: T) => {
     onChange(v);
     setOpen(false);
   };
@@ -52,7 +52,7 @@ export const CustomSelect = <T extends string>({
                 key={opt}
                 role="option"
                 aria-selected={opt === value}
-                onClick={() => selectOption(opt)}
+                onClick={() => handleSelectOption(opt)}
               >
                 {opt}
               </SelectOption>
