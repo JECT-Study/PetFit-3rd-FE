@@ -282,13 +282,13 @@ const DateCell = styled.div<{
   justify-content: center;
   align-items: center;
   min-height: 40px;
+  ${tx.body('med16')};
 
   background: ${({ theme, $isSelected }) =>
     $isSelected ? theme.color.main[100] : theme.color.white};
   border: 2px solid
     ${({ theme, $isSelected }) => ($isSelected ? theme.color.main[500] : theme.color.white)};
   color: ${({ theme, $dimmed }) => ($dimmed ? theme.color.gray[300] : theme.color.gray[500])};
-  ${tx.body('med16')};
   border-radius: 8px;
   cursor: pointer;
 
