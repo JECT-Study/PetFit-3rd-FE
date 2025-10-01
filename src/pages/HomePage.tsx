@@ -88,6 +88,7 @@ export const HomePage = () => {
         <NameTagBar names={sortedPets} selectedPetId={selectedPetId} onSelect={handleSelectPet} />
         <TodayBar />
       </TopSection>
+
       {selectedPet && (
         <>
           <BriefingSection>
