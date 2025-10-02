@@ -31,7 +31,6 @@ export const RoutineProgress = ({ petId }: RoutineProps) => {
   return (
     <Container>
       <Label>루틴 달성률</Label>
-
       <ProgressBarContainer>
         <ProgressBar>
           <ProgressFill style={{ width: `${completedPercent}%` }} />
@@ -46,7 +45,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 0 8px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 8px 0px #0000001f;
 `;
 
 const ProgressBarContainer = styled.div`
@@ -68,7 +69,7 @@ const PercentText = styled.div`
 `;
 
 const ProgressBar = styled.div`
-  width: 100%;
+  width: 90%;
   height: 16px;
   background-color: #dddddd;
   border-radius: 8px;
