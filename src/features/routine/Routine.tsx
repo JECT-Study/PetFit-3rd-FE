@@ -23,20 +23,19 @@ export const Routine = ({ petId }: RoutineProps) => {
   if (isSlotLoading || isRoutineLoading) return <LoadingSpinner />;
 
   return (
-    <Container>
-      <RoutineTitleContainer>
-        <RoutineTitle>오늘의 루틴</RoutineTitle>
-        <Actions>
-          <button onClick={() => navigate('/slot')}>
-            <Settings />
-          </button>
-          {!routineData && <Notice>슬롯 설정하기</Notice>}
-        </Actions>
-      </RoutineTitleContainer>
-      {routineData && <RoutineProgress petId={petId} />}
-
+    <div>
+      <Container>
+        <RoutineTitleContainer>
+          <RoutineTitle>오늘의 루틴</RoutineTitle>
+          <Actions>
+            <EditButton onClick={() => navigate('/slot')}>수정</EditButton>
+            {!routineData && <Notice>슬롯 설정하기</Notice>}
+          </Actions>
+        </RoutineTitleContainer>
+        {routineData && <RoutineProgress petId={petId} />}
+      </Container>
       <RoutineItem petId={petId} />
-    </Container>
+    </div>
   );
 };
 
@@ -48,7 +47,14 @@ const Actions = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  justify-content: center;
   gap: 8px;
+`;
+
+const EditButton = styled.div`
+  margin-right: 6px;
+  font-size: 13px;
+  color: ${({ theme }) => theme.color.gray[400]};
 `;
 
 const Notice = styled.div`
@@ -80,4 +86,5 @@ const RoutineTitleContainer = styled.div`
 const RoutineTitle = styled.div`
   font-size: 18px;
   font-weight: 600;
+  margin: 16px 0;
 `;
