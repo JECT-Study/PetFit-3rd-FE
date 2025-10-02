@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { Pencil, Check } from 'lucide-react';
 import styled from 'styled-components';
 
 import { checkRoutine, uncheckRoutine } from '@/apis/routine';
@@ -13,7 +12,14 @@ import { useSlot } from '@/hooks/useSlot';
 import type { Routine, SlotId } from '@/types/routine';
 import { formatDate } from '@/utils/calendar';
 
-import Memo from '@/assets/icons/memo.svg?react';
+import {
+  SwipeableList,
+  SwipeableListItem,
+  SwipeAction,
+  TrailingActions,
+  LeadingActions,
+} from 'react-swipeable-list';
+import 'react-swipeable-list/dist/styles.css';
 
 interface RoutineItemProps {
   petId: number;
@@ -28,14 +34,6 @@ interface ModalProps {
 export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
   const [modal, setModal] = useState<ModalProps>({ open: false, slotId: null });
   const queryClient = useQueryClient();
-
-  type StatusType = 'UNCHECKED' | 'MEMO' | 'CHECKED';
-
-  const STATUS_ICON: Record<StatusType, React.ReactElement> = {
-    UNCHECKED: <Check width={24} color="#DDDDDD" />,
-    MEMO: <Memo />,
-    CHECKED: <Check width={24} color="#4D9DE0" />,
-  } as const;
 
   const { data: slot } = useSlot(petId);
   const { data: routineDataFromHook, isLoading } = useDailyRoutine(petId, {
@@ -55,64 +53,135 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
     return FIXED_ORDER.indexOf(a.category) - FIXED_ORDER.indexOf(b.category);
   });
 
-  // 루틴을 완료하거나 취소하기
-  const handleStatusClick = async (id: SlotId) => {
+  const handleCheck = async (id: SlotId) => {
     try {
       const today = formatDate(new Date());
-
-      const currentStatus = sortedRoutineData.find(rtn => rtn.category === id)?.status;
-      if (currentStatus === 'CHECKED') {
-        await uncheckRoutine(petId, today, id);
-      } else {
-        await checkRoutine(petId, today, id);
-      }
-
+      await checkRoutine(petId, today, id);
       queryClient.invalidateQueries({ queryKey: ['dailyRoutine', petId, today] });
     } catch (err) {
-      console.error('루틴 체크/해제 실패', err);
+      console.error('루틴 체크 실패', err);
     }
+  };
+
+  const handleUncheck = async (id: SlotId) => {
+    try {
+      const today = formatDate(new Date());
+      await uncheckRoutine(petId, today, id);
+      queryClient.invalidateQueries({ queryKey: ['dailyRoutine', petId, today] });
+    } catch (err) {
+      console.error('루틴 언체크 실패', err);
+    }
+  };
+
+  // 왼쪽으로 스와이프
+  const getLeadingActions = (rtn: Routine) => {
+    const id = rtn.category as SlotId;
+    if (rtn.status === 'CHECKED') {
+      return null;
+    }
+
+    if (rtn.status === 'MEMO') {
+      return (
+        <LeadingActions>
+          <SwipeAction onClick={() => handleUncheck(id)}>
+            <StatusContainer>
+              <PendingText>대기</PendingText>
+            </StatusContainer>
+          </SwipeAction>
+        </LeadingActions>
+      );
+    }
+
+    return (
+      <LeadingActions>
+        <SwipeAction onClick={() => handleCheck(id)}>
+          <CompleteContainer>
+            <CompleteText>완료</CompleteText>
+          </CompleteContainer>
+        </SwipeAction>
+      </LeadingActions>
+    );
+  };
+
+  // 오른쪽으로 스와이프
+  const getTrailingActions = (rtn: Routine) => {
+    const id = rtn.category as SlotId;
+    if (rtn.status === 'MEMO') {
+      return null;
+    }
+
+    if (rtn.status === 'CHECKED') {
+      return (
+        <TrailingActions>
+          <SwipeAction onClick={() => handleUncheck(id)}>
+            <StatusContainer>
+              <PendingText>대기</PendingText>
+            </StatusContainer>
+          </SwipeAction>
+        </TrailingActions>
+      );
+    }
+
+    return (
+      <TrailingActions>
+        <SwipeAction onClick={() => setModal({ open: true, slotId: id })}>
+          <UncompleteContainer>
+            <UncompleteText>미완</UncompleteText>
+          </UncompleteContainer>
+        </SwipeAction>
+      </TrailingActions>
+    );
   };
 
   return (
     <div>
-      {sortedRoutineData.map((rtn: Routine) => {
-        const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(
-          slot => slot.id === rtn.category
-        )!;
-        return (
-          <Container key={id}>
-            <ItemContainer>
-              <StuatusIcon onClick={() => handleStatusClick(id)}>
-                {STATUS_ICON[rtn.status]}
-              </StuatusIcon>
-              <MainInfoContainer>
-                <MainInfo>
-                  <Icon width={16} color="#4D9DE0" />
-                  <TitleText>{label}</TitleText>
-                  <AmountText>
-                    {rtn.targetAmount != null ? (
-                      <>
-                        {rtn.actualAmount !== undefined ? `${rtn.actualAmount}${unit} / ` : ''}
-                        {rtn.targetAmount}
-                        {unit}
-                      </>
-                    ) : rtn.content ? (
-                      ''
-                    ) : (
-                      placeholder
-                    )}
-                  </AmountText>
-                  <MemoInfo>{rtn.content}</MemoInfo>
-                </MainInfo>
-              </MainInfoContainer>
-            </ItemContainer>
+      <TitleContainer>
+        <TitleList>목록</TitleList>
+        <TitleDescription>좌우로 스와이프해서 루틴을 완료하세요</TitleDescription>
+      </TitleContainer>
+      <SwipeableList>
+        {sortedRoutineData.map((rtn: Routine) => {
+          const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(
+            slot => slot.id === rtn.category
+          )!;
 
-            <NoteButton onClick={() => setModal({ open: true, slotId: id })}>
-              <Pencil width={14} />
-            </NoteButton>
-          </Container>
-        );
-      })}
+          return (
+            <SwipeableListItem
+              key={id}
+              leadingActions={getLeadingActions(rtn)}
+              trailingActions={getTrailingActions(rtn)}
+            >
+              <Container $status={rtn.status}>
+                <ItemContainer>
+                  <MainInfoContainer>
+                    <MainInfo>
+                      <Icon width={16} color="#4D9DE0" />
+                      <TitleText>{label}</TitleText>
+                      <AmountText>
+                        {rtn.targetAmount != null ? (
+                          <>
+                            {rtn.actualAmount !== undefined ? `${rtn.actualAmount}${unit} / ` : ''}
+                            {rtn.targetAmount}
+                            {unit}
+                          </>
+                        ) : rtn.content ? (
+                          ''
+                        ) : (
+                          placeholder
+                        )}
+                      </AmountText>
+                      <MemoInfo>{rtn.content}</MemoInfo>
+                    </MainInfo>
+                  </MainInfoContainer>
+                </ItemContainer>
+                <StatusLabel $status={rtn.status}>
+                  {rtn.status === 'CHECKED' ? '완료' : rtn.status === 'MEMO' ? '메모' : '대기'}
+                </StatusLabel>{' '}
+              </Container>
+            </SwipeableListItem>
+          );
+        })}
+      </SwipeableList>
 
       {modal.slotId && (
         <RoutineDetailModal
@@ -130,11 +199,39 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
   );
 };
 
-const Container = styled.div`
+const TitleContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  margin: 16px 0;
+  padding: 0 20px;
+`;
+
+const TitleList = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const TitleDescription = styled.div`
+  font-size: 12px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.color.gray[400]};
+`;
+
+const Container = styled.div<{ $status: 'UNCHECKED' | 'MEMO' | 'CHECKED' }>`
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px #dddddd solid;
   align-items: center;
+  width: 100%;
+  height: 70px;
+  box-sizing: border-box;
+  padding: 0 12px;
+
+  background-color: ${({ $status, theme }) =>
+    $status === 'CHECKED'
+      ? theme.color.sub[500_30]
+      : $status === 'MEMO'
+        ? theme.color.warning[500_30]
+        : null};
 `;
 
 const ItemContainer = styled.div`
@@ -144,11 +241,49 @@ const ItemContainer = styled.div`
   margin: 10px 0;
 `;
 
-const StuatusIcon = styled.div`
-  cursor: pointer;
+const MainInfoContainer = styled.div``;
+
+const StatusContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
-const MainInfoContainer = styled.div``;
+const CompleteContainer = styled(StatusContainer)`
+  background-color: ${({ theme }) => theme.color.sub[500_30]};
+`;
+
+const UncompleteContainer = styled(StatusContainer)`
+  background-color: ${({ theme }) => theme.color.warning[500_30]};
+`;
+
+const StatusText = styled.div`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  font-size: 16.67px;
+  border-radius: 6.67px;
+  padding: 2px 4px;
+
+  color: ${({ theme }) => theme.color.white};
+`;
+
+const PendingText = styled(StatusText)`
+  background-color: ${({ theme }) => theme.color.gray[300]};
+`;
+
+const CompleteText = styled(StatusText)`
+  background-color: ${({ theme }) => theme.color.sub[500]};
+`;
+
+const UncompleteText = styled(StatusText)`
+  background-color: ${({ theme }) => theme.color.warning[500]};
+`;
 
 const TitleText = styled.div`
   font-weight: 500;
@@ -178,10 +313,21 @@ const MemoInfo = styled.div`
   max-width: 220px;
 `;
 
-const NoteButton = styled.div`
-  &:hover {
-    cursor: pointer;
-  }
+const StatusLabel = styled.div<{ $status: 'UNCHECKED' | 'MEMO' | 'CHECKED' }>`
+  font-size: 14px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  background-color: ${({ $status, theme }) =>
+    $status === 'CHECKED'
+      ? theme.color.sub[500]
+      : $status === 'MEMO'
+        ? theme.color.warning[500]
+        : theme.color.gray[300]};
+
+  color: ${({ theme }) => theme.color.white};
+  white-space: nowrap;
 `;
 
 const NonSlot = styled.div`
