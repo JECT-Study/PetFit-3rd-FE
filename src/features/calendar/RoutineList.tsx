@@ -1,55 +1,18 @@
-import { useMemo } from 'react';
-
-import { useQuery } from '@tanstack/react-query';
-import { Check } from 'lucide-react';
 import styled from 'styled-components';
 
-import { fetchDailyEntries } from '@/apis/calendar';
-import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { SLOT_ITEMS } from '@/constants/slot';
-import type { Routine } from '@/types/routine';
-import { formatDate } from '@/utils/calendar';
-import { toRoutineModel } from '@/utils/transform/routine';
-
-import Memo from '@/assets/icons/memo.svg?react';
+import type { UiRoutine } from '@/types/routine';
 
 type Props = {
-  petId: number;
-  selectedDate: Date;
+  routines: UiRoutine[]; // 타입 수정
 };
-
-type StatusType = 'UNCHECKED' | 'MEMO' | 'CHECKED';
-
-const STATUS_ICON: Record<StatusType, React.ReactElement> = {
-  UNCHECKED: <Check width={24} color="#DDDDDD" />,
-  MEMO: <Memo />,
-  CHECKED: <Check width={24} color="#4D9DE0" />,
-} as const;
 
 /**
  * 달력 전용 루틴 조회 컴포넌트
  * - 수정/체크/메모 변경 없음(조회 전용)
  * - dailyEntries 캐시 키를 그대로 사용하므로 WeeklyDetailsSection의 동일 쿼리와 중복 호출되지 않음(React Query dedupe)
  */
-export const CalendarRoutineList = ({ petId, selectedDate }: Props) => {
-  const dateStr = formatDate(selectedDate); // 'YYYY-MM-DD'
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['dailyEntries', petId, dateStr],
-    queryFn: () => fetchDailyEntries(petId, dateStr),
-    enabled: petId > 0,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // API → 화면 모델 변환
-  const routines: Routine[] = useMemo(
-    () => (data?.routineResponseList ?? []).map(toRoutineModel),
-    [data]
-  );
-
-  if (!petId) return null;
-  if (isLoading) return <LoadingSpinner />;
-
+export const RoutineList = ({ routines }: Props) => {
   if (!routines || routines.length === 0) {
     return <NonSlot>해당 날짜에 표시할 루틴이 없습니다</NonSlot>;
   }
@@ -60,14 +23,12 @@ export const CalendarRoutineList = ({ petId, selectedDate }: Props) => {
   );
 
   return (
-    <div>
+    <List>
       {sorted.map(rtn => {
         const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(s => s.id === rtn.category)!;
         return (
           <Container key={id}>
             <ItemContainer>
-              <StatusIcon>{STATUS_ICON[rtn.status]}</StatusIcon>
-
               <MainInfo>
                 <Icon width={16} color="#4D9DE0" />
                 <TitleText>{label}</TitleText>
@@ -92,14 +53,19 @@ export const CalendarRoutineList = ({ petId, selectedDate }: Props) => {
           </Container>
         );
       })}
-    </div>
+    </List>
   );
 };
 
-const Container = styled.div`
+const List = styled.ul`
+  & > * {
+    border-bottom: 1px solid ${({ theme }) => theme.color.gray[200]};
+  }
+`;
+
+const Container = styled.li`
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px #dddddd solid;
   align-items: center;
 `;
 
@@ -109,8 +75,6 @@ const ItemContainer = styled.div`
   gap: 20px;
   margin: 10px 0;
 `;
-
-const StatusIcon = styled.div``;
 
 const MainInfo = styled.div`
   display: flex;
