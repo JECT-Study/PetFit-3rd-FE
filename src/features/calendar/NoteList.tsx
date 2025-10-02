@@ -1,15 +1,15 @@
 import styled from 'styled-components';
 
 import { NoteItem } from '@/features/calendar/NoteItem';
-import type { Note } from '@/types/note';
+import type { UiNote } from '@/types/calendar.ui';
 
 interface NoteItemListProps {
-  notes: Note[];
+  notes: UiNote[];
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
 }
 
-export const NoteItemList = ({ notes, onEdit, onDelete }: NoteItemListProps) => {
+export const NoteList = ({ notes, onEdit, onDelete }: NoteItemListProps) => {
   if (notes.length === 0) return null;
 
   return (
@@ -27,6 +27,8 @@ export const NoteItemList = ({ notes, onEdit, onDelete }: NoteItemListProps) => 
   );
 };
 
-const Container = styled.div`
-  margin-top: 12px;
+const Container = styled.ul`
+  & > * {
+    border-bottom: 1px solid ${({ theme }) => theme.color.gray[200]};
+  }
 `;
