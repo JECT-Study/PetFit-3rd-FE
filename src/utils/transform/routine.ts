@@ -1,8 +1,7 @@
-import type { Routine as APIRoutine } from '@/apis/calendar';
-import type { RoutineStatus, SlotId, Routine as UiRoutine } from '@/types/routine';
+import type { RoutineDto, RoutineStatus, SlotId, Routine as UiRoutine } from '@/types/routine';
 
-export const toRoutineModel = (routine: APIRoutine): UiRoutine => {
-  const statusMap: Record<APIRoutine['status'], RoutineStatus> = {
+export const toUiRoutine = (routine: RoutineDto): UiRoutine => {
+  const statusMap: Record<RoutineDto['status'], RoutineStatus> = {
     CHECKED: 'CHECKED',
     MEMO: 'MEMO',
     UNCHECKED: 'UNCHECKED',

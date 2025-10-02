@@ -6,18 +6,18 @@ import styled from 'styled-components';
 import { BaseModal } from '@/components/common/BaseModal';
 import { FormInput } from '@/components/common/FormInput';
 import { FormTextarea } from '@/components/common/FormTextarea';
-import type { Note } from '@/types/note';
 import { validators } from '@/utils/validators';
+import type { UiNote } from '@/types/calendar.ui';
 
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialNote: Note;
-  onSubmit: (note: Note) => void;
+  initialNote: UiNote;
+  onSubmit: (note: UiNote) => void;
 }
 
 export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalProps) => {
-  const [note, setNote] = useState<Note>(initialNote);
+  const [note, setNote] = useState<UiNote>(initialNote);
   const [formValidity, setFormValidity] = useState({ title: false, content: true });
 
   useEffect(() => {

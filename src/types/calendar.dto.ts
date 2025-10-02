@@ -1,8 +1,4 @@
-import type { CALENDAR_LEGEND_ORDER } from '@/constants/calendar';
-
-// UI 모델(예: 날짜별 마킹)
-export type CalendarMarkType = (typeof CALENDAR_LEGEND_ORDER)[number];
-export type CalendarMarksByDate = Record<string, CalendarMarkType[]>; // 'YYYY-MM-DD' -> ['completed','note']
+import type { RoutineDto } from './routine';
 
 // 월간 엔트리 DTO (백엔드 응답 그대로)
 export interface MonthlyEntryDto {
@@ -13,23 +9,24 @@ export interface MonthlyEntryDto {
   scheduled: boolean; // UI에선 제외(요구사항 외)
 }
 // 일간 상세 조회 DTO
-export interface DailyEntryResponseDto {
+export interface DailyEntryDto {
   entryDate: string; // 'YYYY-MM-DD'
   remarkResponseList: RemarkDto[];
   routineResponseList: RoutineDto[];
 }
+
+// 특이사항 조회 DTO
 export interface RemarkDto {
   remarkId: number;
   title: string;
   content: string;
   remarkDate: string; // 'YYYY-MM-DD'
 }
-export interface RoutineDto {
-  routineId: number;
-  category: string;
-  status: 'CHECKED' | 'MEMO' | 'UNCHECKED';
-  targetAmount: number;
-  actualAmount: number;
+
+// 등록/수정 요청 바디(DTO)
+export interface RemarkCreateDto {
+  title: string;
   content: string;
-  date: string; // 'YYYY-MM-DD'
+  remarkDate: string; // 'YYYY-MM-DD'
 }
+export type RemarkUpdateDto = Pick<RemarkCreateDto, 'title' | 'content'>; // PATCH는 날짜 제외
