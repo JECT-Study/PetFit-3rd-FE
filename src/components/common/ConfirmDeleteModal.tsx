@@ -1,5 +1,3 @@
-import styled from 'styled-components';
-
 import { Modal } from '@/ds/Modal';
 import { Button } from '@/ds/Button';
 

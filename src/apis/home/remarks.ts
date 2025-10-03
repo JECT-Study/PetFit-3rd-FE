@@ -1,17 +1,11 @@
 import type { ApiResponse } from '@/types/common';
 
 import { axiosInstance } from '../axiosInstance';
+import type { RemarkDto } from '@/types/calendar.dto';
 
-export interface RemarkItem {
-  remarkId: number;
-  title: string;
-  content: string;
-  remarkDate: string;
-}
-
-export const fetchHomeRemarks = async (petId: number): Promise<RemarkItem[]> => {
+export const fetchHomeRemarks = async (petId: number): Promise<RemarkDto[]> => {
   try {
-    const res = await axiosInstance.get<ApiResponse<RemarkItem[]>>(`/remarks/${petId}/home`);
+    const res = await axiosInstance.get<ApiResponse<RemarkDto[]>>(`/remarks/${petId}/home`);
     return res.data.content;
   } catch (error) {
     console.log('fetch home remarks failed', error);
