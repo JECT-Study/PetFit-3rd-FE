@@ -14,11 +14,15 @@ export interface Routine {
 }
 
 // 네이밍 통일 필요
-export type RoutineStatusDto = 'CHECKED' | 'MEMO' | 'UNCHECKED';
+export const ROUTINE_STATUS = ['CHECKED', 'MEMO', 'UNCHECKED'] as const;
+export type RoutineStatusDto = (typeof ROUTINE_STATUS)[number];
+
+export const SLOT_IDS = ['feed', 'water', 'walk', 'potty', 'dental', 'skin'] as const;
+export type RoutineSlotKey = (typeof SLOT_IDS)[number]; // 'feed' | 'water' | ...
 
 export interface RoutineDto {
-  routineId: number;
-  category: string;
+  routineId: number; // 서버 식별자
+  category: string; // ex) "feed" (서버에서 string)
   status: RoutineStatusDto;
   targetAmount: number;
   actualAmount: number;
@@ -27,11 +31,11 @@ export interface RoutineDto {
 }
 
 export interface UiRoutine {
-  id: SlotId;
+  id: number;
+  slotKey: RoutineSlotKey; // ✅ UI 슬롯 종류(아이콘/라벨 매핑 키)
+  status: RoutineStatusDto;
+  targetAmount: number;
   actualAmount?: number | null;
-  category: string;
-  targetAmount: number | string;
   content: string | null;
-  status: RoutineStatus;
   date: string;
 }

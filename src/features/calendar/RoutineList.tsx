@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { SLOT_ITEMS } from '@/constants/slot';
-import type { UiRoutine } from '@/types/routine';
+import { SLOT_IDS, type UiRoutine } from '@/types/routine';
 
 type Props = {
   routines: UiRoutine[]; // 타입 수정
@@ -17,37 +17,45 @@ export const RoutineList = ({ routines }: Props) => {
     return <NonSlot>해당 날짜에 표시할 루틴이 없습니다</NonSlot>;
   }
 
-  const FIXED_ORDER = ['feed', 'water', 'walk', 'potty', 'dental', 'skin'];
   const sorted = [...routines].sort(
-    (a, b) => FIXED_ORDER.indexOf(a.category) - FIXED_ORDER.indexOf(b.category)
+    (a, b) => SLOT_IDS.indexOf(a.slotKey) - SLOT_IDS.indexOf(b.slotKey)
   );
 
   return (
     <List>
       {sorted.map(rtn => {
-        const { id, Icon, label, unit, placeholder } = SLOT_ITEMS.find(s => s.id === rtn.category)!;
+        // 슬롯 메타(아이콘/라벨/단위/placeholder)
+        const meta = SLOT_ITEMS.find(s => s.id === rtn.slotKey);
+        if (!meta) return null;
+
+        const { Icon, label, unit, placeholder } = meta;
+
+        const hasTarget = rtn.targetAmount > 0;
+        const hasActual =
+          typeof rtn.actualAmount === 'number' && rtn.actualAmount !== null && rtn.actualAmount > 0;
+
         return (
-          <Container key={id}>
+          <Container key={rtn.id}>
             <ItemContainer>
               <MainInfo>
                 <Icon width={16} color="#4D9DE0" />
                 <TitleText>{label}</TitleText>
 
                 <AmountText>
-                  {rtn.targetAmount != null ? (
+                  {hasTarget ? (
                     <>
-                      {rtn.actualAmount != null ? `${rtn.actualAmount}${unit} / ` : ''}
+                      {hasActual ? `${rtn.actualAmount}${unit} / ` : ''}
                       {rtn.targetAmount}
                       {unit}
                     </>
                   ) : rtn.content ? (
-                    ''
+                    '' // 메모가 있으면 수량 대신 메모만 노출
                   ) : (
                     placeholder
                   )}
                 </AmountText>
 
-                <MemoInfo>{rtn.content}</MemoInfo>
+                <MemoInfo>{rtn.content ?? ''}</MemoInfo>
               </MainInfo>
             </ItemContainer>
           </Container>

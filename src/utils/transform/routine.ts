@@ -1,19 +1,28 @@
-import type { RoutineDto, RoutineStatus, SlotId, Routine as UiRoutine } from '@/types/routine';
+import { SLOT_IDS, type RoutineDto, type RoutineSlotKey, type UiRoutine } from '@/types/routine';
 
-export const toUiRoutine = (routine: RoutineDto): UiRoutine => {
-  const statusMap: Record<RoutineDto['status'], RoutineStatus> = {
-    CHECKED: 'CHECKED',
-    MEMO: 'MEMO',
-    UNCHECKED: 'UNCHECKED',
-  };
+// 백엔드 DTO가 enum이 아닌 관계로 런타임 검증
+const SLOT_ID_SET = new Set<RoutineSlotKey>(SLOT_IDS);
+export const toSlotKey = (v: string): RoutineSlotKey => {
+  if (SLOT_ID_SET.has(v as RoutineSlotKey)) return v as RoutineSlotKey;
+  throw new Error(`Invalid slotKey: ${v}`);
+};
 
+export const toUiRoutine = ({
+  routineId: id,
+  category,
+  status,
+  targetAmount,
+  actualAmount,
+  content,
+  date,
+}: RoutineDto): UiRoutine => {
   return {
-    id: routine.category as SlotId, // SLOT_ITEMS에서 유효한 값인지 보장 필요
-    category: routine.category,
-    status: statusMap[routine.status],
-    targetAmount: routine.targetAmount,
-    actualAmount: routine.actualAmount,
-    content: routine.content,
-    date: routine.date,
+    id,
+    slotKey: toSlotKey(category),
+    status,
+    targetAmount,
+    actualAmount,
+    content,
+    date,
   };
 };
