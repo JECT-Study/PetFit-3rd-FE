@@ -7,29 +7,15 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getPets, type Pet } from '@/apis/pets';
-import { BriefCard } from '@/features/home/BriefCard';
 import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
 import { Routine } from '@/features/routine/Routine';
-import { useBriefCardData } from '@/hooks/useBriefCardData';
 import { setSelectedPet, type SelectedPetState } from '@/store/petSlice';
 import type { RootState } from '@/store/store';
-import { tx } from '@/styles/typography';
 import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
-
-interface ScheduleProps {
-  scheduleId: number;
-  title: string;
-  targetDate: string;
-}
-
-interface RemarkProps {
-  remarkId: number;
-  title: string;
-  remarkDate: string;
-}
+import { BriefFeature } from '@/features/home/BriefFeature';
 
 const convertToSelectedPet = (pet: Pet): SelectedPetState => ({
   id: pet.id,
@@ -75,8 +61,8 @@ export const HomePage = () => {
     }
   };
 
-  // 일정, 특이사항
-  const { scheduleData, remarkData } = useBriefCardData(selectedPetId ?? -1);
+  const today = new Date();
+
   return (
     <Container>
       <Header>
@@ -91,29 +77,7 @@ export const HomePage = () => {
 
       {selectedPet && (
         <>
-          <BriefingSection>
-            <SectionTitle>오늘의 브리핑</SectionTitle>
-            <CardRow>
-              <BriefCard
-                label="일정"
-                color="var(--point-500)"
-                items={scheduleData.map((s: ScheduleProps) => ({
-                  id: s.scheduleId,
-                  title: s.title,
-                  date: s.targetDate,
-                }))}
-              />
-              <BriefCard
-                label="특이사항"
-                color="var(--warning-500)"
-                items={remarkData.map((r: RemarkProps) => ({
-                  id: r.remarkId,
-                  title: r.title,
-                  date: r.remarkDate,
-                }))}
-              />
-            </CardRow>
-          </BriefingSection>
+          <BriefFeature petId={selectedPet.id} today={today} />
 
           <div>
             <Routine petId={selectedPet.id} />
@@ -143,21 +107,4 @@ const TopSection = styled.div`
   flex-direction: column;
   gap: 8px;
   margin: 12px 0 24px;
-`;
-
-const BriefingSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 0 20px;
-`;
-
-const SectionTitle = styled.h2`
-  ${tx.title('semi18')};
-`;
-
-const CardRow = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
 `;
