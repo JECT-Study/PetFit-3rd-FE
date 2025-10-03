@@ -10,20 +10,19 @@ import type { RootState } from '@/store/store';
 import { formatDate } from '@/utils/calendar';
 
 import { RoutineList } from './RoutineList';
-import { NoteSection } from './NoteSection';
+import { NotesFeature } from './NotesFeature';
 import { tx } from '@/styles/typography';
 import type { UiNote } from '@/types/calendar.ui';
 import { toUiNote } from '@/utils/transform/calendar';
 import { toUiRoutine } from '@/utils/transform/routine';
-import type { NoteSectionHandle } from './NoteSection';
+import type { NotesFeatureHandle } from './NotesFeature';
 
-interface DailyDetailsSectionProps {
+interface DayDetailsPanelProps {
   selectedDate: Date;
 }
 
-export const DailyDetailsSection = ({ selectedDate }: DailyDetailsSectionProps) => {
+export const DayDetailsPanel = ({ selectedDate }: DayDetailsPanelProps) => {
   const selectedPetId = useSelector((state: RootState) => state.selectedPet.id);
-
   const formattedDate = formatDate(selectedDate); // 'YYYY-MM-DD'
 
   // ✅ 일간 특이사항 + 루틴 조회 API 호출
@@ -46,16 +45,14 @@ export const DailyDetailsSection = ({ selectedDate }: DailyDetailsSectionProps) 
   );
 
   // ✅ 자식 메서드 호출을 위한 ref
-  const remarksRef = useRef<NoteSectionHandle>(null);
+  const remarksRef = useRef<NotesFeatureHandle>(null);
   const handleAddNote = () => remarksRef.current?.openCreate(); // ✅ 부모 버튼 → 자식 모달 오픈
 
   return (
     <Wrapper>
       <MarginBottom>
         <SectionTitle>하루 루틴</SectionTitle>
-        <SectionAction onClick={handleAddNote} data-testid="note-add">
-          특이사항 추가
-        </SectionAction>
+        <SectionAction onClick={handleAddNote}>특이사항 추가</SectionAction>
       </MarginBottom>
 
       <Section role="region" aria-label="하루 루틴">
@@ -63,7 +60,7 @@ export const DailyDetailsSection = ({ selectedDate }: DailyDetailsSectionProps) 
         <RoutineList routines={routines} />
 
         {/* ✅ CRUD/모달은 NoteSection이 관리 (조회 데이터만 주입) */}
-        <NoteSection
+        <NotesFeature
           ref={remarksRef}
           petId={selectedPetId ?? -1}
           selectedDate={selectedDate}

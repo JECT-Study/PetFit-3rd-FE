@@ -9,3 +9,8 @@ export interface UiNote {
   title: string;
   content: string;
 }
+
+/** UiNote에서 편집 가능한 필드만 추출 */
+export type EditableNote = Omit<UiNote, 'id'>;
+/** 편집 가능한 필드 키 */
+export type NoteField = keyof EditableNote; // 'title' | 'content'
