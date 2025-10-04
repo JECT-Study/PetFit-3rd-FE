@@ -9,3 +9,5 @@ export const CALENDAR_LEGEND = {
   memo: { label: '메모', color: 'var(--warning-500)' },
   note: { label: '특이사항', color: 'var(--main-600)' },
 } as const;
+
+export const CALENDAR_DIM_COLOR = 'var(--gray-300)';

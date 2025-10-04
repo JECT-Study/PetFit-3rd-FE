@@ -32,18 +32,11 @@ export const TodayBar = () => {
       ? Math.max(0, Math.floor((toYMD(today).getTime() - toYMD(birth).getTime()) / 86400000))
       : null;
 
-  const formattedDate = `${String(today.getMonth() + 1).padStart(2, '0')}월 ${String(
-    today.getDate()
-  ).padStart(2, '0')}일`;
-
   const dDay =
     selectedPetId === null || isLoading ? 'D —' : diffDays === null ? 'D —' : `D+ ${diffDays}`;
 
   return (
     <Wrapper>
-      <TodayText>
-        <strong>Today</strong> {formattedDate}
-      </TodayText>
       <DDayText>{dDay}</DDayText>
     </Wrapper>
   );
@@ -53,16 +46,6 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
-`;
-
-const TodayText = styled.span`
-  font-size: 14px;
-  color: #333;
-
-  strong {
-    margin-right: 4px;
-    font-weight: 600;
-  }
 `;
 
 const DDayText = styled.span`

@@ -1,15 +1,15 @@
 import styled from 'styled-components';
 
-import { DAYS_OF_WEEK, CALENDAR_LEGEND } from '@/constants/calendar';
-import type { CalendarMarksByDate, CalendarMarkType } from '@/types/calendar';
+import { DAYS_OF_WEEK, CALENDAR_LEGEND, CALENDAR_DIM_COLOR } from '@/constants/calendar';
 import { formatDate, getMonthDates, isSameDay, isSameMonth } from '@/utils/calendar';
 import { tx } from '@/styles/typography';
+import type { UiCalendarMarksByDate, UiCalendarMarkType } from '@/types/calendar.ui';
 
 interface MonthViewProps {
   viewDate: Date;
   selectedDate: Date;
   onDateClick: (date: Date) => void;
-  calendarMarks: CalendarMarksByDate;
+  calendarMarks: UiCalendarMarksByDate;
 }
 
 export const MonthView = ({
@@ -38,8 +38,8 @@ export const MonthView = ({
 
           const formatted = formatDate(date);
           const dots = calendarMarks[formatted] || [];
-          const dotColor = (type: CalendarMarkType) =>
-            isInCurrentMonth ? CALENDAR_LEGEND[type].color : '#ddd';
+          const dotColor = (type: UiCalendarMarkType) =>
+            isInCurrentMonth ? CALENDAR_LEGEND[type].color : CALENDAR_DIM_COLOR;
 
           return (
             <Cell

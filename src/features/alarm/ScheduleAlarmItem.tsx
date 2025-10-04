@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { MoreActionDropdown } from '@/components/common/MoreActionDropdown';
+import { OverflowMenu } from '@/components/common/OverflowMenu';
 import type { Alarm } from '@/types/alarm';
 
 interface ScheduleAlarmItemProps {
@@ -32,7 +32,7 @@ export const ScheduleAlarmItem = ({ alarm, onEdit, onDelete }: ScheduleAlarmItem
           <TitleText>{alarm.title}</TitleText>
           <Dday>{getDday(alarm.startDate)}</Dday>
         </TitleLeft>
-        <MoreActionDropdown onEdit={onEdit} onDelete={onDelete} />
+        <OverflowMenu onEdit={onEdit} onDelete={onDelete} />
       </TitleRow>
 
       <DetailText>・ {alarm.description}</DetailText>

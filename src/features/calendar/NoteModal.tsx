@@ -1,127 +1,100 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-
-import { X } from 'lucide-react';
-import styled from 'styled-components';
-
-import { BaseModal } from '@/components/common/BaseModal';
-import { FormInput } from '@/components/common/FormInput';
-import { FormTextarea } from '@/components/common/FormTextarea';
-import type { Note } from '@/types/note';
-import { validators } from '@/utils/validators';
+import type { EditableNote, NoteField, UiNote } from '@/types/calendar.ui';
+import { Modal } from '@/ds/Modal';
+import { Button } from '@/ds/Button';
+import { useImeMaxLength } from '@/hooks/useImeMaxLength';
+import {
+  NOTE_CONTENT_INPUT_MAX,
+  NOTE_CONTENT_VALIDATE_MAX,
+  NOTE_TITLE_INPUT_MAX,
+  NOTE_TITLE_VALIDATE_MAX,
+} from '@/constants/note';
+import { Field } from '@/ds/Field';
+import { InputBase } from '@/ds/InputBase';
+import { TextareaBase } from '@/ds/TextareaBase';
 
 interface NoteModalProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
-  initialNote: Note;
-  onSubmit: (note: Note) => void;
+
+  note: UiNote; // 드래프트 표시용
+  errors: { title: string | null; content: string | null };
+  canSave: boolean;
+
+  onChange: <K extends NoteField>(k: K, v: EditableNote[K]) => void;
+  onBlurField: (field: NoteField) => void;
+  onSubmit: () => void; // 부모가 저장까지 처리
 }
 
-export const NoteModal = ({ isOpen, onClose, initialNote, onSubmit }: NoteModalProps) => {
-  const [note, setNote] = useState<Note>(initialNote);
-  const [formValidity, setFormValidity] = useState({ title: false, content: true });
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    setNote(initialNote);
-
-    // ✅ 실제 값으로 초기 유효성 계산 (과거처럼 true 고정 금지)
-    const titleOk = validators.title(initialNote.title ?? '').isValid;
-
-    const contentStr = initialNote.content ?? '';
-    const contentOk =
-      contentStr.trim() === '' // 본문은 선택 → 빈 값이면 통과
-        ? true
-        : validators.content(contentStr).isValid;
-
-    setFormValidity({ title: titleOk, content: contentOk });
-  }, [isOpen, initialNote]);
-
-  const isFormValid = useMemo(() => Object.values(formValidity).every(Boolean), [formValidity]);
-
-  // ✅ useCallback으로 고정
-  const handleFieldValidChange = useCallback((field: 'title' | 'content', isValid: boolean) => {
-    setFormValidity(prev => ({ ...prev, [field]: isValid }));
-  }, []);
-
-  // ✅ 필드별 핸들러 useCallback으로 고정
-  const titleValidHandler = useCallback(
-    (isValid: boolean) => handleFieldValidChange('title', isValid),
-    [handleFieldValidChange]
-  );
-  const contentValidHandler = useCallback(
-    (isValid: boolean) => handleFieldValidChange('content', isValid),
-    [handleFieldValidChange]
-  );
-
-  const handleSubmit = () => {
-    if (!isFormValid) return;
-    onSubmit({
-      ...note,
-      title: (note.title ?? '').trim(),
-      content: (note.content ?? '').trim(),
-    });
-    onClose();
-  };
+export const NoteModal = ({
+  open,
+  onClose,
+  note,
+  errors,
+  canSave,
+  onChange,
+  onBlurField,
+  onSubmit,
+}: NoteModalProps) => {
+  const titleIme = useImeMaxLength({
+    setValue: v => onChange('title', v),
+    max: NOTE_TITLE_INPUT_MAX,
+  });
+  const contentIme = useImeMaxLength({
+    setValue: v => onChange('content', v),
+    max: NOTE_CONTENT_INPUT_MAX,
+  });
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose}>
-      <ModalContainer role="dialog" aria-modal="true">
-        <CloseButton onClick={onClose} aria-label="닫기">
-          <X size={20} />
-        </CloseButton>
-
-        <FormInput
-          label="특이사항 제목"
-          value={note.title}
-          onChange={e => setNote(prev => ({ ...prev, title: e.target.value }))}
-          validationType="title"
-          placeholder="특이사항 제목을 입력해주세요."
-          onFieldValidChange={titleValidHandler}
-        />
-
-        <FormTextarea
-          label="특이사항 내용"
-          value={note.content}
-          onChange={e => setNote(prev => ({ ...prev, content: e.target.value }))}
-          validationType="content"
-          placeholder="내용을 입력해주세요."
-          onFieldValidChange={contentValidHandler}
-          optional
-        />
-
-        <SaveButton onClick={handleSubmit} $disabled={!isFormValid}>
+    <Modal
+      open={open}
+      onOpenChange={v => {
+        if (!v) onClose(); // ✅ Modal이 닫힐 때 부모 onClose 호출
+      }}
+      title="특이사항"
+      showClose
+      footer={
+        <Button size="lg" fullWidth disabled={!canSave} onClick={onSubmit}>
           저장
-        </SaveButton>
-      </ModalContainer>
-    </BaseModal>
+        </Button>
+      }
+    >
+      <Field
+        label="제목"
+        hint={errors.title ?? null}
+        invalid={!!errors.title}
+        count={note.title.length}
+        max={NOTE_TITLE_VALIDATE_MAX}
+      >
+        <InputBase
+          id="note-title"
+          placeholder="특이사항 제목을 입력해주세요."
+          value={note.title}
+          onChange={titleIme.imeOnChange} // ✅ IME 안전 onChange
+          onCompositionEnd={titleIme.imeOnCompositionEnd} // ✅ 조합 종료 보정
+          onPaste={titleIme.imeOnPaste} // ✅ 붙여넣기 보정
+          onBlur={() => onBlurField('title')}
+          maxLength={NOTE_TITLE_INPUT_MAX}
+        />
+      </Field>
+
+      <Field
+        label="내용"
+        hint={errors.content ?? null}
+        invalid={!!errors.content}
+        count={note.content.length}
+        max={NOTE_CONTENT_VALIDATE_MAX}
+      >
+        <TextareaBase
+          id="note-content"
+          placeholder="내용을 입력해주세요."
+          value={note.content}
+          onChange={contentIme.imeOnChange} // ✅ IME 안전 onChange
+          onCompositionEnd={contentIme.imeOnCompositionEnd} // ✅ 조합 종료 보정
+          onPaste={contentIme.imeOnPaste} // ✅ 붙여넣기 보정
+          onBlur={() => onBlurField('content')}
+          maxLength={NOTE_CONTENT_INPUT_MAX}
+        />
+      </Field>
+    </Modal>
   );
 };
-
-const ModalContainer = styled.div`
-  position: relative;
-  padding-top: 24px;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: transparent;
-
-  svg {
-    stroke: #373737;
-  }
-`;
-
-const SaveButton = styled.button<{ $disabled: boolean }>`
-  width: 100%;
-  margin-top: 16px;
-  padding: 12px 0;
-  background-color: ${({ $disabled }) => ($disabled ? '#eee' : '#facc15')};
-  border-radius: 10px;
-  color: ${({ $disabled }) => ($disabled ? '#999' : '#222')};
-  font-size: 16px;
-  font-weight: bold;
-  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
-`;

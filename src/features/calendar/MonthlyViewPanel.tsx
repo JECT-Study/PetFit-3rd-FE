@@ -7,11 +7,12 @@ import { fetchMonthlyEntries } from '@/apis/calendar';
 import { CALENDAR_LEGEND, CALENDAR_LEGEND_ORDER } from '@/constants/calendar';
 import { MonthView } from '@/features/calendar/MonthView';
 import type { RootState } from '@/store/store';
-import type { CalendarMarksByDate, MonthlyEntryDto } from '@/types/calendar';
+import type { UiCalendarMarksByDate } from '@/types/calendar.ui';
 import { getMonthNumber, getSurroundingMonths, getYear } from '@/utils/calendar';
 import { useMemo, useState } from 'react';
 import { tx } from '@/styles/typography';
-import { toCalendarMarks } from '@/utils/transform/calendar';
+import { toUiCalendarMarks } from '@/utils/transform/calendar';
+import type { MonthlyEntryDto } from '@/types/calendar.dto';
 
 interface MonthlyViewPanelProps {
   selectedDate: Date;
@@ -40,8 +41,8 @@ export const MonthlyViewPanel = ({ selectedDate, onDateClick }: MonthlyViewPanel
   const allEntries: MonthlyEntryDto[] = results.flatMap(r => r.data ?? []);
 
   // ✅ 매퍼로 UI 마킹 생성
-  const calendarMarks: CalendarMarksByDate = useMemo(
-    () => toCalendarMarks(allEntries),
+  const calendarMarks: UiCalendarMarksByDate = useMemo(
+    () => toUiCalendarMarks(allEntries),
     [allEntries]
   );
 

@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 import { MonthlyViewPanel } from '@/features/calendar/MonthlyViewPanel';
-import { DailyDetailsSection } from '@/features/calendar/DailyDetailsSection';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { useState } from 'react';
+import { DayDetailsPanel } from '@/features/calendar/DayDetailsPanel';
 
 export const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -16,7 +16,7 @@ export const CalendarPage = () => {
 
       <Line />
 
-      <DailyDetailsSection selectedDate={selectedDate} />
+      <DayDetailsPanel selectedDate={selectedDate} />
     </Wrapper>
   );
 };

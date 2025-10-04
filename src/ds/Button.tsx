@@ -9,7 +9,7 @@ import styled, { css } from 'styled-components';
 import { tx } from '@/styles/typography';
 
 export type ButtonSize = 'lg' | 'sm';
-export type ButtonVariant = 'primary' | 'destructive';
+export type ButtonVariant = 'primary' | 'destructive' | 'secondary';
 
 // ⬇︎ 커스텀 props 타입 추가
 type BaseOwnProps = {
@@ -102,6 +102,7 @@ const Root = styled.button<{
     $size === 'lg'
       ? css`
           padding: 20px;
+          height: 56px;
           border-radius: ${({ theme }) => theme.radius.md};
           ${tx.title('semi18')};
         `
@@ -111,19 +112,37 @@ const Root = styled.button<{
           ${tx.body('semi14')};
         `}
 
-  /* 스킨 */
-  background: ${({ theme, $variant }) =>
-    $variant === 'destructive' ? theme.color.warning[500] : theme.color.main[500]};
-  border: ${({ theme, $variant }) =>
-    $variant === 'destructive' ? 'none' : `1px solid ${theme.color.main[500]}`};
-  color: ${({ theme, $variant }) =>
-    $variant === 'destructive' ? theme.color.gray[100] : theme.color.gray[700]};
+  /* variant skins */
+  ${({ $variant, theme }) => {
+    switch ($variant) {
+      case 'destructive':
+        return css`
+          background: ${theme.color.warning[500]};
+          border: none;
+          color: ${theme.color.gray[100]};
+        `;
+      case 'secondary': // ← 취소 버튼용
+        return css`
+          background: ${theme.color.gray[100]};
+          border: 1px solid ${theme.color.gray[300]};
+          color: ${theme.color.gray[400]};
+        `;
+      case 'primary':
+      default:
+        return css`
+          background: ${theme.color.main[500]};
+          border: 1px solid ${theme.color.main[500]};
+          color: ${theme.color.gray[700]};
+        `;
+    }
+  }}
+
   cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 
   /* 데스크탑: hover 시 외곽선 스타일 */
   @media (hover: hover) and (pointer: fine) {
     ${({ $variant, theme }) =>
-      $variant !== 'destructive' &&
+      $variant === 'primary' &&
       css`
         &:hover:not(:disabled):not([aria-disabled='true']) {
           background: ${theme.color.white};
@@ -133,7 +152,7 @@ const Root = styled.button<{
   /* 모바일/터치: active(누르는 동안) 시 외곽선 스타일 */
   @media (hover: none) and (pointer: coarse) {
     ${({ $variant, theme }) =>
-      $variant !== 'destructive' &&
+      $variant === 'primary' &&
       css`
         &:active:not(:disabled):not([aria-disabled='true']) {
           background: ${theme.color.white};

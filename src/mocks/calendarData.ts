@@ -1,14 +1,14 @@
-import type { CalendarMarkType } from '@/types/calendar';
-import type { PetType } from '@/types/form';
-import type { Note } from '@/types/note';
+import type { UiCalendarMarkType } from '@/types/calendar.ui';
+import type { PetSpecies } from '@/types/pet';
+import type { UiNote } from '@/types/calendar.ui';
 
-export const MOCK_PETS: { id: number; name: string; type: PetType }[] = [
+export const MOCK_PETS: { id: number; name: string; type: PetSpecies }[] = [
   { id: 1, name: '댕댕이', type: '강아지' },
   { id: 2, name: '냥이', type: '고양이' },
   { id: 3, name: '콩이', type: '햄스터' },
 ];
 
-export const MOCK_CALENDAR_MARKS: Record<string, CalendarMarkType[]> = {
+export const MOCK_CALENDAR_MARKS: Record<string, UiCalendarMarkType[]> = {
   '2025-04-28': ['completed'],
   '2025-05-01': ['completed', 'memo'],
   '2025-05-04': ['note'],
@@ -21,9 +21,9 @@ export const MOCK_CALENDAR_MARKS: Record<string, CalendarMarkType[]> = {
   '2025-06-28': ['note'],
   '2025-06-29': ['note'],
   '2025-07-02': ['note'],
-} satisfies Record<string, CalendarMarkType[]>;
+} satisfies Record<string, UiCalendarMarkType[]>;
 
-export const MOCK_CALENDAR_NOTES: Note[] = [
+export const MOCK_CALENDAR_NOTES: UiNote[] = [
   {
     id: 1,
     title: '댕댕이 구토',
