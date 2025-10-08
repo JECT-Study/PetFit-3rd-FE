@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -16,6 +17,7 @@ import EmptyRoutine from '@/assets/icons/empty-routine.svg?react';
 
 export const SlotSettingPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [defaultValues, setDefaultValues] = useState<Record<string, number>>({});
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
@@ -73,8 +75,11 @@ export const SlotSettingPage = () => {
   }, []);
 
   const hasSelection = selectedIds.length > 0;
-  const handleToggle = (id: string) =>
-    setSelectedIds(prev => (prev.includes(id) ? prev.filter(k => k !== id) : [...prev, id]));
+
+  const handleSelect = (id: string) =>
+    setSelectedIds(prev => (prev.includes(id) ? prev : [...prev, id]));
+
+  const handleDeselect = (id: string) => setSelectedIds(prev => prev.filter(k => k !== id));
 
   const handleSubmit = async () => {
     const payload = {
@@ -95,6 +100,7 @@ export const SlotSettingPage = () => {
       } else {
         await patchSlot(selectedPetId ?? 0, payload);
       }
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
       navigate('/');
     } catch (err) {
       console.error(err);
@@ -110,11 +116,20 @@ export const SlotSettingPage = () => {
     return true;
   });
 
+  const handleSkip = async () => {
+    queryClient.invalidateQueries({ queryKey: ['pets'] });
+    navigate('/');
+  };
+
   return (
     <Wrapper>
-      <TitleHeader title="하루 루틴 설정" showBack={showBack} />
+      <TitleHeader
+        title="루틴 설정"
+        showBack={showBack}
+        right={<SkipButton onClick={handleSkip}>건너뛰기</SkipButton>}
+      />
       <ContentArea>
-        <SlotButton selectedIds={selectedIds} onToggle={handleToggle} />
+        <SlotButton selectedIds={selectedIds} onSelect={handleSelect} onDeselect={handleDeselect} />
 
         {!hasSelection && (
           <>
@@ -149,6 +164,17 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+`;
+
+const SkipButton = styled.button`
+  white-space: nowrap;
+  font-size: 14px;
+  padding: 0;
+
+  &:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 const ContentArea = styled.div`

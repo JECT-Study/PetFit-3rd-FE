@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { MainLayout } from '@/layouts/MainLayout';
 import { PlainLayout } from '@/layouts/PlainLayout';
-import { AddPetPage } from '@/pages/AddPetPage';
 import { AlarmPage } from '@/pages/AlarmPage';
 import { AuthLoginRedirectPage } from '@/pages/AuthLoginRedirectPage';
 import { AuthLogoutRedirectPage } from '@/pages/AuthLogoutRedirectPage';
@@ -11,29 +10,38 @@ import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { NicknameEditPage } from '@/pages/NicknameEditPage';
+import { PetAddPage } from '@/pages/PetAddPage';
+import { PetEditPage } from '@/pages/PetEditPage';
 import { PetManagementPage } from '@/pages/PetManagementPage';
 import { SignupPetRegisterPage } from '@/pages/SignupPetRegisterPage';
 import { SlotSettingPage } from '@/pages/SlotSettingPage';
-import { TokenRedirectPage } from '@/pages/TokenRedirectPage';
 import { WithdrawPage } from '@/pages/WithdrawPage';
 
 import { PrivateRouter } from './PrivateRouter';
+import { PublicRouter } from './PublicRouter';
 import { StateGuard } from './StateGuard';
 
 export const router = createBrowserRouter([
+  // ── Public 영역: 로그인/리다이렉트 등 ─────────────────────────────
   {
-    element: <PlainLayout />,
+    element: <PublicRouter />, // ★ 인증 상태에 따라 /login 접근 차단
     children: [
-      { path: '/login', element: <LoginPage /> },
-      { path: '/oauth/redirect', element: <AuthLoginRedirectPage /> },
-      { path: '/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
-      { path: '/token', element: <TokenRedirectPage /> },
+      {
+        element: <PlainLayout />,
+        children: [
+          { path: '/login', element: <LoginPage /> },
+          { path: '/oauth/redirect', element: <AuthLoginRedirectPage /> },
+          { path: '/auth/kakao/logout/dev', element: <AuthLogoutRedirectPage /> },
+        ],
+      },
     ],
   },
+
+  // ── Private 영역: 보호 라우트 ────────────────────────────────────
   {
     element: <PrivateRouter />,
     children: [
-      // 전역 상태 모두 필요(메인 섹션)
+      // 메인 섹션: memberId & selectedPetId 모두 필요
       {
         element: <StateGuard requireMemberId requireSelectedPet />,
         children: [
@@ -43,17 +51,17 @@ export const router = createBrowserRouter([
               { path: '/', element: <HomePage /> },
               { path: '/alarm', element: <AlarmPage /> },
               { path: '/calendar', element: <CalendarPage /> },
-              // { path: '/info', element: <InfoPage /> },
               { path: '/mypage', element: <MyPage /> },
               { path: '/withdraw', element: <WithdrawPage /> },
-              { path: '/edit-nickname', element: <NicknameEditPage /> },
+              { path: '/edit/nickname', element: <NicknameEditPage /> },
               { path: '/manage', element: <PetManagementPage /> },
-              { path: '/add/pet', element: <AddPetPage /> },
+              { path: '/add/pet', element: <PetAddPage /> },
+              { path: '/edit/pet/:petId', element: <PetEditPage /> },
             ],
           },
         ],
       },
-      // 신규 유저 플로우: memberId만 필요, selectedPetId는 불필요
+      // 온보딩 섹션: memberId만 필요, selectedPetId 불필요
       {
         element: <StateGuard requireMemberId requireSelectedPet={false} />,
         children: [

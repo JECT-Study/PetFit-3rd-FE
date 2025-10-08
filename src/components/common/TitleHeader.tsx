@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { tx } from '@/styles/typography';
 
 interface HeaderProps {
   title: string;
@@ -56,8 +57,8 @@ const HeaderBar = styled.header`
 const Title = styled.div`
   flex: 1;
   text-align: center;
-  font-size: 18px;
-  font-weight: 600;
+  ${tx.title('semi18')};
+  color: ${({ theme }) => theme.color.gray[700]};
 `;
 
 const SlotBox = styled.div`
@@ -75,6 +76,7 @@ const IconButton = styled.button`
   all: unset;
   display: flex;
   align-items: center;
+  cursor: pointer;
 `;
 
 const Spacer = styled.div`

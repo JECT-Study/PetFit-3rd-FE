@@ -5,6 +5,7 @@ import { Pencil, Check } from 'lucide-react';
 import styled from 'styled-components';
 
 import { checkRoutine, uncheckRoutine } from '@/apis/routine';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { SLOT_ITEMS } from '@/constants/slot';
 import { RoutineDetailModal } from '@/features/routine/RoutineDetailModal';
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
@@ -37,7 +38,7 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
   } as const;
 
   const { data: slot } = useSlot(petId);
-  const { data: routineDataFromHook } = useDailyRoutine(petId, {
+  const { data: routineDataFromHook, isLoading } = useDailyRoutine(petId, {
     enabled: !!slot,
   });
   const routineList = routines ?? routineDataFromHook;
@@ -45,6 +46,8 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
   if (!routineList) {
     return <NonSlot>슬롯을 설정해주세요</NonSlot>;
   }
+
+  if (isLoading) return <LoadingSpinner />;
 
   const FIXED_ORDER = ['feed', 'water', 'walk', 'potty', 'dental', 'skin'];
 

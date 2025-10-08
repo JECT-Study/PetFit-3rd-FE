@@ -11,12 +11,8 @@ import { axiosInstance } from './axiosInstance';
  */
 export const kakaoLogin = async (code: string) => {
   const endpoint = IS_DEV ? '/auth/kakao/login/dev' : '/auth/kakao/login';
-
   try {
-    // 302 redirect 목적의 요청만 수행 (개발 환경만 실행)
-    await axiosInstance.get(endpoint, {
-      params: { code },
-    });
+    await axiosInstance.get(endpoint, { params: { code } });
   } catch (error) {
     console.error('kakao login failed:', error);
     throw error;
@@ -54,51 +50,26 @@ export const kakaoWithdraw = async (memberId: number | null) => {
 };
 
 /**
- * 운영환경: 서버에 accessToken, refreshToken 전달하여 쿠키 설정
- * - 서버가 쿠키(HttpOnly)를 응답으로 내려주는 역할
- * - 프론트는 토큰을 직접 저장하지 않고 쿠키로 인증 유지
- */
-export const setAuthCookies = async (accessToken: string, refreshToken: string) => {
-  try {
-    const response = await axiosInstance.post('/auth/token/cookie', null, {
-      params: {
-        accessToken,
-        refreshToken,
-      },
-    });
-
-    const { memberId, newUser } = response.data.content;
-    if (typeof memberId !== 'number') {
-      throw new Error('memberId가 응답에 없습니다.');
-    }
-
-    return { memberId, isNewUser: newUser }; // 호출부에서는 isNewUser로 사용할 수 있도록 변환
-  } catch (error) {
-    console.error('setAuthCookies failed:', error);
-    throw error;
-  }
-};
-
-/**
  * 서버에 쿠키 기반 인증 상태 확인 요청
  */
-export const verifyAuth = async (): Promise<boolean> => {
-  const res = await axiosInstance.get('/auth/verify'); // 서버에서 쿠키 기반 검증
-  return res.data.content;
+export const getAuthMe = async () => {
+  const res = await axiosInstance.post('/auth/me'); // 서버에서 쿠키 기반 검증
+  const { memberId, newUser } = res.data.content;
+  return { memberId, isNewUser: newUser };
 };
 
-export const getNickname = async (memberId: number | null) => {
+export const getNickname = async () => {
   try {
-    const response = await axiosInstance.get(`members/${memberId}`);
+    const response = await axiosInstance.get(`members`);
     return response.data.content;
   } catch (error) {
     console.error('get nickname failed: ', error);
   }
 };
 
-export const editNickname = async (memberId: number, nickname: string) => {
+export const editNickname = async (nickname: string) => {
   try {
-    await axiosInstance.put(`members/${memberId}`, { nickname });
+    await axiosInstance.put(`members`, { nickname });
   } catch (error) {
     console.error('edit nickname failed: ', error);
   }

@@ -1,7 +1,7 @@
 {
   "name": "petfit",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,19 @@
     "format": "prettier \"src/**/*.{js,jsx,ts,tsx}\" --write",
     "format:check": "prettier \"src/**/*.{js,jsx,ts,tsx}\" --check",
     "lint:css": "stylelint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint:css:fix": "stylelint \"src/**/*.{js,jsx,ts,tsx}\" --fix"
+    "lint:css:fix": "stylelint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
+    "test": "vitest --environment jsdom",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed --project=chromium",
+    "test:e2e:debug": "PWDEBUG=1 playwright test",
+    "typecheck:app": "tsc -p tsconfig.app.json --noEmit",
+    "typecheck:stories": "tsc -p tsconfig.storybook.json --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build:storybook": "storybook build",
+    "test:stories": "storybook test --watch"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
@@ -29,11 +41,23 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@playwright/test": "^1.55.0",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/blocks": "^8.6.14",
+    "@storybook/react-vite": "^8.6.14",
+    "@storybook/test": "^8.6.14",
+    "@storybook/test-runner": "^0.23.0",
+    "@storybook/testing-library": "^0.2.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.2",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
     "@vitejs/plugin-react": "^4.4.1",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-import-resolver-alias": "^1.1.2",
@@ -43,7 +67,10 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "jsdom": "^27.0.0",
+    "msw": "^2.11.2",
     "postcss-styled-syntax": "^0.7.1",
+    "storybook": "^8.6.14",
     "stylelint": "^14.16.1",
     "stylelint-config-prettier": "^9.0.5",
     "stylelint-config-rational-order": "^0.1.2",
@@ -54,6 +81,8 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite-plugin-svgr": "^4.3.0",
+    "vitest": "^3.2.4",
+    "whatwg-fetch": "^3.6.20"
   }
 }

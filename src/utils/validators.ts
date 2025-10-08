@@ -6,6 +6,7 @@ interface ValidatorResult {
   message: string;
 }
 
+// @deprecated
 // ✅ 필드별 최대 길이 상수
 export const MAX_LENGTH = {
   petName: 20,
@@ -14,8 +15,8 @@ export const MAX_LENGTH = {
   nickname: 10,
 } as const;
 
-// ✅ 정규식 (예: 특수 문자 허용 포함)
-export const VALID_CHAR_REGEX = /^[\w가-힣\s!@#%^&*()[\]{}\-_=+~;:'",.<>/?\\|`·★♡♥]+$/;
+// ✅ 정규식
+export const VALID_CHAR_REGEX = /^[가-힣a-zA-Z]+$/;
 
 // ✅ 공통 메시지 템플릿
 export const VALIDATION_MESSAGES = {

@@ -23,10 +23,18 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
+    "types": ["vitest/globals"],
     "baseUrl": ".", // 이걸 꼭 추가해야 paths가 작동함
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "**/*.stories.*", // 🔹 앱 빌드에서는 스토리 제외
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/__tests__/**",
+    "src/setupTests.ts"
+  ]
 }

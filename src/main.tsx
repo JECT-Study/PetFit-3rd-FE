@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import App from './App.tsx';
 import { store } from './store/store.ts';
 import './index.css';
+import './styles/color-vars.declare.css';
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.withCredentials = true;

@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import styled from 'styled-components';
 
 import { DAYS_OF_WEEK } from '@/constants/calendar';
-import { typo } from '@/styles/tokens';
-import type { BaseFieldProps } from '@/types/form';
+import { tx } from '@/styles/typography';
 import {
   formatDate,
   getMonthDates,
@@ -14,40 +13,44 @@ import {
   isSameDay,
   isSameMonth,
 } from '@/utils/calendar';
+import { useClickOutside } from '@/hooks/useClickOutside';
 
-interface CustomDatePickerProps extends BaseFieldProps {
+interface CustomDatePickerProps {
+  fieldLabel?: string;
   value: Date;
   onChange: (date: Date) => void;
   withYearSelect?: boolean;
 }
 
+const YEAR_RANGE = 36; // 몇 년을 표시할지 (개수)
+
 export const CustomDatePicker = ({
-  label,
+  fieldLabel,
   value: selectedDate,
   onChange,
   withYearSelect,
 }: CustomDatePickerProps) => {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [visibleDate, setVisibleDate] = useState(new Date(selectedDate));
-  const [isSelectingYear, setIsSelectingYear] = useState(false);
+  const [selectingYear, setSelectingYear] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
-  const calendarDates = getMonthDates(visibleDate);
+  // ✅ 외부 클릭 닫기: 훅 적용 (mousedown + touchstart)
+  useClickOutside<HTMLDivElement>(rootRef, open, () => setOpen(false));
 
+  // 열 때 현재 선택 월로 스냅
   const handleToggleCalendar = () => {
-    if (!isCalendarOpen) {
-      setVisibleDate(new Date(selectedDate));
-    }
-    setIsCalendarOpen(prev => !prev);
-    setIsSelectingYear(false);
+    if (!open) setVisibleDate(new Date(selectedDate));
+    setOpen(o => !o);
+    setSelectingYear(false);
   };
 
-  const handlePrevMonth = () => {
+  const handleClickPrevMonth = () => {
     const prev = new Date(visibleDate);
     prev.setMonth(prev.getMonth() - 1);
     setVisibleDate(prev);
   };
-
-  const handleNextMonth = () => {
+  const handleClickNextMonth = () => {
     const next = new Date(visibleDate);
     next.setMonth(next.getMonth() + 1);
     setVisibleDate(next);
@@ -55,90 +58,107 @@ export const CustomDatePicker = ({
 
   const handleSelectDate = (date: Date) => {
     onChange(date);
-    setIsCalendarOpen(false);
+    setOpen(false);
+    setSelectingYear(false);
   };
 
-  const handleToggleYearSelect = () => {
-    if (withYearSelect) setIsSelectingYear(prev => !prev);
+  const handleToggleYear = () => {
+    if (withYearSelect) setSelectingYear(v => !v);
   };
 
-  const yearList = Array.from({ length: 42 }, (_, i) => 1984 + i); // 1984 ~ 2025
+  const calendarDates = getMonthDates(visibleDate);
+
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - (YEAR_RANGE - 1);
+  const yearList = Array.from({ length: YEAR_RANGE }, (_, i) => startYear + i);
 
   return (
     <FieldGroup>
-      {label && <Label>{label}</Label>}
-      <TriggerButton onClick={handleToggleCalendar}>
-        <TriggerSpan>{formatDate(selectedDate)}</TriggerSpan>
-        <Calendar size={18} color="var(--grey-700)" />
-      </TriggerButton>
-      {isCalendarOpen && (
-        <CalendarPanel>
-          <CalendarHeaderRow>
-            <button onClick={handlePrevMonth}>
-              <ChevronLeft size={18} color="var(--grey-700)" />
-            </button>
-            <CalendarHeaderCenter>
-              <span>
-                {getYear(visibleDate)}년 {getMonthNumber(visibleDate)}월
-              </span>
-              {withYearSelect && (
-                <YearToggleButton onClick={handleToggleYearSelect}>
-                  <ChevronDown size={18} color="var(--grey-700)" />
-                </YearToggleButton>
-              )}
-            </CalendarHeaderCenter>
-            <button onClick={handleNextMonth}>
-              <ChevronRight size={18} color="var(--grey-700)" />
-            </button>
-          </CalendarHeaderRow>
+      {fieldLabel && <Label>{fieldLabel}</Label>}
 
-          {isSelectingYear ? (
-            <YearScrollContainer>
-              {yearList.map(year => (
-                <DateCell
-                  key={year}
-                  $isSelected={year === getYear(visibleDate)}
-                  onClick={() => {
-                    const newDate = new Date(visibleDate);
-                    newDate.setFullYear(year);
-                    setVisibleDate(newDate);
-                    setIsSelectingYear(false);
-                  }}
-                >
-                  {year}
-                </DateCell>
-              ))}
-            </YearScrollContainer>
-          ) : (
-            <>
-              <DayOfWeekRow>
-                {DAYS_OF_WEEK.map(day => (
-                  <CalendarHeaderCell key={day}>{day}</CalendarHeaderCell>
+      <CalendarBlock ref={rootRef}>
+        <TriggerButton
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          onClick={handleToggleCalendar}
+        >
+          <TriggerSpan>{formatDate(selectedDate)}</TriggerSpan>
+          <Calendar size={20} />
+        </TriggerButton>
+
+        {open && (
+          <CalendarPanel role="dialog" aria-label="달력">
+            <CalendarHeaderRow>
+              <IconBtn type="button" onClick={handleClickPrevMonth} aria-label="이전 달">
+                <ChevronLeft size={16} />
+              </IconBtn>
+
+              <HeaderToggleButton
+                type="button"
+                onClick={handleToggleYear}
+                aria-label="연도 선택 전환"
+                aria-expanded={selectingYear}
+              >
+                <TriggerSpan>
+                  {getYear(visibleDate)}년 {getMonthNumber(visibleDate)}월
+                </TriggerSpan>
+                {withYearSelect && <ChevronDown size={16} />}
+              </HeaderToggleButton>
+
+              <IconBtn type="button" onClick={handleClickNextMonth} aria-label="다음 달">
+                <ChevronRight size={16} />
+              </IconBtn>
+            </CalendarHeaderRow>
+
+            {selectingYear ? (
+              <YearScrollContainer>
+                {yearList.map(year => (
+                  <YearCell
+                    key={year}
+                    $isSelected={year === getYear(visibleDate)}
+                    onClick={() => {
+                      const newDate = new Date(visibleDate);
+                      newDate.setFullYear(year);
+                      setVisibleDate(newDate);
+                      setSelectingYear(false);
+                    }}
+                  >
+                    {year}
+                  </YearCell>
                 ))}
-              </DayOfWeekRow>
+              </YearScrollContainer>
+            ) : (
+              <>
+                <DayOfWeekRow>
+                  {DAYS_OF_WEEK.map(day => (
+                    <CalendarHeaderCell key={day}>{day}</CalendarHeaderCell>
+                  ))}
+                </DayOfWeekRow>
 
-              <CalendarGrid>
-                {calendarDates.map(date => {
-                  const day = date.getDate();
-                  const isCurrentMonth = isSameMonth(date, visibleDate);
-                  const isSelected = isSameDay(date, selectedDate);
+                <CalendarGrid>
+                  {calendarDates.map(date => {
+                    const day = date.getDate();
+                    const isCurrentMonth = isSameMonth(date, visibleDate);
+                    const isSelected = isSameDay(date, selectedDate);
 
-                  return (
-                    <DateCell
-                      key={date.toISOString()}
-                      $dimmed={!isCurrentMonth}
-                      $isSelected={isSelected}
-                      onClick={() => handleSelectDate(date)}
-                    >
-                      {day}
-                    </DateCell>
-                  );
-                })}
-              </CalendarGrid>
-            </>
-          )}
-        </CalendarPanel>
-      )}
+                    return (
+                      <DateCell
+                        key={date.toISOString()}
+                        $dimmed={!isCurrentMonth}
+                        $isSelected={isSelected}
+                        onClick={() => handleSelectDate(date)}
+                      >
+                        {day}
+                      </DateCell>
+                    );
+                  })}
+                </CalendarGrid>
+              </>
+            )}
+          </CalendarPanel>
+        )}
+      </CalendarBlock>
     </FieldGroup>
   );
 };
@@ -149,33 +169,37 @@ const FieldGroup = styled.div`
   gap: 8px;
 `;
 
-const Label = styled.label`
-  padding-left: 8px;
-  color: var(--grey-600);
-  ${typo.bodyReg14};
+const CalendarBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
-const TriggerButton = styled.div`
+const Label = styled.label`
+  padding-left: 8px;
+  color: ${({ theme }) => theme.color.gray[600]};
+  ${tx.body('reg14')};
+`;
+
+const TriggerButton = styled.button`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background-color: var(--main-100);
-  border: 1.5px solid var(--main-500);
+  padding: 14px 20px;
+  background: ${({ theme }) => theme.color.white};
+  border: 1px solid ${({ theme }) => theme.color.gray[300]};
+  color: ${({ theme }) => theme.color.gray[700]};
   border-radius: 8px;
-  cursor: pointer;
 `;
 
 const TriggerSpan = styled.span`
-  color: var(--grey-700);
-  ${typo.bodySemi14};
+  ${tx.body('reg14')};
 `;
 
 const CalendarPanel = styled.div`
-  margin-top: -4px;
-  padding: 16px;
-  background-color: var(--main-100);
-  border: 1.5px solid var(--main-500);
+  padding: 20px;
+  background: ${({ theme }) => theme.color.white};
+  border: 1px solid ${({ theme }) => theme.color.gray[300]};
   border-radius: 8px;
 `;
 
@@ -186,35 +210,48 @@ const CalendarHeaderRow = styled.div`
   margin-bottom: 10px;
 `;
 
-const CalendarHeaderCenter = styled.div`
+const IconBtn = styled.button`
+  color: ${({ theme }) => theme.color.gray[700]};
+`;
+
+const HeaderToggleButton = styled.button`
   display: flex;
   align-items: center;
   gap: 4px;
-  ${typo.bodySemi14};
-`;
-
-const YearToggleButton = styled.button`
-  background: transparent;
-  padding: 0;
+  color: ${({ theme }) => theme.color.gray[700]};
+  ${tx.body('semi14')};
 `;
 
 const YearScrollContainer = styled.div`
-  max-height: 210px; // 7줄까지 보여주고 나머진 스크롤
-  overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  padding: 4px;
-  border-top: 1px solid #eee;
+  padding: 0 4px;
+  max-height: 240px; // 5줄까지 보여주고 나머진 스크롤
+  overflow-y: auto;
 `;
 
-const CalendarHeaderCell = styled.div`
+const YearCell = styled.div<{
+  $dimmed?: boolean;
+  $isSelected?: boolean;
+  $isHeader?: boolean;
+}>`
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 48px;
-  color: var(--grey-700);
-  ${typo.bodyMed16};
+
+  background: ${({ theme, $isSelected }) =>
+    $isSelected ? theme.color.main[100] : theme.color.white};
+  border: 2px solid
+    ${({ theme, $isSelected }) => ($isSelected ? theme.color.main[500] : theme.color.white)};
+  color: ${({ theme, $dimmed }) => ($dimmed ? theme.color.gray[300] : theme.color.gray[500])};
+  ${tx.body('med16')};
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.color.main[500]};
+  }
 `;
 
 const DayOfWeekRow = styled.div`
@@ -222,10 +259,18 @@ const DayOfWeekRow = styled.div`
   grid-template-columns: repeat(7, 1fr);
 `;
 
+const CalendarHeaderCell = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 46px;
+  color: ${({ theme }) => theme.color.black};
+  ${tx.body('med16')};
+`;
+
 const CalendarGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  border: 1px solid var(--white-0);
 `;
 
 const DateCell = styled.div<{
@@ -236,15 +281,18 @@ const DateCell = styled.div<{
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 48px;
-  font-weight: normal;
-  color: ${({ $dimmed }) => ($dimmed ? 'var(--grey-300)' : '#000')};
-  background-color: ${({ $dimmed, $isSelected }) =>
-    $isSelected ? 'var(--main-300)' : $dimmed ? 'var(--white-0)' : 'transparent'};
-  border: 2px solid var(--white-0);
+  min-height: 40px;
+  ${tx.body('med16')};
+
+  background: ${({ theme, $isSelected }) =>
+    $isSelected ? theme.color.main[100] : theme.color.white};
+  border: 2px solid
+    ${({ theme, $isSelected }) => ($isSelected ? theme.color.main[500] : theme.color.white)};
+  color: ${({ theme, $dimmed }) => ($dimmed ? theme.color.gray[300] : theme.color.gray[500])};
+  border-radius: 8px;
   cursor: pointer;
 
   &:hover {
-    background-color: #fde68a;
+    border-color: ${({ theme }) => theme.color.main[500]};
   }
 `;

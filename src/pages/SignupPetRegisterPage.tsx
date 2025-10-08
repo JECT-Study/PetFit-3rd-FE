@@ -7,8 +7,11 @@ import styled from 'styled-components';
 import { PetRegisterForm } from '@/components/PetRegisterForm';
 import { useRegisterPet } from '@/hooks/useRegisterPet';
 import { setSelectedPet, setSelectedPetId } from '@/store/petSlice';
-import { typo } from '@/styles/tokens';
-import type { PetForm } from '@/types/form';
+import { tx } from '@/styles/typography';
+import { usePetForm } from '@/hooks/usePetForm';
+import { Button } from '@/ds/Button';
+import { TitleHeader } from '@/components/common/TitleHeader';
+import type { PetForm } from '@/types/pet';
 
 export const SignupPetRegisterPage = () => {
   const [form, setForm] = useState<PetForm>({
@@ -17,14 +20,15 @@ export const SignupPetRegisterPage = () => {
     gender: '남아',
     birthDate: new Date(),
   });
-  const [isPetFormValid, setIsPetFormValid] = useState(false);
+
+  const { errors, isValid, setField, onBlurField } = usePetForm(form, setForm);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { register, loading, error } = useRegisterPet();
 
   const handleNextClick = async () => {
-    if (!isPetFormValid || loading) return;
+    if (!isValid || loading) return;
 
     const petInfo = await register(form); // ✅ id 포함 결과
 
@@ -39,15 +43,16 @@ export const SignupPetRegisterPage = () => {
 
   return (
     <Container>
-      <Title>반려동물 정보 입력</Title>
+      <TitleHeader title="반려동물 정보 입력" />
 
-      <PetRegisterForm form={form} setForm={setForm} onFormValidChange={setIsPetFormValid} />
+      <PetRegisterForm form={form} errors={errors} onChange={setField} onBlurField={onBlurField} />
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
-
-      <NextButton onClick={handleNextClick} disabled={!isPetFormValid || loading}>
-        {loading ? '등록 중...' : '다음'}
-      </NextButton>
+      <Footer>
+        <Button size="lg" fullWidth disabled={!isValid || loading} onClick={handleNextClick}>
+          {loading ? '등록 중...' : '다음'}
+        </Button>
+      </Footer>
     </Container>
   );
 };
@@ -59,33 +64,13 @@ const Container = styled.div`
   padding: 0 20px;
 `;
 
-const Title = styled.h2`
-  padding: 18px 0;
-  text-align: center;
-  color: var(--grey-700);
-  ${typo.titleSemi18};
-`;
-
 const ErrorMessage = styled.p`
   margin: 8px 0;
   text-align: center;
-  color: var(--warning-500);
-  ${typo.bodyReg14};
+  color: ${({ theme }) => theme.color.warning[500]};
+  ${tx.body('reg14')};
 `;
 
-const NextButton = styled.button`
+const Footer = styled.div`
   margin-bottom: 24px;
-  padding: 16px 0;
-  border-radius: 12px;
-  ${typo.titleSemi18};
-
-  background: var(--main-500);
-  color: var(--grey-700);
-
-  &:disabled {
-    background: var(--grey-100);
-    color: var(--grey-400);
-    border: 1px solid var(--grey-300);
-    cursor: not-allowed;
-  }
 `;

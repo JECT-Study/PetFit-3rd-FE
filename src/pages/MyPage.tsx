@@ -5,16 +5,27 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { TitleHeader } from '@/components/common/TitleHeader';
+import { ToggleButton } from '@/components/common/ToggleButton';
 import { LogoutModal } from '@/features/mypage/LogoutModal';
 import { Profile } from '@/features/mypage/Profile';
 
 export const MyPage = () => {
   const [logoutModal, setLogoutModal] = useState(false);
   const navigate = useNavigate();
+
+  const handleAlarmToggle = (isOn: boolean) => {
+    if (isOn) {
+      console.log('알람 on');
+    } else {
+      console.log('알람 off');
+    }
+  };
+
   return (
     <div>
       <TitleHeader title="마이페이지" />
       <Profile />
+      <LineBar></LineBar>
       <MenuContainer>
         <MenuTitle>반려동물 설정</MenuTitle>
         <Menu onClick={() => navigate('/manage')}>
@@ -22,6 +33,9 @@ export const MyPage = () => {
         </Menu>
 
         <MenuTitle>기타</MenuTitle>
+        <Menu>
+          알림 <ToggleButton onToggle={handleAlarmToggle} />
+        </Menu>
         <Menu>버전 정보</Menu>
         <Menu onClick={() => setLogoutModal(true)}>
           로그아웃 <ChevronRight size={20} />
@@ -38,6 +52,12 @@ export const MyPage = () => {
   );
 };
 
+const LineBar = styled.div`
+  width: 100%;
+  height: 4px;
+  margin: 30px 0;
+  background: #e0e0e0;
+`;
 const MenuContainer = styled.div`
   margin-top: 20px;
 `;

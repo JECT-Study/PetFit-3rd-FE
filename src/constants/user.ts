@@ -1,0 +1,2 @@
+export const USER_NICKNAME_VALIDATE_MAX = 10;
+export const USER_NICKNAME_INPUT_MAX = 20;

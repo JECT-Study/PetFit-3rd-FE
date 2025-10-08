@@ -1,0 +1,5 @@
+export const ALARM_TITLE_VALIDATE_MAX = 20;
+export const ALARM_CONTENT_VALIDATE_MAX = 200;
+
+export const ALARM_TITLE_INPUT_MAX = 30;
+export const ALARM_CONTENT_INPUT_MAX = 250;
