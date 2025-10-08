@@ -2,23 +2,20 @@ import { useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { SquareCheckBig } from 'lucide-react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { getNickname } from '@/apis/auth';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { WithdrawModal } from '@/features/mypage/WithdrawModal';
-import type { RootState } from '@/store/store';
 
 import WithdrawDog from '@/assets/icons/withdraw-dog.svg?react';
 export const WithdrawPage = () => {
   const [withdrawModal, setWithdrawModal] = useState(false);
   const [agreed, setAgreed] = useState(false);
 
-  const memberId = useSelector((state: RootState) => state.user.memberId);
   const { data: userInfo } = useQuery({
     queryKey: ['userInfo'],
-    queryFn: () => getNickname(memberId),
+    queryFn: () => getNickname(),
   });
 
   const handleAgreeClick = () => {

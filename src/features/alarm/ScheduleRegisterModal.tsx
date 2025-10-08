@@ -79,7 +79,7 @@ export const ScheduleRegisterModal = ({
 
           <Form>
             <CustomDatePicker
-              label="시작 날짜"
+              fieldLabel="시작 날짜"
               value={alarm.startDate}
               onChange={startDate => setAlarm({ ...alarm, startDate })}
             />

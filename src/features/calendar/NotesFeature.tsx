@@ -7,7 +7,6 @@ import type { UiNote } from '@/types/calendar.ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createNote, deleteNote, updateNote } from '@/apis/calendar';
 import { toRemarkCreateDto, toRemarkUpdateDto } from '@/utils/transform/calendar';
-import type { RemarkDto } from '@/types/calendar.dto';
 import { formatDate } from '@/utils/calendar';
 import { useNoteForm } from '@/hooks/useNoteForm';
 
@@ -64,11 +63,10 @@ export const NotesFeature = forwardRef<NotesFeatureHandle, Props>(
       if (!draft || petId <= 0 || !canSave) return;
 
       try {
-        let saved: RemarkDto;
         if (existsIn(notes, draft)) {
-          saved = await updateNote(draft.id, toRemarkUpdateDto(draft));
+          await updateNote(draft.id, toRemarkUpdateDto(draft));
         } else {
-          saved = await createNote(petId, toRemarkCreateDto(draft, selectedDate));
+          await createNote(petId, toRemarkCreateDto(draft, selectedDate));
         }
         // 목록은 invalidate로 새로고침(서버 상태 신뢰)
         invalidate();

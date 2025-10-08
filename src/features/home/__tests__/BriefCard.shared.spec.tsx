@@ -22,7 +22,7 @@ const makeItems = (n: number) =>
 
 describe('[BriefCard][shared] 공통 행위', () => {
   test('리스트 렌더링: 2개 이하면 모두 보인다', () => {
-    renderWithDeps(<BriefCard label="일정" color="#3b82f6" items={makeItems(2)} />);
+    renderWithDeps(<BriefCard variant="alarm" items={makeItems(2)} />);
     const items = screen.getAllByTestId('brief-item');
     expect(items).toHaveLength(2);
     expect(items[0]).toHaveTextContent('알람 1');
@@ -30,7 +30,7 @@ describe('[BriefCard][shared] 공통 행위', () => {
   });
 
   test('토글(아코디언) 동작: 3개 이상이면 접힘 → 토글 클릭 시 모두 보임', async () => {
-    renderWithDeps(<BriefCard label="일정" color="#3b82f6" items={makeItems(3)} />);
+    renderWithDeps(<BriefCard variant="alarm" items={makeItems(3)} />);
 
     // 초기: 2개만 노출
     expect(screen.getAllByTestId('brief-item')).toHaveLength(2);
@@ -45,13 +45,13 @@ describe('[BriefCard][shared] 공통 행위', () => {
   });
 
   test('로딩 메시지 표시', () => {
-    renderWithDeps(<BriefCard label="일정" color="#3b82f6" items={[]} loading />);
+    renderWithDeps(<BriefCard variant="alarm" items={[]} loading />);
     expect(screen.getByRole('status')).toBeInTheDocument();
     expect(screen.queryAllByTestId('brief-item')).toHaveLength(0);
   });
 
   test('실패 메시지 표시', () => {
-    renderWithDeps(<BriefCard label="일정" color="#3b82f6" items={[]} error="요청 실패" />);
+    renderWithDeps(<BriefCard variant="alarm" items={[]} error="요청 실패" />);
     expect(screen.getByRole('alert')).toHaveTextContent('요청 실패');
     expect(screen.queryAllByTestId('brief-item')).toHaveLength(0);
   });
