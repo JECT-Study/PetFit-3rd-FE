@@ -1,6 +1,5 @@
 // src/ds/TextareaBase.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { within, userEvent, expect } from '@storybook/test';
 import { TextareaBase } from './TextareaBase';
 
 const meta: Meta<typeof TextareaBase> = {

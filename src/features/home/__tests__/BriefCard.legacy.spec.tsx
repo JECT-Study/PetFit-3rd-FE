@@ -28,7 +28,7 @@ describe('[BriefCard][legacy] 알람 추가 버튼 → 라우팅', () => {
     const mockNavigate = vi.fn();
     (useNavigate as unknown as Mock).mockReturnValue(mockNavigate);
 
-    renderWithDeps(<BriefCard label="일정" color="#3b82f6" items={[]} />);
+    renderWithDeps(<BriefCard variant="alarm" items={[]} />);
 
     await userEvent.click(screen.getByTestId('brief-add-button'));
     expect(mockNavigate).toHaveBeenCalledWith('/alarm');

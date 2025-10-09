@@ -9,9 +9,8 @@ const meta: Meta<typeof Modal> = {
   title: 'DS/Modal',
   component: Modal,
   tags: ['autodocs'],
-  argTypes: {
-    closeOnEsc: { control: 'boolean' },
-    closeOnBackdrop: { control: 'boolean' },
+  parameters: {
+    controls: { exclude: ['open', 'onOpenChange', 'initialFocusRef'] },
   },
 };
 export default meta;
