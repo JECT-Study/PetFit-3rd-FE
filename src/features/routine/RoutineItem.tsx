@@ -155,9 +155,18 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
                 <ItemContainer>
                   <MainInfoContainer>
                     <MainInfo>
-                      <Icon width={16} color="#4D9DE0" />
-                      <TitleText>{label}</TitleText>
-                      <AmountText>
+                      <Icon
+                        width={16}
+                        color={
+                          rtn.status === 'CHECKED'
+                            ? '#4D9DE0'
+                            : rtn.status === 'MEMO'
+                              ? '#FF5C33'
+                              : '#666666'
+                        }
+                      />
+                      <TitleText $status={rtn.status}>{label}</TitleText>
+                      <AmountText $status={rtn.status}>
                         {rtn.targetAmount != null ? (
                           <>
                             {rtn.actualAmount !== undefined ? `${rtn.actualAmount}${unit} / ` : ''}
@@ -175,7 +184,7 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
                   </MainInfoContainer>
                 </ItemContainer>
                 <StatusLabel $status={rtn.status}>
-                  {rtn.status === 'CHECKED' ? '완료' : rtn.status === 'MEMO' ? '메모' : '대기'}
+                  {rtn.status === 'CHECKED' ? '완료' : rtn.status === 'MEMO' ? '미완' : '대기'}
                 </StatusLabel>{' '}
               </Container>
             </SwipeableListItem>
@@ -285,13 +294,25 @@ const UncompleteText = styled(StatusText)`
   background-color: ${({ theme }) => theme.color.warning[500]};
 `;
 
-const TitleText = styled.div`
+const TitleText = styled.div<{ $status: 'UNCHECKED' | 'MEMO' | 'CHECKED' }>`
   font-weight: 500;
   font-size: 16px;
+  color: ${({ $status, theme }) =>
+    $status === 'CHECKED'
+      ? theme.color.sub[500]
+      : $status === 'MEMO'
+        ? theme.color.warning[500]
+        : theme.color.gray[700]};
 `;
 
-const AmountText = styled.div`
+const AmountText = styled.div<{ $status: 'UNCHECKED' | 'MEMO' | 'CHECKED' }>`
   font-size: 14px;
+  color: ${({ $status, theme }) =>
+    $status === 'CHECKED'
+      ? theme.color.sub[500]
+      : $status === 'MEMO'
+        ? theme.color.warning[500]
+        : theme.color.gray[700]};
 `;
 
 const MainInfo = styled.div`
