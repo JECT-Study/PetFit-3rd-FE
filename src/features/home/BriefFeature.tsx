@@ -18,13 +18,14 @@ import { createAlarm } from '@/apis/alarm';
 import { toCreateAlarmRequestDto } from '@/utils/transform/alarm';
 import { useAlarmForm } from '@/hooks/useAlarmForm';
 import { AlarmModal } from '../alarm/AlarmModal';
+import type { NoteForm } from '@/types/calendar.base';
 
 type Props = {
   petId: number;
   today: Date; // 보통 오늘
 };
 
-const createEmptyNote = (): UiNote => ({ id: Date.now(), title: '', content: '' });
+const createEmptyNote = (): NoteForm => ({ title: '', content: '' });
 const createEmptyAlarm = (date: Date): AlarmForm => ({
   title: '',
   content: '',
@@ -43,7 +44,7 @@ export const BriefFeature = ({ petId, today }: Props) => {
   const remarkItems = mapRemarksToBrief(remarkData);
 
   // ===== 특이사항 모달 =====
-  const [noteDraft, setNoteDraft] = useState<UiNote | null>(null);
+  const [noteDraft, setNoteDraft] = useState<NoteForm | null>(null);
   const {
     errors: noteErrors,
     canSave: canSaveNote,

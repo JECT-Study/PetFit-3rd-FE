@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import { validators } from '@/utils/validators';
-import type { EditableNote, NoteField, UiNote } from '@/types/calendar.ui';
+import type { EditableNote, NoteField } from '@/types/calendar.ui';
+import type { NoteForm } from '@/types/calendar.base';
 
 type NoteErrors = { title: string | null; content: string | null };
 
 export const useNoteForm = (
-  draft: UiNote | null,
-  setDraft: Dispatch<SetStateAction<UiNote | null>>
+  draft: NoteForm | null,
+  setDraft: Dispatch<SetStateAction<NoteForm | null>>
 ) => {
   const [touched, setTouched] = useState<Partial<Record<NoteField, boolean>>>({});
 
@@ -14,7 +15,7 @@ export const useNoteForm = (
   useEffect(() => {
     if (!draft) return;
     setTouched({});
-  }, [draft && draft.id]);
+  }, [draft?.title, draft?.content]);
 
   // 실제 유효성(표시 여부와 무관)
   const rawErrors: NoteErrors = useMemo(() => {

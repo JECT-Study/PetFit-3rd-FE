@@ -1,16 +1,19 @@
-import type { CALENDAR_LEGEND_ORDER } from '@/constants/calendar';
+// types/calendar.ui.ts
+// 화면에 직접 바인딩할 모델
 
-// UI 모델(예: 날짜별 마킹)
+import type { CALENDAR_LEGEND_ORDER } from '@/constants/calendar';
+import type { NoteBase, NoteForm } from './calendar.base';
+
+// 달력 마킹(표시 전용)
 export type UiCalendarMarkType = (typeof CALENDAR_LEGEND_ORDER)[number];
 export type UiCalendarMarksByDate = Record<string, UiCalendarMarkType[]>; // 'YYYY-MM-DD' -> ['completed','note']
 
-export interface UiNote {
+// 프레젠테이션 모델
+export interface UiNote extends NoteBase {
   id: number; // remarkId
-  title: string;
-  content: string;
 }
 
-/** UiNote에서 편집 가능한 필드만 추출 */
-export type EditableNote = Omit<UiNote, 'id'>;
-/** 편집 가능한 필드 키 */
+/** UiNote에서 편집 가능한 필드만 */
+export type EditableNote = NoteForm;
+/** 편집 가능 필드 키 */
 export type NoteField = keyof EditableNote; // 'title' | 'content'
