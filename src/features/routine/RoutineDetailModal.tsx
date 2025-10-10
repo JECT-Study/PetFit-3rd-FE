@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
+import { tx } from '@/styles/typography';
 
 import { memoRoutine } from '@/apis/routine';
 import { BaseModal } from '@/components/common/BaseModal';
@@ -114,8 +115,7 @@ const Header = styled.div`
   h2 {
     flex: 1;
     text-align: center;
-    font-size: 18px;
-    font-weight: 600;
+    ${tx.title('semi18')}
   }
 `;
 
@@ -135,16 +135,15 @@ const Field = styled.div`
 `;
 
 const FieldTitle = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  color: #4d4d4d;
+  ${tx.body('reg14')}
+  color: ${({ theme }) => theme.color.gray[600]};
 `;
 
 const AmountInput = styled.input`
   padding: 10px 12px;
-  font-size: 14px;
-  background: #fff8e5;
-  border: 1px solid #ffc533;
+  ${tx.body('reg14')}
+  background: ${({ theme }) => theme.color.main[100]};
+  border: 1px solid ${({ theme }) => theme.color.main[500]};
   border-radius: 8px;
 `;
 
@@ -152,8 +151,8 @@ const MemoInput = styled.textarea`
   height: 100px;
   padding: 12px;
   font-size: 14px;
-  background: #fff8e5;
-  border: 1px solid #ffc533;
+  background: ${({ theme }) => theme.color.main[100]};
+  border: 1px solid ${({ theme }) => theme.color.main[500]};
   border-radius: 8px;
   resize: none;
 `;
@@ -169,8 +168,7 @@ const SaveButton = styled.button<{ disabled: boolean }>`
   margin-top: 8px;
   padding: 14px 0;
 
-  font-size: 18px;
-  font-weight: 600;
+  ${tx.title('semi18')}
 
   color: ${({ disabled }) => (disabled ? '##A5A5A5' : '#373737')};
   background: ${({ disabled }) => (disabled ? '#F0F0F0' : '#FFC533')};

@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
+import { tx } from '@/styles/typography';
 
 import { checkRoutine, uncheckRoutine } from '@/apis/routine';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
@@ -185,7 +186,7 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
                 </ItemContainer>
                 <StatusLabel $status={rtn.status}>
                   {rtn.status === 'CHECKED' ? '완료' : rtn.status === 'MEMO' ? '미완' : '대기'}
-                </StatusLabel>{' '}
+                </StatusLabel>
               </Container>
             </SwipeableListItem>
           );
@@ -210,19 +211,18 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
 
 const TitleContainer = styled.div`
   display: flex;
+  align-items: center;
   gap: 10px;
   margin: 16px 0;
   padding: 0 20px;
 `;
 
 const TitleList = styled.div`
-  font-size: 16px;
-  font-weight: 500;
+  ${tx.body('med16')}
 `;
 
 const TitleDescription = styled.div`
-  font-size: 12px;
-  font-weight: 500;
+  ${tx.caption('med12')}
   color: ${({ theme }) => theme.color.gray[400]};
 `;
 
@@ -276,8 +276,9 @@ const StatusText = styled.div`
   text-overflow: ellipsis;
 
   font-size: 16.67px;
+  font-weight: 600;
   border-radius: 6.67px;
-  padding: 2px 4px;
+  padding: 4px 8px;
 
   color: ${({ theme }) => theme.color.white};
 `;
@@ -295,8 +296,7 @@ const UncompleteText = styled(StatusText)`
 `;
 
 const TitleText = styled.div<{ $status: 'UNCHECKED' | 'MEMO' | 'CHECKED' }>`
-  font-weight: 500;
-  font-size: 16px;
+  ${tx.body('med16')}
   color: ${({ $status, theme }) =>
     $status === 'CHECKED'
       ? theme.color.sub[500]
@@ -306,7 +306,7 @@ const TitleText = styled.div<{ $status: 'UNCHECKED' | 'MEMO' | 'CHECKED' }>`
 `;
 
 const AmountText = styled.div<{ $status: 'UNCHECKED' | 'MEMO' | 'CHECKED' }>`
-  font-size: 14px;
+  ${tx.body('reg14')}
   color: ${({ $status, theme }) =>
     $status === 'CHECKED'
       ? theme.color.sub[500]
@@ -320,13 +320,13 @@ const MainInfo = styled.div`
   align-items: center;
   margin: 5px 0;
   gap: 6px;
-  font-size: 14px;
+  ${tx.body('reg14')}
 `;
 
 const MemoInfo = styled.div`
   display: flex;
   align-items: center;
-  font-size: 14px;
+  ${tx.body('reg14')}
   color: gray;
   white-space: nowrap;
   overflow: hidden;
@@ -335,8 +335,8 @@ const MemoInfo = styled.div`
 `;
 
 const StatusLabel = styled.div<{ $status: 'UNCHECKED' | 'MEMO' | 'CHECKED' }>`
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16.67px;
+  font-weight: 600;
   padding: 4px 8px;
   border-radius: 6px;
 
