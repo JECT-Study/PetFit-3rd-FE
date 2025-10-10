@@ -1,7 +1,6 @@
 // features/home/BriefFeature.tsx
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { tx } from '@/styles/typography';
@@ -13,46 +12,89 @@ import { useNoteForm } from '@/hooks/useNoteForm';
 import type { UiNote } from '@/types/calendar.ui';
 import { createNote } from '@/apis/calendar';
 import { toRemarkCreateDto } from '@/utils/transform/calendar';
-import { mapRemarksToBrief, mapSchedulesToBrief } from './mappers';
+import { mapAlarmsToBrief, mapRemarksToBrief } from './mappers';
+import type { AlarmForm } from '@/types/alarm.base';
+import { createAlarm } from '@/apis/alarm';
+import { toCreateAlarmRequestDto } from '@/utils/transform/alarm';
+import { useAlarmForm } from '@/hooks/useAlarmForm';
+import { AlarmModal } from '../alarm/AlarmModal';
 
 type Props = {
   petId: number;
   today: Date; // 보통 오늘
 };
 
-const createEmpty = (): UiNote => ({ id: Date.now(), title: '', content: '' });
+const createEmptyNote = (): UiNote => ({ id: Date.now(), title: '', content: '' });
+const createEmptyAlarm = (date: Date): AlarmForm => ({
+  title: '',
+  content: '',
+  date, // 기본 오늘
+  hour: 9, // 기본 09:00
+  minute: 0,
+});
 
 export const BriefFeature = ({ petId, today }: Props) => {
-  const navigate = useNavigate();
   const qc = useQueryClient();
 
   // 홈 브리핑 데이터(서버 상태)
-  const { scheduleData, remarkData } = useBriefCardData(petId);
+  const { alarmData, remarkData } = useBriefCardData(petId);
   // 카드용 단순 타입으로 매핑 (id + title)
-  const scheduleItems = mapSchedulesToBrief(scheduleData);
+  const alarmItems = mapAlarmsToBrief(alarmData);
   const remarkItems = mapRemarksToBrief(remarkData);
 
-  // 특이사항 모달 드래프트만 로컬
-  const [draft, setDraft] = useState<UiNote | null>(null);
-  const { errors, canSave, onChange, onBlurField, resetTouched } = useNoteForm(draft, setDraft);
+  // ===== 특이사항 모달 =====
+  const [noteDraft, setNoteDraft] = useState<UiNote | null>(null);
+  const {
+    errors: noteErrors,
+    canSave: canSaveNote,
+    onChange: onChangeNote,
+    onBlurField: onBlurNoteField,
+    resetTouched: resetNoteTouched,
+  } = useNoteForm(noteDraft, setNoteDraft);
 
   const openCreateNote = () => {
-    setDraft(createEmpty());
-    resetTouched();
+    setNoteDraft(createEmptyNote());
+    resetNoteTouched();
   };
-
-  const closeNote = () => setDraft(null);
+  const closeNote = () => setNoteDraft(null);
 
   const onSubmitNote = async () => {
-    if (!draft || petId <= 0 || !canSave) return;
+    if (!noteDraft || petId <= 0 || !canSaveNote) return;
     try {
-      await createNote(petId, toRemarkCreateDto(draft, today));
+      await createNote(petId, toRemarkCreateDto(noteDraft, today));
       // 홈 카드 리프레시
       qc.invalidateQueries({ queryKey: ['remark', petId] });
-      // (캘린더 등 다른 화면도 갱신이 필요하면 여기에 invalidate 추가)
       closeNote();
     } catch (e) {
       console.error('특이사항 저장 실패', e);
+    }
+  };
+
+  // ===== 알람 모달 =====
+  const [alarmDraft, setAlarmDraft] = useState<AlarmForm | null>(null);
+  const {
+    errors: alarmErrors,
+    canSave: canSaveAlarm,
+    onChange: onChangeAlarm,
+    onBlurField: onBlurAlarmField,
+    resetTouched: resetAlarmTouched,
+  } = useAlarmForm(alarmDraft, setAlarmDraft);
+
+  const openCreateAlarm = () => {
+    setAlarmDraft(createEmptyAlarm(today));
+    resetAlarmTouched();
+  };
+  const closeAlarm = () => setAlarmDraft(null);
+
+  const onSubmitAlarm = async () => {
+    if (!alarmDraft || petId <= 0 || !canSaveAlarm) return;
+    try {
+      await createAlarm(petId, toCreateAlarmRequestDto(alarmDraft));
+      // 홈 카드의 알람 데이터 쿼리 갱신
+      qc.invalidateQueries({ queryKey: ['alarm', petId] });
+      closeAlarm();
+    } catch (e) {
+      console.error('알람 저장 실패', e);
     }
   };
 
@@ -70,23 +112,31 @@ export const BriefFeature = ({ petId, today }: Props) => {
       </BriefHeader>
 
       <CardRow>
-        <BriefCard variant="alarm" items={scheduleItems} onAdd={() => navigate('/alarm')} />
-        <BriefCard
-          variant="note"
-          items={remarkItems}
-          onAdd={openCreateNote} // ⬅️ 모달 오픈
-        />
+        <BriefCard variant="alarm" items={alarmItems} onAdd={openCreateAlarm} />
+        <BriefCard variant="note" items={remarkItems} onAdd={openCreateNote} />
       </CardRow>
+
+      {/* 알람 모달 */}
+      <AlarmModal
+        open={!!alarmDraft}
+        onClose={closeAlarm}
+        alarm={alarmDraft ?? createEmptyAlarm(today)}
+        errors={alarmErrors}
+        canSave={canSaveAlarm}
+        onChange={onChangeAlarm}
+        onBlurField={onBlurAlarmField}
+        onSubmit={onSubmitAlarm}
+      />
 
       {/* 특이사항 모달 */}
       <NoteModal
-        open={!!draft}
+        open={!!noteDraft}
         onClose={closeNote}
-        note={draft ?? createEmpty()}
-        errors={errors}
-        canSave={canSave}
-        onChange={onChange}
-        onBlurField={onBlurField}
+        note={noteDraft ?? createEmptyNote()}
+        errors={noteErrors}
+        canSave={canSaveNote}
+        onChange={onChangeNote}
+        onBlurField={onBlurNoteField}
         onSubmit={onSubmitNote}
       />
     </Wrapper>

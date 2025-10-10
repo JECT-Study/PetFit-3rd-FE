@@ -2,7 +2,6 @@ import type { RemarkDto } from '@/types/calendar.dto';
 import type { BriefItem } from './BriefCard';
 import type { AlarmDto } from '@/types/alarm.dto';
 
-// 타입 수정 필요
 export const mapAlarmsToBrief = (list: AlarmDto[]): BriefItem[] =>
   list.map(s => ({ id: s.alarmId, title: s.title }));
 
