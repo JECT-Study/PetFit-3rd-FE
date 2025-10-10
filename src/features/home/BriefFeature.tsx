@@ -9,7 +9,6 @@ import { BriefCard } from './BriefCard';
 
 import { NoteModal } from '@/features/calendar/NoteModal';
 import { useNoteForm } from '@/hooks/useNoteForm';
-import type { UiNote } from '@/types/calendar.ui';
 import { createNote } from '@/apis/calendar';
 import { toRemarkCreateDto } from '@/utils/transform/calendar';
 import { mapAlarmsToBrief, mapRemarksToBrief } from './mappers';
@@ -43,34 +42,6 @@ export const BriefFeature = ({ petId, today }: Props) => {
   const alarmItems = mapAlarmsToBrief(alarmData);
   const remarkItems = mapRemarksToBrief(remarkData);
 
-  // ===== 특이사항 모달 =====
-  const [noteDraft, setNoteDraft] = useState<NoteForm | null>(null);
-  const {
-    errors: noteErrors,
-    canSave: canSaveNote,
-    onChange: onChangeNote,
-    onBlurField: onBlurNoteField,
-    resetTouched: resetNoteTouched,
-  } = useNoteForm(noteDraft, setNoteDraft);
-
-  const openCreateNote = () => {
-    setNoteDraft(createEmptyNote());
-    resetNoteTouched();
-  };
-  const closeNote = () => setNoteDraft(null);
-
-  const onSubmitNote = async () => {
-    if (!noteDraft || petId <= 0 || !canSaveNote) return;
-    try {
-      await createNote(petId, toRemarkCreateDto(noteDraft, today));
-      // 홈 카드 리프레시
-      qc.invalidateQueries({ queryKey: ['remark', petId] });
-      closeNote();
-    } catch (e) {
-      console.error('특이사항 저장 실패', e);
-    }
-  };
-
   // ===== 알람 모달 =====
   const [alarmDraft, setAlarmDraft] = useState<AlarmForm | null>(null);
   const {
@@ -96,6 +67,34 @@ export const BriefFeature = ({ petId, today }: Props) => {
       closeAlarm();
     } catch (e) {
       console.error('알람 저장 실패', e);
+    }
+  };
+
+  // ===== 특이사항 모달 =====
+  const [noteDraft, setNoteDraft] = useState<NoteForm | null>(null);
+  const {
+    errors: noteErrors,
+    canSave: canSaveNote,
+    onChange: onChangeNote,
+    onBlurField: onBlurNoteField,
+    resetTouched: resetNoteTouched,
+  } = useNoteForm(noteDraft, setNoteDraft);
+
+  const openCreateNote = () => {
+    setNoteDraft(createEmptyNote());
+    resetNoteTouched();
+  };
+  const closeNote = () => setNoteDraft(null);
+
+  const onSubmitNote = async () => {
+    if (!noteDraft || petId <= 0 || !canSaveNote) return;
+    try {
+      await createNote(petId, toRemarkCreateDto(noteDraft, today));
+      // 홈 카드 리프레시
+      qc.invalidateQueries({ queryKey: ['remark', petId] });
+      closeNote();
+    } catch (e) {
+      console.error('특이사항 저장 실패', e);
     }
   };
 
