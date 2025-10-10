@@ -29,8 +29,8 @@ export const theme = {
     },
     white: 'var(--white)',
     black: 'var(--black)',
-    sub: { 500: 'var(--sub-500)' },
-    warning: { 500: 'var(--warning-500)' },
+    sub: { 500: 'var(--sub-500)', 500_30: 'var(--sub-500-30)' },
+    warning: { 500: 'var(--warning-500)', 500_30: 'var(--warning-500-30)' },
   },
 
   radius: { sm: '8px', md: '12px', lg: '16px' },

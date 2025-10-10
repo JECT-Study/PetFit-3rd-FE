@@ -22,9 +22,13 @@
   --gray-800: #2E2E2E;
   --gray-900: #191919;
 
-  /* Sub / Warning */
+  /* Sub */
   --sub-500:    #4D9DE0;
+  --sub-500-30: #4D9DE04D;
+
+  /* Warning */
   --warning-500:#FF5C33;
+  --warning-500-30: #FF5C334D;
 
   /* White / Black */
   --white: #FFFFFF;
