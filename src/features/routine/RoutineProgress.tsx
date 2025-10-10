@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { tx } from '@/styles/typography';
 
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { useDailyRoutine } from '@/hooks/useDailyRoutine';
@@ -31,7 +32,6 @@ export const RoutineProgress = ({ petId }: RoutineProps) => {
   return (
     <Container>
       <Label>루틴 달성률</Label>
-
       <ProgressBarContainer>
         <ProgressBar>
           <ProgressFill style={{ width: `${completedPercent}%` }} />
@@ -46,7 +46,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 0 8px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 8px 0px #0000001f;
 `;
 
 const ProgressBarContainer = styled.div`
@@ -58,25 +60,25 @@ const ProgressBarContainer = styled.div`
 `;
 
 const Label = styled.div`
-  font-size: 12px;
-  color: #7a7a7a;
+  ${tx.caption('med12')}
+  color: ${({ theme }) => theme.color.gray[500]};
 `;
 
 const PercentText = styled.div`
-  font-size: 13px;
-  color: #666666;
+  ${tx.body('semi13')}
+  color: ${({ theme }) => theme.color.gray[500]};
 `;
 
 const ProgressBar = styled.div`
-  width: 100%;
+  width: 90%;
   height: 16px;
-  background-color: #dddddd;
+  background-color: #d9d9d9;
   border-radius: 8px;
   overflow: hidden;
 `;
 
 const ProgressFill = styled.div`
   height: 100%;
-  background-color: #4d9de0;
+  background-color: ${({ theme }) => theme.color.sub[500]};
   border-radius: 8px;
 `;
