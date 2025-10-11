@@ -1,5 +1,5 @@
-// features/calendar/NotesSection.tsx
-import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+// features/calendar/NotesFeature.tsx
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import { NoteList } from './NoteList';
 import { NoteModal } from './NoteModal';
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
@@ -7,9 +7,9 @@ import type { UiNote } from '@/types/calendar.ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { createNote, deleteNote, updateNote } from '@/apis/calendar';
 import { toRemarkCreateDto, toRemarkUpdateDto } from '@/utils/transform/calendar';
-import type { RemarkDto } from '@/types/calendar.dto';
 import { formatDate } from '@/utils/calendar';
 import { useNoteForm } from '@/hooks/useNoteForm';
+import type { NoteForm } from '@/types/calendar.base';
 
 export type NotesFeatureHandle = {
   openCreate: () => void; // ✅ 부모에서 호출
@@ -21,19 +21,19 @@ type Props = {
   notes: UiNote[];
 };
 
-const createEmpty = (): UiNote => ({ id: Date.now(), title: '', content: '' });
-const existsIn = (list: UiNote[], n: UiNote) => list.some(x => x.id === n.id);
+const createEmpty = (): NoteForm => ({ title: '', content: '' });
 
 export const NotesFeature = forwardRef<NotesFeatureHandle, Props>(
   ({ petId, selectedDate, notes }, ref) => {
     const qc = useQueryClient();
 
-    // 드래프트(편집 중 1건) + 삭제대상만 로컬로 관리
-    const [draft, setDraft] = useState<UiNote | null>(null);
+    // 드래프트(편집 중 1건) + 편집/삭제 대상 id만 로컬로 관리
+    const [draft, setDraft] = useState<NoteForm | null>(null);
+    const [editingId, setEditingId] = useState<number | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
 
     const dateStr = formatDate(selectedDate);
-    const monthKey = useMemo(() => dateStr.slice(0, 7), [dateStr]);
+    const monthKey = dateStr.slice(0, 7);
 
     const invalidate = () => {
       qc.invalidateQueries({ queryKey: ['dailyEntries', petId, dateStr] });
@@ -45,6 +45,7 @@ export const NotesFeature = forwardRef<NotesFeatureHandle, Props>(
 
     // 외부 버튼 → 새 드래프트 오픈
     const openCreate = () => {
+      setEditingId(null);
       setDraft(createEmpty());
       resetTouched();
     };
@@ -54,9 +55,11 @@ export const NotesFeature = forwardRef<NotesFeatureHandle, Props>(
     const handleEdit = (id: number) => {
       const found = notes.find(n => n.id === id);
       if (!found) return;
-      setDraft(found);
+      setEditingId(found.id);
+      setDraft({ title: found.title, content: found.content });
       resetTouched();
     };
+    // 삭제 진입
     const handleRequestDelete = (id: number) => setDeleteId(id);
 
     // 저장
@@ -64,15 +67,15 @@ export const NotesFeature = forwardRef<NotesFeatureHandle, Props>(
       if (!draft || petId <= 0 || !canSave) return;
 
       try {
-        let saved: RemarkDto;
-        if (existsIn(notes, draft)) {
-          saved = await updateNote(draft.id, toRemarkUpdateDto(draft));
+        if (editingId == null) {
+          await createNote(petId, toRemarkCreateDto(draft, selectedDate)); // 생성
         } else {
-          saved = await createNote(petId, toRemarkCreateDto(draft, selectedDate));
+          await updateNote(editingId, toRemarkUpdateDto(draft)); // 수정
         }
         // 목록은 invalidate로 새로고침(서버 상태 신뢰)
         invalidate();
         setDraft(null);
+        setEditingId(null);
       } catch (e) {
         console.error('특이사항 저장 실패', e);
       }
@@ -97,7 +100,10 @@ export const NotesFeature = forwardRef<NotesFeatureHandle, Props>(
 
         <NoteModal
           open={!!draft}
-          onClose={() => setDraft(null)}
+          onClose={() => {
+            setDraft(null);
+            setEditingId(null);
+          }}
           note={draft ?? createEmpty()}
           errors={errors}
           canSave={canSave}

@@ -1,4 +1,4 @@
-import type { EditableNote, NoteField, UiNote } from '@/types/calendar.ui';
+import type { EditableNote, NoteField } from '@/types/calendar.ui';
 import { Modal } from '@/ds/Modal';
 import { Button } from '@/ds/Button';
 import { useImeMaxLength } from '@/hooks/useImeMaxLength';
@@ -11,12 +11,13 @@ import {
 import { Field } from '@/ds/Field';
 import { InputBase } from '@/ds/InputBase';
 import { TextareaBase } from '@/ds/TextareaBase';
+import type { NoteForm } from '@/types/calendar.base';
 
 interface NoteModalProps {
   open: boolean;
   onClose: () => void;
 
-  note: UiNote; // 드래프트 표시용
+  note: NoteForm; // 드래프트 표시용
   errors: { title: string | null; content: string | null };
   canSave: boolean;
 

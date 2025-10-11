@@ -14,6 +14,9 @@ interface FieldProps {
   /** 상단 라벨(선택) */
   label?: React.ReactNode;
 
+  /** 헬퍼 행(힌트/카운트) 표시 여부. 기본 true */
+  showHelper?: boolean;
+
   /** 라벨-컨트롤 연결용 id(선택). 보통은 자식에 id를 직접 지정 권장 */
   labelFor?: string;
 
@@ -21,16 +24,13 @@ interface FieldProps {
   helperId?: string;
 
   /** 힌트(동적 메시지 포함). 이번 정책상 에러 스타일은 헬퍼 색만 변경 */
-  hint: string | null;
+  hint?: string | null;
   /** 검증 결과(헬퍼 색/aria-invalid 주입용) */
-  invalid: boolean;
+  invalid?: boolean;
 
   /** 글자수 카운트 */
-  count: number;
-  max: number;
-
-  /** 헬퍼 행(힌트/카운트) 표시 여부. 기본 true */
-  showHelper?: boolean;
+  count?: number;
+  max?: number;
 
   /** <InputBase .../> 또는 <TextareaBase .../> 단일 엘리먼트 */
   children: ReactElement<FieldControlProps>;

@@ -1,220 +1,151 @@
-import { useEffect, useState } from 'react';
-
-import { useSelector } from 'react-redux';
+import { useMemo, useRef } from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 
-import { createSchedule, deleteSchedule, getAllSchedules, updateSchedule } from '@/apis/alarm';
-import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal';
-import { ScheduleAlarmItem } from '@/features/alarm/ScheduleAlarmItem';
-import { ScheduleRegisterModal } from '@/features/alarm/ScheduleRegisterModal';
-import { useModal } from '@/hooks/useModal';
 import type { RootState } from '@/store/store';
-import type { Alarm } from '@/types/alarm';
-import { toAlarm, toScheduleFormData } from '@/utils/transform/alarm';
-
+import { AlarmFeature, type AlarmFeatureHandle } from '@/features/alarm/AlarmFeature';
 import EmptyDog from '@/assets/icons/empty-dog.svg?react';
-
-const createEmptyAlarm = (): Alarm => ({
-  id: Date.now(),
-  startDate: new Date(),
-  title: '',
-  description: '',
-});
+import { getAllAlarms } from '@/apis/alarm';
+import { toAlarmEntity, toUiAlarm } from '@/utils/transform/alarm';
+import { Button } from '@/ds/Button';
+import { tx } from '@/styles/typography';
+import { Plus } from 'lucide-react';
 
 export const AlarmPage = () => {
-  const { isOpen, openModal, closeModal } = useModal();
+  const petId = useSelector((s: RootState) => s.selectedPet.id);
+  const pid = petId ?? -1;
 
-  const [alarmList, setAlarmList] = useState<Alarm[]>([]);
-  const [editingAlarm, setEditingAlarm] = useState<Alarm>(createEmptyAlarm());
-  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  // 서버 조회(SSOT)
+  const { data, isLoading } = useQuery({
+    queryKey: ['alarms', pid],
+    queryFn: () => {
+      if (pid <= 0) throw new Error('No pet selected');
+      return getAllAlarms(pid); // AlarmDto[]
+    },
+    enabled: pid > 0,
+    staleTime: 5 * 60 * 1000,
+  });
 
-  // ✅ 전역 상태에서 selectedPet.id 추출
-  const petId = useSelector((state: RootState) => state.selectedPet.id);
+  const alarms = useMemo(() => {
+    const list = (data ?? []).map(toAlarmEntity).map(toUiAlarm);
+    return list.sort((a, b) => a.notifyAt.getTime() - b.notifyAt.getTime());
+  }, [data]);
 
-  // 🟢 API 연동: 알람 전체 불러오기
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const res = await getAllSchedules(petId ?? -1);
-        setAlarmList(res.map(toAlarm));
-      } catch (e) {
-        console.error('알람 불러오기 실패', e);
-      }
-    };
-    fetch();
-  }, []);
-
-  // 🟢 API 연동: 알람 등록/수정
-  const handleSubmit = async (submittedAlarm: Alarm) => {
-    try {
-      const formData = toScheduleFormData(submittedAlarm);
-
-      if (isEditing(alarmList, submittedAlarm)) {
-        const updated = await updateSchedule(submittedAlarm.id, formData);
-        setAlarmList(prev => addOrUpdateAlarmList(prev, toAlarm(updated)));
-      } else {
-        const created = await createSchedule(petId ?? -1, formData);
-        setAlarmList(prev => addOrUpdateAlarmList(prev, toAlarm(created)));
-      }
-      closeModal();
-    } catch (err) {
-      console.error('알람 저장 실패', err);
-    }
-  };
-
-  // 🟢 API 연동: 알람 삭제
-  const confirmDelete = async () => {
-    if (deleteTargetId === null) return;
-    try {
-      await deleteSchedule(deleteTargetId);
-      setAlarmList(prev => deleteAlarmById(prev, deleteTargetId));
-    } catch (err) {
-      console.error('알람 삭제 실패', err);
-    } finally {
-      setDeleteTargetId(null);
-    }
-  };
-
-  const isEditing = (list: Alarm[], target: Alarm) => list.some(alarm => alarm.id === target.id);
-
-  // const addOrUpdateAlarmList = (list: Alarm[], target: Alarm): Alarm[] =>
-  //   isEditing(list, target)
-  //     ? list.map(alarm => (alarm.id === target.id ? target : alarm))
-  //     : [...list, target];
-
-  const addOrUpdateAlarmList = (list: Alarm[], target: Alarm): Alarm[] => {
-    const index = list.findIndex(alarm => alarm.id === target.id);
-    let newList: Alarm[];
-
-    if (index === -1) {
-      // 신규 알람 추가
-      newList = [...list, { ...target }];
-    } else {
-      // 기존 알람 수정
-      newList = [...list];
-      newList[index] = { ...target };
-    }
-
-    // 🔁 날짜 기준 오름차순 정렬 (가까운 날짜가 위로)
-    return newList.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
-  };
-
-  const deleteAlarmById = (list: Alarm[], targetId: number): Alarm[] =>
-    list.filter(alarm => alarm.id !== targetId);
-
-  const handleAddAlarm = () => {
-    setEditingAlarm(createEmptyAlarm());
-    openModal();
-  };
-
-  const handleEdit = (alarm: Alarm) => {
-    setEditingAlarm(alarm);
-    openModal();
-  };
+  const featureRef = useRef<AlarmFeatureHandle>(null);
 
   return (
     <Wrapper>
-      <Header>알람 설정하기</Header>
+      <Header>알람 목록</Header>
 
-      <Content>
-        {alarmList.length === 0 ? (
+      <Content $isEmpty={!alarms.length}>
+        {isLoading && <Placeholder>로딩 중…</Placeholder>}
+
+        {!isLoading && alarms.length === 0 && (
           <>
             <EmptyDogIcon />
             <Description>등록한 알람이 없습니다</Description>
-            <AddButton onClick={handleAddAlarm}>알람 추가하기</AddButton>
-          </>
-        ) : (
-          <>
-            <AddButton hasList onClick={handleAddAlarm}>
-              알람 추가하기
-            </AddButton>
-            <List>
-              {alarmList.map(alarm => (
-                <ScheduleAlarmItem
-                  key={alarm.id}
-                  alarm={alarm}
-                  onEdit={() => handleEdit(alarm)}
-                  onDelete={() => setDeleteTargetId(alarm.id)}
-                />
-              ))}
-            </List>
           </>
         )}
+
+        <AlarmFeature ref={featureRef} petId={pid} alarms={alarms} />
       </Content>
 
-      <ScheduleRegisterModal
-        isOpen={isOpen}
-        onClose={closeModal}
-        initialAlarm={editingAlarm} // 추가 시엔 빈 객체, 수정 시엔 기존 알람
-        onSubmit={handleSubmit}
-      />
-
-      <ConfirmDeleteModal
-        isOpen={deleteTargetId !== null}
-        onClose={() => setDeleteTargetId(null)}
-        onConfirm={confirmDelete}
-      />
+      <Footer $isEmpty={!alarms.length}>
+        {alarms.length > 0 ? (
+          <AddButton onClick={() => featureRef.current?.openCreate()}>
+            <Plus aria-hidden size={18} strokeWidth={2} />
+            <Text>알람 추가</Text>
+          </AddButton>
+        ) : (
+          <Button size="lg" fullWidth onClick={() => featureRef.current?.openCreate()}>
+            알람 추가하기
+          </Button>
+        )}
+      </Footer>
     </Wrapper>
   );
 };
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 60px);
+`;
 
 const Header = styled.h2`
   text-align: center;
   padding: 18px 0;
   font-size: 18px;
-  font-style: normal;
   font-weight: 600;
   line-height: 135%;
   letter-spacing: -0.45px;
 `;
 
-const Content = styled.div`
-  position: relative;
-  margin-top: 70px;
+const Content = styled.div<{ $isEmpty: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 18px;
+  justify-content: ${({ $isEmpty }) => ($isEmpty ? 'center' : 'flex-start')};
+  align-items: ${({ $isEmpty }) => ($isEmpty ? 'center' : 'stretch')};
+  gap: 12px;
+  flex: 1;
+`;
+
+const Placeholder = styled.div`
+  color: ${({ theme }) => theme.color.gray[400]};
+  ${tx.body('reg14')};
 `;
 
 const EmptyDogIcon = styled(EmptyDog)`
-  width: 120px;
+  width: 142px;
   height: auto;
+  color: ${({ theme }) => theme.color.gray[400]};
 `;
 
 const Description = styled.p`
-  color: #999;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
+  color: ${({ theme }) => theme.color.gray[400]};
+  ${tx.body('med16')};
 `;
 
-const AddButton = styled.button<{ hasList?: boolean }>`
-  position: ${({ hasList }) => (hasList ? 'absolute' : 'static')};
-  top: ${({ hasList }) => (hasList ? '-58px' : 'auto')};
-  right: ${({ hasList }) => (hasList ? '16px' : 'auto')};
-  align-self: ${({ hasList }) => (hasList ? 'flex-end' : 'center')};
-  margin-top: ${({ hasList }) => (hasList ? '0' : '18px')};
+const Footer = styled.div<{ $isEmpty: boolean }>`
+  display: flex;
+  justify-content: ${({ $isEmpty }) => ($isEmpty ? 'flex-start' : 'flex-end')};
+  padding: 0 20px;
+  margin-bottom: 30px;
+`;
 
-  padding: 8px 12px;
-  background-color: #facc15;
-  color: #222;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
+const AddButton = styled.button`
+  position: fixed;
+  /* 네비바 위 + 여유 간격 + 안전영역(iOS 노치) */
+  bottom: calc(60px + 30px);
+  z-index: 10;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid ${({ theme }) => theme.color.main[500]};
+  background: ${({ theme }) => theme.color.white};
+  ${tx.body('med16')};
+  color: ${({ theme }) => theme.color.gray[700]};
+  border-radius: 30px;
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.12);
+  cursor: pointer;
 
   &:hover {
-    opacity: 0.9;
-    cursor: pointer;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.16);
+  }
+  &:active {
+    transform: translateY(1px);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
-const List = styled.ul`
-  width: 100%;
-  padding: 0 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+const Text = styled.span`
+  color: ${({ theme }) => theme.color.gray[700]};
+  ${tx.body('med16')};
 `;

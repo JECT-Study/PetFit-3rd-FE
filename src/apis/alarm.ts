@@ -1,55 +1,80 @@
-import { axiosInstance } from './axiosInstance'; // 환경에 맞게 경로 수정
-import type { ApiResponse } from '../types/common'; // ApiResponse 정의가 있는 위치 기준
+// apis/alarm.ts
+import { axiosInstance } from './axiosInstance';
+import type { ApiResponse } from '@/types/common';
+import type {
+  AlarmDto,
+  CreateAlarmRequestDto,
+  UpdateAlarmRequestDto,
+  AlarmId,
+} from '@/types/alarm.dto';
 
-// API 응답 전용 타입
-export interface ScheduleApiResponse {
-  scheduleId: number;
-  title: string;
-  content: string;
-  targetDate: string; // YYYY-MM-DD
-}
-
-// API 요청 바디 (등록/수정 시 사용)
-export interface ScheduleFormData {
-  title: string;
-  content: string;
-  targetDate?: string; // 등록 시 필요, 수정 시 선택
-}
-
-// 📌 일정 등록: POST /api/schedules/{petId}
-export const createSchedule = async (
+/**
+ * 1) 알람 생성: POST /alarms/{petId}
+ */
+export const createAlarm = async (
   petId: number,
-  data: ScheduleFormData
-): Promise<ScheduleApiResponse> => {
-  const res = await axiosInstance.post<ApiResponse<ScheduleApiResponse>>(
-    `/schedules/${petId}`,
-    data
-  );
+  body: CreateAlarmRequestDto
+): Promise<AlarmDto> => {
+  const res = await axiosInstance.post<ApiResponse<AlarmDto>>(`/alarms/${petId}`, body);
   return res.data.content;
 };
 
-// 📌 일정 삭제: DELETE /api/schedules/{scheduleId}
-export const deleteSchedule = async (scheduleId: number): Promise<string> => {
-  const res = await axiosInstance.delete<ApiResponse<string>>(`/schedules/${scheduleId}`);
+/**
+ * 2) 알람 수정: PATCH /alarms/{alarmId}
+ */
+export const updateAlarm = async (
+  alarmId: AlarmId,
+  body: UpdateAlarmRequestDto
+): Promise<AlarmDto> => {
+  const res = await axiosInstance.patch<ApiResponse<AlarmDto>>(`/alarms/${alarmId}`, body);
   return res.data.content;
 };
 
-// 📌 일정 수정: PATCH /api/schedules/{scheduleId}
-export const updateSchedule = async (
-  scheduleId: number,
-  data: ScheduleFormData
-): Promise<ScheduleApiResponse> => {
-  const res = await axiosInstance.patch<ApiResponse<ScheduleApiResponse>>(
-    `/schedules/${scheduleId}`,
-    data
-  );
+/**
+ * 3) 알람 삭제: DELETE /alarms/{alarmId}
+ */
+export const deleteAlarm = async (alarmId: AlarmId): Promise<string> => {
+  const res = await axiosInstance.delete<ApiResponse<string>>(`/alarms/${alarmId}`);
   return res.data.content;
 };
 
-// 📌 전체 일정 조회: GET /api/schedules/{petId}/all
-export const getAllSchedules = async (petId: number): Promise<ScheduleApiResponse[]> => {
-  const res = await axiosInstance.get<ApiResponse<ScheduleApiResponse[]>>(
-    `/schedules/${petId}/all`
-  );
+/**
+ * 4) 알람 전체 목록 조회: GET /alarms/{petId}/all
+ */
+export const getAllAlarms = async (petId: number): Promise<AlarmDto[]> => {
+  const res = await axiosInstance.get<ApiResponse<AlarmDto[]>>(`/alarms/${petId}`);
   return res.data.content;
+};
+
+/**
+ * 5) 알람 단건 읽음 처리: PATCH /alarms/{alarmId}/read
+ */
+export const markAlarmRead = async (alarmId: AlarmId): Promise<void> => {
+  await axiosInstance.patch(`/alarms/${alarmId}/read`);
+};
+
+/**
+ * 6) 읽지 않은 알람 목록 조회: GET /alarms/{petId}/unread
+ */
+export const getUnreadAlarms = async (petId: number): Promise<AlarmDto[]> => {
+  const res = await axiosInstance.get<ApiResponse<AlarmDto[]>>(`/alarms/${petId}/unread`);
+  return res.data.content;
+};
+
+/**
+ * 7) SSE 구독: GET /alarms/{petId}/subscribe (text/event-stream)
+ *    - 브라우저에서 EventSource 사용
+ *    - 쿠키 인증이면 withCredentials: true 필요
+ *    - axios로는 SSE를 다루기 까다로우므로 분리
+ */
+export const subscribeAlarms = (petId: number): EventSource => {
+  const rawBase = import.meta.env.VITE_BACKEND_URL;
+  if (!rawBase) throw new Error('VITE_BACKEND_URL이 비어 있습니다.');
+
+  // 디렉터리로 인식되도록 끝에 슬래시 보장
+  const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+  // 상대 경로를 안전하게 결합 (중복/누락 슬래시 자동 정리)
+  const url = new URL(`alarms/${petId}/subscribe`, base).toString();
+
+  return new EventSource(url, { withCredentials: true });
 };
