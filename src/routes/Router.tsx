@@ -22,6 +22,7 @@ import { PublicRouter } from './PublicRouter';
 import { StateGuard } from './StateGuard';
 import { AIReportPage } from '@/pages/AIReportPage';
 import { AIReportListPage } from '@/pages/AIReportListPage';
+import { AIReportDetailPage } from '@/pages/AIReportDetailPage';
 
 export const router = createBrowserRouter([
   // ── Public 영역: 로그인/리다이렉트 등 ─────────────────────────────
@@ -61,6 +62,7 @@ export const router = createBrowserRouter([
               { path: '/edit/pet/:petId', element: <PetEditPage /> },
               { path: '/aireport', element: <AIReportPage /> },
               { path: '/aireport/list', element: <AIReportListPage /> },
+              { path: '/aireport/:reportId', element: <AIReportDetailPage /> },
             ],
           },
         ],

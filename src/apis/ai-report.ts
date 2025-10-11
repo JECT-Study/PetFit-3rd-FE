@@ -15,7 +15,8 @@ export const createReport = async (petId: number, startDate: string, endDate: st
 
 export const getReport = async (reportId: number) => {
   try {
-    await axiosInstance.get(`aireports/${reportId}`);
+    const response = await axiosInstance.get(`aireports/${reportId}`);
+    return response.data.content;
   } catch {
     console.log('ai 보고서 불러오기 실패');
   }
