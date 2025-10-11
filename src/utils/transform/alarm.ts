@@ -4,15 +4,21 @@ import type { AlarmForm } from '@/types/alarm.base';
 
 /* ───────────── Date 유틸 ───────────── */
 
-/** 로컬 date-only + 시분 → 로컬 Date(해당 일자 시각) */
-export const mergeLocalDateTime = (dateOnly: Date, hour: number, minute: number): Date =>
-  new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), hour, minute, 0, 0);
-
 /** Date → 시/분 분리(로컬) */
 export const splitTime = (dt: Date) => ({
   hour: dt.getHours(),
   minute: dt.getMinutes(),
 });
+
+// UI(Form) → DTO (생성/수정 요청)
+// 로컬 date+time → Date → ISO → 밀리초/‘Z’ 제거(서버 규약)
+const mergeLocalDateTime = (d: Date, h: number, m: number) =>
+  new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m, 0, 0);
+
+const toServerUtcString = (dt: Date) => dt.toISOString().replace(/\.\d{3}Z$/, ''); // 'YYYY-MM-DDTHH:mm:ss'
+
+// 서버 문자열이 타임존 없으니 UTC로 간주해 파싱
+const parseServerUtcString = (s: string) => new Date(`${s}Z`);
 
 /* ───────────── DTO → Entity ───────────── */
 
@@ -20,7 +26,7 @@ export const toAlarmEntity = (dto: AlarmDto): AlarmEntity => ({
   id: dto.alarmId,
   title: dto.title,
   content: dto.content,
-  notifyAt: new Date(dto.targetDateTime), // ISO(UTC) → Date(로컬로 표시됨)
+  notifyAt: parseServerUtcString(dto.targetDateTime), // ISO(UTC로 해석) → Date(로컬로 표시됨)
   read: dto.read,
 });
 
@@ -43,14 +49,14 @@ export const toUiAlarm = (e: AlarmEntity): UiAlarm => ({
 export const toCreateAlarmRequestDto = (f: AlarmForm): CreateAlarmRequestDto => ({
   title: f.title,
   content: f.content,
-  targetDateTime: mergeLocalDateTime(f.date, f.hour, f.minute).toISOString(), // KST→UTC ISO
+  targetDateTime: toServerUtcString(mergeLocalDateTime(f.date, f.hour, f.minute)), // KST→UTC ISO(no ms)
 });
 
 /** 폼 → 수정 요청 DTO */
 export const toUpdateAlarmRequestDto = (f: AlarmForm): UpdateAlarmRequestDto => ({
   title: f.title,
   content: f.content,
-  targetDateTime: mergeLocalDateTime(f.date, f.hour, f.minute).toISOString(),
+  targetDateTime: toServerUtcString(mergeLocalDateTime(f.date, f.hour, f.minute)),
 });
 
 /** 엔티티 → 폼 초기값(수정 모드) */
