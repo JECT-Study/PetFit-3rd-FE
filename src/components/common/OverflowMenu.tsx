@@ -1,20 +1,27 @@
 import { useState, useRef } from 'react';
 
-import { MoreVertical } from 'lucide-react';
+import { MoreHorizontal, MoreVertical } from 'lucide-react';
 import styled from 'styled-components';
 import { tx } from '@/styles/typography';
 import { useClickOutside } from '@/hooks/useClickOutside';
 
+type MenuContext = 'alarm' | 'calendar';
+
 interface OverflowMenuProps {
+  context: MenuContext; // 'alarm' | 'calendar'
+  targetDate?: Date; // 알람일 때만 사용(과거이면 수정 숨김)
   onEdit?: () => void;
   onDelete: () => void;
 }
 
-export const OverflowMenu = ({ onEdit, onDelete }: OverflowMenuProps) => {
+export const OverflowMenu = ({ context, targetDate, onEdit, onDelete }: OverflowMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(dropdownRef, isOpen, () => setIsOpen(false));
+
+  // 알람 컨텍스트에서는 과거면 수정 숨김
+  const canEdit = context === 'alarm' ? !(targetDate && targetDate.getTime() <= Date.now()) : true;
 
   const handleToggleDropdown = () => {
     setIsOpen(prev => !prev);
@@ -28,13 +35,19 @@ export const OverflowMenu = ({ onEdit, onDelete }: OverflowMenuProps) => {
         aria-haspopup="menu"
         aria-expanded={isOpen}
       >
-        <MoreIcon />
+        {context === 'alarm' ? <AlarmIcon /> : <CalendarIcon />}
       </ToggleButton>
 
       {isOpen && (
-        <Dropdown>
-          {onEdit && <DropdownItem onClick={onEdit}>수정</DropdownItem>}
-          <DropdownItem onClick={onDelete}>삭제</DropdownItem>
+        <Dropdown role="menu">
+          {canEdit && onEdit && (
+            <DropdownItem role="menuitem" onClick={onEdit}>
+              수정
+            </DropdownItem>
+          )}
+          <DropdownItem role="menuitem" onClick={onDelete}>
+            삭제
+          </DropdownItem>
         </Dropdown>
       )}
     </Wrapper>
@@ -51,7 +64,12 @@ const ToggleButton = styled.button`
   align-items: center;
 `;
 
-const MoreIcon = styled(MoreVertical).attrs({ size: 24, strokeWidth: 2 })`
+/* alarm용: 가로 점, 회색700 */
+const AlarmIcon = styled(MoreHorizontal).attrs({ size: 24, strokeWidth: 1.5 })`
+  color: ${({ theme }) => theme.color.gray[700]};
+`;
+/* calendar용: 세로 점, 회색400 */
+const CalendarIcon = styled(MoreVertical).attrs({ size: 24, strokeWidth: 2 })`
   color: ${({ theme }) => theme.color.gray[400]};
 `;
 
@@ -73,6 +91,11 @@ const DropdownItem = styled.li`
   ${tx.body('med13')};
   color: ${({ theme }) => theme.color.gray[700]};
   cursor: pointer;
+
+  /* 두 번째 항목부터 상단 보더 */
+  & + & {
+    border-top: 1px solid ${({ theme }) => theme.color.gray[200]};
+  }
 
   &:hover {
     background-color: #f9f9f9;

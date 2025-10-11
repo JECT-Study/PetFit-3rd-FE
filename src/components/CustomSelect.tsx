@@ -70,16 +70,16 @@ const FieldGroup = styled.div`
   gap: 8px;
 `;
 
-const SelectBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
 const Label = styled.label`
   padding-left: 8px;
   color: ${({ theme }) => theme.color.gray[500]};
   ${tx.body('reg14')};
+`;
+
+const SelectBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
 const SelectTrigger = styled.button`
@@ -105,7 +105,7 @@ const SelectDropdown = styled.ul`
   background: ${({ theme }) => theme.color.white};
   border: 1px solid ${({ theme }) => theme.color.gray[300]};
   color: ${({ theme }) => theme.color.gray[500]};
-  border-radius: 8px;
+  border-radius: ${({ theme }) => theme.radius.sm};
 `;
 
 const SelectOption = styled.li`
