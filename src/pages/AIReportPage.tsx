@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import Dog from '@/assets/icons/dog.svg?react';
 import styled from 'styled-components';
@@ -8,9 +8,13 @@ import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { getPetById } from '@/apis/pets';
 import { DateRangePickerModal } from '@/features/ai-report/DateRangePickerModal';
+import { getReportList } from '@/apis/ai-report';
+import { useNavigate } from 'react-router-dom';
 
 export const AIReportPage = () => {
+  const navigate = useNavigate();
   const selectedPetId = useSelector((s: RootState) => s.selectedPet.id);
+
   const { data: pet } = useQuery({
     queryKey: ['pet', selectedPetId],
     queryFn: () => getPetById(selectedPetId as number),
@@ -19,6 +23,20 @@ export const AIReportPage = () => {
   });
 
   const [openModal, setOpenModal] = useState(false);
+
+  const { data: reportList, isFetched } = useQuery({
+    queryKey: ['aiReports', selectedPetId],
+    queryFn: () => getReportList(selectedPetId ?? 0),
+    enabled: !!selectedPetId,
+  });
+
+  useEffect(() => {
+    if (reportList && reportList.length > 0) {
+      navigate('/aireport/list');
+    }
+  }, [reportList, navigate]);
+  if (!isFetched) return null;
+  if (reportList && reportList.length > 0) return null;
 
   return (
     <Container>
