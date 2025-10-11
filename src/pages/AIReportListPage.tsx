@@ -6,8 +6,11 @@ import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { getPetById } from '@/apis/pets';
 import { getReportList } from '@/apis/ai-report';
+import { useNavigate } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 
 export const AIReportListPage = () => {
+  const navigate = useNavigate();
   const selectedPetId = useSelector((s: RootState) => s.selectedPet.id);
   const { data: pet } = useQuery({
     queryKey: ['pet', selectedPetId],
@@ -38,7 +41,7 @@ export const AIReportListPage = () => {
           {reportList &&
             reportList.length > 0 &&
             reportList.map((report: any) => (
-              <ReportItem key={report.id}>
+              <ReportItem key={report.id} onClick={() => navigate(`/aireport/${2}`)}>
                 <ReportTitle>{report.title}</ReportTitle>
                 <ReportDate>
                   기간 | {report.startDate} ~ {report.endDate}
@@ -47,6 +50,11 @@ export const AIReportListPage = () => {
             ))}
         </ListContainer>
       </Container>
+
+      <FloatingButton>
+        <Sparkles size={16} />
+        <span>AI 진단받기</span>
+      </FloatingButton>
     </>
   );
 };
@@ -99,4 +107,18 @@ const ReportDate = styled.div`
   margin-top: 4px;
   ${tx.caption('med12')};
   color: ${({ theme }) => theme.color.gray[400]};
+`;
+
+const FloatingButton = styled.button`
+  display: flex;
+  align-items: center;
+  position: fixed;
+  right: 20px;
+  bottom: 80px;
+  padding: 18px;
+  gap: 6px;
+  ${tx.body('med16')};
+  border: 1px solid ${({ theme }) => theme.color.main[500]};
+  border-radius: 30px;
+  cursor: pointer;
 `;
