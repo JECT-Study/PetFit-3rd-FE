@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { fetchHomeRemarks } from '@/apis/home/remarks';
-import { fetchHomeAlarms } from '@/apis/home/alarm';
+import { fetchHomeRemarks, fetchHomeAlarms } from '@/apis/home';
 
 export const useBriefCardData = (petId: number) => {
   const { data: alarmData = [] } = useQuery({
