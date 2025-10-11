@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import { tx } from '@/styles/typography';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export const AIReportDetailPage = () => {
   const { reportId } = useParams<{ reportId: string }>();
@@ -32,7 +34,29 @@ export const AIReportDetailPage = () => {
 
       <Divider />
       <Container>
-        <Content>{reportDetail.content}</Content>
+        <Content>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              h3: ({ node, ...props }) => (
+                <h3 style={{ margin: '16px 0 8px', fontWeight: 600 }} {...props} />
+              ),
+              strong: ({ node, ...props }) => <strong style={{ fontWeight: 600 }} {...props} />,
+              p: ({ node, ...props }) => <p style={{ marginBottom: 10 }} {...props} />,
+              li: ({ node, ...props }) => (
+                <li style={{ marginBottom: 6, listStylePosition: 'outside' }} {...props} />
+              ),
+              ul: ({ node, ...props }) => (
+                <ul style={{ marginLeft: 20, marginBottom: 12, listStyle: 'disc' }} {...props} />
+              ),
+              ol: ({ node, ...props }) => (
+                <ol style={{ marginLeft: 20, marginBottom: 12, listStyle: 'decimal' }} {...props} />
+              ),
+            }}
+          >
+            {reportDetail.content}
+          </ReactMarkdown>
+        </Content>
       </Container>
     </>
   );
