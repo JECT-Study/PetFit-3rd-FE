@@ -41,7 +41,10 @@ export const AIReportListPage = () => {
           {reportList &&
             reportList.length > 0 &&
             reportList.map((report: any) => (
-              <ReportItem key={report.id} onClick={() => navigate(`/aireport/${2}`)}>
+              <ReportItem
+                key={report.aiReportId}
+                onClick={() => navigate(`/aireport/${report.aiReportId}`)}
+              >
                 <ReportTitle>{report.title}</ReportTitle>
                 <ReportDate>
                   기간 | {report.startDate} ~ {report.endDate}
