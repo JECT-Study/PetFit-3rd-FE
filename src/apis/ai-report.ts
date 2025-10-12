@@ -7,7 +7,8 @@ export const createReport = async (petId: number, startDate: string, endDate: st
     endDate,
   };
   try {
-    await axiosInstance.post('aireports/generate', payload);
+    const response = await axiosInstance.post('aireports/generate', payload);
+    return response.data.content;
   } catch (error) {
     console.log('ai 보고서 생성 실패');
   }
