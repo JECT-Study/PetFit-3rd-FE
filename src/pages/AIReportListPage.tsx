@@ -29,7 +29,6 @@ export const AIReportListPage = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  console.log(reportList);
   return (
     <>
       <TitleHeader title="AI 진단" />
