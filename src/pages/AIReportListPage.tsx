@@ -8,9 +8,13 @@ import { getPetById } from '@/apis/pets';
 import { getReportList } from '@/apis/ai-report';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { DateRangePickerModal } from '@/features/ai-report/DateRangePickerModal';
 
 export const AIReportListPage = () => {
   const navigate = useNavigate();
+  const [openModal, setOpenModal] = useState(false);
+
   const selectedPetId = useSelector((s: RootState) => s.selectedPet.id);
   const { data: pet } = useQuery({
     queryKey: ['pet', selectedPetId],
@@ -56,8 +60,10 @@ export const AIReportListPage = () => {
 
       <FloatingButton>
         <Sparkles size={16} />
-        <span>AI 진단받기</span>
+        <span onClick={() => setOpenModal(true)}>AI 진단받기</span>
       </FloatingButton>
+
+      <DateRangePickerModal isOpen={openModal} onClose={() => setOpenModal(false)} />
     </>
   );
 };
