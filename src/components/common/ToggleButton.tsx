@@ -37,7 +37,8 @@ const ToggleBackground = styled.div<{ $isToggleOn: boolean }>`
   border-radius: 16px;
   outline: none;
   padding: 0 2px;
-  background-color: ${({ $isToggleOn }) => ($isToggleOn ? 'var(--main-500)' : 'var(--grey-400)')};
+  background-color: ${({ theme, $isToggleOn }) =>
+    $isToggleOn ? theme.color.main[500] : theme.color.gray[400]};
 `;
 
 const HandleButton = styled.div<{ $isToggleOn: boolean }>`
