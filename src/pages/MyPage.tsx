@@ -36,7 +36,9 @@ export const MyPage = () => {
         <Menu>
           알림 <ToggleButton onToggle={handleAlarmToggle} />
         </Menu>
-        <Menu>버전 정보</Menu>
+        <Menu>
+          버전 정보 <div>1.2.0</div>
+        </Menu>
         <Menu onClick={() => setLogoutModal(true)}>
           로그아웃 <ChevronRight size={20} />
         </Menu>
