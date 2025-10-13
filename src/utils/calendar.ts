@@ -102,3 +102,8 @@ export const getSurroundingMonths = (date: Date): string[] => {
 
   return [prev, current, next].map(formatYearMonth);
 };
+
+export const isWithinRange = (date: Date, start: Date, end: Date) => {
+  const t = date.getTime();
+  return t >= start.getTime() && t <= end.getTime();
+};
