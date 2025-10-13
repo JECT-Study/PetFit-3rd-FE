@@ -177,7 +177,7 @@ const CalendarBlock = styled.div`
 
 const Label = styled.label`
   padding-left: 8px;
-  color: ${({ theme }) => theme.color.gray[600]};
+  color: ${({ theme }) => theme.color.gray[500]};
   ${tx.body('reg14')};
 `;
 

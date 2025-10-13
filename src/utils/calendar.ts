@@ -1,3 +1,4 @@
+/** Date → 'YYYY-MM-DD' (로컬 기준) */
 export const formatDate = (date: Date): string => {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -100,4 +101,9 @@ export const getSurroundingMonths = (date: Date): string[] => {
   const next = new Date(date.getFullYear(), date.getMonth() + 1, 1);
 
   return [prev, current, next].map(formatYearMonth);
+};
+
+export const isWithinRange = (date: Date, start: Date, end: Date) => {
+  const t = date.getTime();
+  return t >= start.getTime() && t <= end.getTime();
 };

@@ -93,3 +93,11 @@ export const getPetById = async (petId: number): Promise<PetApiResponse> => {
   }
   return res.data.content;
 };
+
+export const deletePet = async (petId: number) => {
+  try {
+    await axiosInstance.delete(`pets/${petId}`);
+  } catch (error) {
+    console.log('반려동물 삭제 실패');
+  }
+};

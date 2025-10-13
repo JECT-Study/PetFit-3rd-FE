@@ -13,7 +13,7 @@ import { RoutineList } from './RoutineList';
 import { NotesFeature } from './NotesFeature';
 import { tx } from '@/styles/typography';
 import type { UiNote } from '@/types/calendar.ui';
-import { toUiNote } from '@/utils/transform/calendar';
+import { toNoteEntity, toUiNote } from '@/utils/transform/calendar';
 import { toUiRoutine } from '@/utils/transform/routine';
 import type { NotesFeatureHandle } from './NotesFeature';
 
@@ -37,7 +37,10 @@ export const DayDetailsPanel = ({ selectedDate }: DayDetailsPanelProps) => {
   });
 
   // ✅ 조회 결과 → UI 모델 변환 (부모에서 계산만)
-  const notes: UiNote[] = useMemo(() => (data?.remarkResponseList ?? []).map(toUiNote), [data]);
+  const notes: UiNote[] = useMemo(
+    () => (data?.remarkResponseList ?? []).map(toNoteEntity).map(toUiNote),
+    [data]
+  );
 
   const routines = useMemo(
     () => (data?.routineResponseList ?? []).map(toUiRoutine).filter(Boolean),

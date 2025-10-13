@@ -23,7 +23,7 @@ export const NoteItem = ({ title, content, onEdit, onDelete }: NoteItemProps) =>
         <BodyText>{content}</BodyText>
       </Start>
       <Actions>
-        <OverflowMenu onEdit={onEdit} onDelete={onDelete} />
+        <OverflowMenu context="calendar" onEdit={onEdit} onDelete={onDelete} />
       </Actions>
     </Container>
   );

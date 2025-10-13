@@ -1,6 +1,6 @@
-import { Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { tx } from '@/styles/typography';
 
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { RoutineItem } from '@/features/routine/RoutineItem';
@@ -23,20 +23,19 @@ export const Routine = ({ petId }: RoutineProps) => {
   if (isSlotLoading || isRoutineLoading) return <LoadingSpinner />;
 
   return (
-    <Container>
-      <RoutineTitleContainer>
-        <RoutineTitle>오늘의 루틴</RoutineTitle>
-        <Actions>
-          <button onClick={() => navigate('/slot')}>
-            <Settings />
-          </button>
-          {!routineData && <Notice>슬롯 설정하기</Notice>}
-        </Actions>
-      </RoutineTitleContainer>
-      {routineData && <RoutineProgress petId={petId} />}
-
+    <div>
+      <Container>
+        <RoutineTitleContainer>
+          <RoutineTitle>오늘의 루틴</RoutineTitle>
+          <Actions>
+            <EditButton onClick={() => navigate('/slot')}>수정</EditButton>
+            {!routineData && <Notice>슬롯 설정하기</Notice>}
+          </Actions>
+        </RoutineTitleContainer>
+        {routineData && <RoutineProgress petId={petId} />}
+      </Container>
       <RoutineItem petId={petId} />
-    </Container>
+    </div>
   );
 };
 
@@ -48,16 +47,23 @@ const Actions = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  justify-content: center;
   gap: 8px;
+`;
+
+const EditButton = styled.div`
+  margin-right: 6px;
+  ${tx.body('med13')}
+  color: ${({ theme }) => theme.color.gray[400]};
 `;
 
 const Notice = styled.div`
   position: relative;
   display: inline-block;
   padding: 6px 12px;
-  font-size: 14px;
-  background-color: #ffb700;
-  color: white;
+  ${tx.body('reg14')}
+  background-color: ${({ theme }) => theme.color.main[600]};
+  color: ${({ theme }) => theme.color.white};
   border-radius: 4px;
 
   &::before {
@@ -78,6 +84,6 @@ const RoutineTitleContainer = styled.div`
 `;
 
 const RoutineTitle = styled.div`
-  font-size: 18px;
-  font-weight: 600;
+  ${tx.title('semi18')}
+  margin: 16px 0;
 `;

@@ -1,4 +1,4 @@
-import { Home, Clock, Calendar, User } from 'lucide-react';
+import { Home, Clock, Calendar, User, HeartPulse } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -42,6 +42,19 @@ export const BottomNav = () => {
                 aria-hidden="true"
               />
               <Label $active={isActive}>달력</Label>
+            </>
+          )}
+        </StyledLink>
+        <StyledLink to="/aireport">
+          {({ isActive }) => (
+            <>
+              <HeartPulse
+                size={24}
+                strokeWidth={2}
+                color={isActive ? '#facc15' : '#6b7280'}
+                aria-hidden="true"
+              />
+              <Label $active={isActive}>AI 진단</Label>
             </>
           )}
         </StyledLink>
