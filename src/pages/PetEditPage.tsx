@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { getPetById, putPetsInfo } from '@/apis/pets';
+import { deletePet, getPetById, putPetsInfo } from '@/apis/pets';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { PetRegisterForm } from '@/components/PetRegisterForm';
@@ -13,6 +13,7 @@ import type { RootState } from '@/store/store';
 import { tx } from '@/styles/typography';
 import type { PetForm, PetGender, PetType } from '@/types/form';
 import { usePetForm } from '@/hooks/usePetForm';
+import { BaseModal } from '@/components/common/BaseModal';
 
 export const PetEditPage = () => {
   const { petId } = useParams<{ petId: string }>();
@@ -59,7 +60,7 @@ export const PetEditPage = () => {
   }, [initialForm]);
 
   // 수정
-  const { mutate, isPending } = useMutation({
+  const { mutate: editPet, isPending: isEditing } = useMutation({
     mutationFn: () => putPetsInfo(Number(petId)!, memberId, form),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['petDetail', id] });
@@ -69,7 +70,25 @@ export const PetEditPage = () => {
 
   const handleSave = () => {
     if (!isValid) return;
-    mutate();
+    editPet();
+  };
+
+  // 삭제
+  const { mutate: removePet, isPending: isDeleting } = useMutation({
+    mutationFn: () => deletePet(Number(petId)!),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['petList'] });
+      navigate('/manage', { replace: true });
+    },
+  });
+
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const openDeleteModal = () => setDeleteModalOpen(true);
+  const closeDeleteModal = () => setDeleteModalOpen(false);
+
+  const handleDeleteConfirm = () => {
+    removePet();
+    closeDeleteModal();
   };
 
   if (isLoading) return <LoadingSpinner />;
@@ -79,10 +98,22 @@ export const PetEditPage = () => {
       <TitleHeader title="반려동물 정보 수정" showBack={true} />
 
       <PetRegisterForm form={form} errors={errors} onChange={setField} onBlurField={onBlurField} />
+      <ButtonContainer>
+        <DeleteButton onClick={openDeleteModal} disabled={isDeleting}>
+          {isDeleting ? '삭제 중...' : '삭제'}
+        </DeleteButton>
+        <NextButton onClick={handleSave} disabled={!isValid || isEditing}>
+          {isEditing ? '수정 중...' : '저장'}
+        </NextButton>
+      </ButtonContainer>
 
-      <NextButton onClick={handleSave} disabled={!isValid || isPending}>
-        {isPending ? '수정 중...' : '저장'}
-      </NextButton>
+      <BaseModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal}>
+        <Message>정말 반려동물 정보를 삭제하시겠어요?</Message>
+        <ButtonRow>
+          <CancelButton onClick={closeDeleteModal}>취소</CancelButton>
+          <ConfirmButton onClick={handleDeleteConfirm}>삭제</ConfirmButton>
+        </ButtonRow>
+      </BaseModal>
     </Container>
   );
 };
@@ -94,15 +125,32 @@ const Container = styled.div`
   padding: 0 20px;
 `;
 
-const NextButton = styled.button`
+const ButtonContainer = styled.div`
   position: fixed;
-  bottom: 80px;
+  bottom: 75px;
   left: 20px;
   right: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+`;
+
+const Button = styled.button`
+  flex: 1;
   padding: 16px 0;
+  height: 56px;
   border-radius: 12px;
   ${tx.title('semi18')};
+  cursor: pointer;
+`;
 
+const DeleteButton = styled(Button)`
+  background: ${({ theme }) => theme.color.gray[100]};
+  color: ${({ theme }) => theme.color.gray[400]};
+  border: 1px dashed ${({ theme }) => theme.color.main[300]};
+`;
+
+const NextButton = styled(Button)`
   background: ${({ theme }) => theme.color.main[500]};
   color: ${({ theme }) => theme.color.gray[700]};
 
@@ -112,4 +160,35 @@ const NextButton = styled.button`
     border: 1px solid ${({ theme }) => theme.color.gray[300]};
     cursor: not-allowed;
   }
+`;
+
+const Message = styled.p`
+  ${tx.body('med16')};
+  text-align: center;
+`;
+
+const ButtonRow = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+`;
+
+const CancelButton = styled.button`
+  flex: 1;
+  padding: 8px 12px;
+  ${tx.body('reg14')};
+
+  color: ${({ theme }) => theme.color.gray[400]};
+  background: ${({ theme }) => theme.color.gray[100]};
+  border-radius: 6px;
+`;
+
+const ConfirmButton = styled.button`
+  flex: 1;
+  padding: 8px 12px;
+  ${tx.body('reg14')};
+
+  color: ${({ theme }) => theme.color.gray[700]};
+  background: ${({ theme }) => theme.color.main[500]};
+  border-radius: 6px;
 `;
