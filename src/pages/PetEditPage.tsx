@@ -12,6 +12,7 @@ import { PetRegisterForm } from '@/components/PetRegisterForm';
 import type { RootState } from '@/store/store';
 import { tx } from '@/styles/typography';
 import type { PetForm, PetGender, PetType } from '@/types/form';
+import { usePetForm } from '@/hooks/usePetForm';
 
 export const PetEditPage = () => {
   const { petId } = useParams<{ petId: string }>();
@@ -21,7 +22,6 @@ export const PetEditPage = () => {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isPetFormValid, setIsPetFormValid] = useState(false);
 
   const [form, setForm] = useState<PetForm>({
     name: '',
@@ -29,6 +29,7 @@ export const PetEditPage = () => {
     gender: '남아',
     birthDate: new Date(),
   });
+  const { errors, isValid, setField, onBlurField } = usePetForm(form, setForm);
 
   useEffect(() => {
     if (!id) navigate('/pet-management', { replace: true });
@@ -67,7 +68,7 @@ export const PetEditPage = () => {
   });
 
   const handleSave = () => {
-    if (!isPetFormValid || !petId) return;
+    if (!isValid) return;
     mutate();
   };
 
@@ -77,9 +78,9 @@ export const PetEditPage = () => {
     <Container>
       <TitleHeader title="반려동물 정보 수정" showBack={true} />
 
-      <PetRegisterForm form={form} setForm={setForm} onFormValidChange={setIsPetFormValid} />
+      <PetRegisterForm form={form} errors={errors} onChange={setField} onBlurField={onBlurField} />
 
-      <NextButton onClick={handleSave} disabled={!isPetFormValid || isPending}>
+      <NextButton onClick={handleSave} disabled={!isValid || isPending}>
         {isPending ? '수정 중...' : '저장'}
       </NextButton>
     </Container>
@@ -94,7 +95,10 @@ const Container = styled.div`
 `;
 
 const NextButton = styled.button`
-  margin-bottom: 24px;
+  position: fixed;
+  bottom: 80px;
+  left: 20px;
+  right: 20px;
   padding: 16px 0;
   border-radius: 12px;
   ${tx.title('semi18')};
