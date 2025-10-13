@@ -10,6 +10,7 @@ import { getPets, putFavorite, type Pet } from '@/apis/pets';
 import { TitleHeader } from '@/components/common/TitleHeader';
 import { setSelectedPet, type SelectedPetState } from '@/store/petSlice';
 import type { PetListType } from '@/types/pets';
+import { tx } from '@/styles/typography';
 
 const convertToSelectedPet = (pet: Pet): SelectedPetState => ({
   id: pet.id,
@@ -83,7 +84,7 @@ const Item = styled.div`
   border-width: 1px;
   padding: 16px 20px;
   border: 1px solid var(--main-500);
-  font-size: 14px;
+  ${tx.body('semi14')};
 `;
 
 const PetItem = styled(Item)`

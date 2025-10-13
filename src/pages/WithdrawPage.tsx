@@ -9,6 +9,7 @@ import { TitleHeader } from '@/components/common/TitleHeader';
 import { WithdrawModal } from '@/features/mypage/WithdrawModal';
 
 import WithdrawDog from '@/assets/icons/withdraw-dog.svg?react';
+import { tx } from '@/styles/typography';
 export const WithdrawPage = () => {
   const [withdrawModal, setWithdrawModal] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -72,15 +73,13 @@ const Content = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 18px;
-  font-weight: 600;
+  ${tx.title('semi18')};
 `;
 
 const Description = styled.div`
   margin-top: 16px;
-  font-size: 14px;
-  font-weight: 400;
-  color: #a5a5a5;
+  ${tx.body('reg14')};
+  color: ${({ theme }) => theme.color.gray[400]};
 `;
 
 const Checkbox = styled.div`
@@ -99,8 +98,6 @@ const AgreeButton = styled.button<{ $checked: boolean }>`
   justify-content: center;
   align-items: center;
   gap: 6px;
-
-  font-size: 14px;
-  font-weight: 400;
-  color: ${({ $checked }) => ($checked ? '#000000' : '#A5A5A5')};
+  ${tx.body('reg14')};
+  color: ${({ theme, $checked }) => ($checked ? theme.color.gray[700] : theme.color.gray[400])};
 `;
