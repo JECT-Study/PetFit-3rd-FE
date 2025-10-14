@@ -21,7 +21,6 @@ export const AIReportDetailPage = () => {
 
   if (!reportDetail) return <div>리포트를 찾을 수 없습니다.</div>;
 
-  console.log(reportDetail);
   return (
     <>
       <TitleHeader title="분석 결과" showBack={true} />
