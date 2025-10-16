@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
@@ -33,19 +32,20 @@ export const DayDetailsPanel = ({ selectedDate }: DayDetailsPanelProps) => {
       return fetchDailyEntries(selectedPetId, formattedDate);
     },
     enabled: selectedPetId !== null,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    select: resp => {
+      const notes: UiNote[] = (resp.remarkResponseList ?? []).map(toNoteEntity).map(toUiNote);
+
+      const routines = (resp.routineResponseList ?? [])
+        .map(r => ({
+          ...toUiRoutine(r),
+          id: r.routineId ?? `${r.category}-${r.date}`, // key 안정화
+        }))
+        .filter(Boolean);
+
+      return { notes, routines };
+    },
   });
-
-  // ✅ 조회 결과 → UI 모델 변환 (부모에서 계산만)
-  const notes: UiNote[] = useMemo(
-    () => (data?.remarkResponseList ?? []).map(toNoteEntity).map(toUiNote),
-    [data]
-  );
-
-  const routines = useMemo(
-    () => (data?.routineResponseList ?? []).map(toUiRoutine).filter(Boolean),
-    [data]
-  );
 
   // ✅ 자식 메서드 호출을 위한 ref
   const remarksRef = useRef<NotesFeatureHandle>(null);
@@ -60,14 +60,15 @@ export const DayDetailsPanel = ({ selectedDate }: DayDetailsPanelProps) => {
 
       <Section role="region" aria-label="하루 루틴">
         {/* ✅ 프레젠테이션 전용: 데이터만 전달 */}
-        <RoutineList routines={routines} />
+        <RoutineList routines={data?.routines ?? []} />
 
         {/* ✅ CRUD/모달은 NoteSection이 관리 (조회 데이터만 주입) */}
         <NotesFeature
+          key={`notes-${selectedPetId ?? -1}-${formattedDate}`}
           ref={remarksRef}
           petId={selectedPetId ?? -1}
           selectedDate={selectedDate}
-          notes={notes}
+          notes={data?.notes ?? []}
         />
       </Section>
     </Wrapper>
