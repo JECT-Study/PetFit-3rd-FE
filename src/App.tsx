@@ -9,6 +9,8 @@ import { setSelectedPetId } from './store/petSlice';
 import { GlobalStyle } from './styles/GlobalStyle';
 import type { RootState } from './store/store';
 import { theme } from './styles/theme';
+import { AlarmSseBridge } from './features/alarm/AlarmSseBridge';
+import { ToastProvider } from './ds/ToastProvider';
 
 const AppInitializer = () => {
   const dispatch = useDispatch();
@@ -30,9 +32,12 @@ const AppInitializer = () => {
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <AppInitializer />
-      <RouterProvider router={router} />
+      <ToastProvider>
+        <GlobalStyle />
+        <AppInitializer />
+        <AlarmSseBridge />
+        <RouterProvider router={router} />
+      </ToastProvider>
     </ThemeProvider>
   );
 };
