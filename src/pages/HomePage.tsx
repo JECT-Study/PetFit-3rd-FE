@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { getPets, type Pet } from '@/apis/pets';
-import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
 import { Routine } from '@/features/routine/Routine';
 import { setSelectedPet, type SelectedPetState } from '@/store/petSlice';
@@ -79,8 +78,7 @@ export const HomePage = () => {
       </Header>
 
       <TopSection>
-        <NameTagBar names={sortedPets} selectedPetId={selectedPetId} onSelect={handleSelectPet} />
-        <TodayBar />
+        <TodayBar pets={sortedPets} selectedPetId={selectedPetId} onSelect={handleSelectPet} />
       </TopSection>
 
       {selectedPet && (
