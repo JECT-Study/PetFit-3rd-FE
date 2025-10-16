@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { Backpack } from 'lucide-react';
@@ -16,6 +16,7 @@ import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
 import { BriefFeature } from '@/features/home/BriefFeature';
+import { Tutorial } from '@/features/home/Tutorial';
 
 const convertToSelectedPet = (pet: Pet): SelectedPetState => ({
   id: pet.id,
@@ -63,6 +64,20 @@ export const HomePage = () => {
 
   const today = new Date();
 
+  const [isTutorialVisible, setIsTutorialVisible] = useState(false);
+
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+    if (!hasSeenTutorial) {
+      setIsTutorialVisible(true);
+    }
+  }, []);
+
+  const handleCloseTutorial = () => {
+    setIsTutorialVisible(false);
+    localStorage.setItem('hasSeenTutorial', 'true');
+  };
+
   return (
     <Container>
       <Header>
@@ -84,6 +99,8 @@ export const HomePage = () => {
           </div>
         </>
       )}
+
+      {isTutorialVisible && <Tutorial onClose={handleCloseTutorial} />}
     </Container>
   );
 };
