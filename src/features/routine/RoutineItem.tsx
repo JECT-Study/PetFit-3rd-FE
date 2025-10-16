@@ -47,7 +47,7 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
       document.documentElement.style.overflow = 'auto';
       document.body.style.overflow = 'auto';
     };
-  }, []);
+  }, [modal.open]);
 
   if (!routineList) {
     return <NonSlot>슬롯을 설정해주세요</NonSlot>;
