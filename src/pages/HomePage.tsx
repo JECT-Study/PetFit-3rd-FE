@@ -1,13 +1,11 @@
 import { useEffect } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
-import { Backpack } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getPets, type Pet } from '@/apis/pets';
-import { NameTagBar } from '@/features/home/NameTagBar';
 import { TodayBar } from '@/features/home/TodayBar';
 import { Routine } from '@/features/routine/Routine';
 import { setSelectedPet, type SelectedPetState } from '@/store/petSlice';
@@ -16,6 +14,9 @@ import type { PetListType } from '@/types/pets';
 
 import Logo from '@/assets/icons/logo.svg?react';
 import { BriefFeature } from '@/features/home/BriefFeature';
+import { useUnreadAlarms } from '@/hooks/useUnreadAlarms';
+import { tx } from '@/styles/typography';
+import { useNavigate } from 'react-router-dom';
 
 const convertToSelectedPet = (pet: Pet): SelectedPetState => ({
   id: pet.id,
@@ -61,18 +62,23 @@ export const HomePage = () => {
     }
   };
 
+  // ✅ 미읽음 카운트
+  const { count } = useUnreadAlarms(selectedPet?.id ?? null);
+
   const today = new Date();
 
   return (
     <Container>
       <Header>
-        <StyledLogo onClick={() => navigate('/')} />
-        <Backpack size={24} stroke="#444" />
+        <StyledLogo />
+        <BellWrap onClick={() => navigate('/alarm/unread')} aria-label={`미읽음 알림 보기`}>
+          <Bell size={24} />
+          {count > 0 && <Badge>{count > 99 ? '99+' : count}</Badge>}
+        </BellWrap>
       </Header>
 
       <TopSection>
-        <NameTagBar names={sortedPets} selectedPetId={selectedPetId} onSelect={handleSelectPet} />
-        <TodayBar />
+        <TodayBar pets={sortedPets} selectedPetId={selectedPetId} onSelect={handleSelectPet} />
       </TopSection>
 
       {selectedPet && (
@@ -95,11 +101,40 @@ const Header = styled.header`
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
+  color: ${({ theme }) => theme.color.gray[700]};
 `;
 
 const StyledLogo = styled(Logo)`
   width: 40px;
   height: 28px;
+`;
+
+const BellWrap = styled.button`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  background: transparent;
+  border: 0;
+  color: ${({ theme }) => theme.color.gray[700]};
+  cursor: pointer;
+`;
+
+const Badge = styled.span`
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  ${tx.body('med13')};
+  color: ${({ theme }) => theme.color.white};
+  border-radius: 500px;
+  background: ${({ theme }) => theme.color.warning[500]};
 `;
 
 const TopSection = styled.div`
