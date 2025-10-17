@@ -7,7 +7,7 @@ interface ToggleButtonProps {
 }
 
 export const ToggleButton = ({ onToggle }: ToggleButtonProps) => {
-  const [isToggleOn, setIsToggleOn] = useState(false);
+  const [isToggleOn, setIsToggleOn] = useState(true);
 
   const handleClick = () => {
     const newState = !isToggleOn;
