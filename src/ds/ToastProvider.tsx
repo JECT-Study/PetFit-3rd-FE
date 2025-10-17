@@ -66,7 +66,7 @@ const DEFAULT_DURATION = {
 // variant별 최대 스택 길이(필요 시 조정)
 const MAX_PER_VARIANT: Record<ToastVariant, number> = {
   error: 3,
-  alert: 3,
+  alert: 1,
 };
 
 /** ===== Provider ===== */
