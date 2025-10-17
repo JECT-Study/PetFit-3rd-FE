@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getReport } from '@/apis/ai-report';
@@ -12,6 +13,11 @@ import remarkGfm from 'remark-gfm';
 export const AIReportDetailPage = () => {
   const { reportId } = useParams<{ reportId: string }>();
   const selectedPetId = useSelector((s: RootState) => s.selectedPet.id);
+
+  useEffect(() => {
+    document.documentElement.style.overflow = 'auto';
+    document.body.style.overflow = 'auto';
+  }, []);
 
   const { data: reportDetail } = useQuery({
     queryKey: ['reportDetail', reportId],
