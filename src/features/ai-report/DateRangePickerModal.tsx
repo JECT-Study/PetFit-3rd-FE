@@ -6,7 +6,7 @@ import { tx } from '@/styles/typography';
 
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { BaseModal } from '@/components/common/BaseModal';
 import { CustomDateRangePicker } from '@/components/CustomDateRangePicker';
@@ -20,6 +20,9 @@ interface Props {
 
 export const DateRangePickerModal = ({ isOpen, onClose }: Props) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const selectedPetId = useSelector((s: RootState) => s.selectedPet.id);
+
   const [range, setRange] = useState({
     startDate: new Date(),
     endDate: new Date(),
@@ -39,6 +42,7 @@ export const DateRangePickerModal = ({ isOpen, onClose }: Props) => {
     onSuccess: data => {
       setIsLoadingModalOpen(false);
       onClose();
+      queryClient.invalidateQueries({ queryKey: ['reportList', selectedPetId] });
       navigate(`/aireport/${data.aiReportId}`);
     },
     onError: (error: any) => {

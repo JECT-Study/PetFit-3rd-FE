@@ -119,6 +119,7 @@ export const PetEditPage = () => {
 };
 
 const Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -126,10 +127,11 @@ const Container = styled.div`
 `;
 
 const ButtonContainer = styled.div`
-  position: fixed;
+  position: absolute;
   bottom: 75px;
   left: 20px;
   right: 20px;
+
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -147,7 +149,7 @@ const Button = styled.button`
 const DeleteButton = styled(Button)`
   background: ${({ theme }) => theme.color.gray[100]};
   color: ${({ theme }) => theme.color.gray[400]};
-  border: 1px dashed ${({ theme }) => theme.color.main[300]};
+  border: 1px dashed ${({ theme }) => theme.color.gray[300]};
 `;
 
 const NextButton = styled(Button)`

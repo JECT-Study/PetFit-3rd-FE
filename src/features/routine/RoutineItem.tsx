@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import styled from 'styled-components';
@@ -41,6 +41,13 @@ export const RoutineItem = ({ petId, routines }: RoutineItemProps) => {
     enabled: !!slot,
   });
   const routineList = routines ?? routineDataFromHook;
+
+  useEffect(() => {
+    return () => {
+      document.documentElement.style.overflow = 'auto';
+      document.body.style.overflow = 'auto';
+    };
+  }, [modal.open]);
 
   if (!routineList) {
     return <NonSlot>슬롯을 설정해주세요</NonSlot>;

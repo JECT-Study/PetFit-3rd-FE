@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getReport } from '@/apis/ai-report';
@@ -13,6 +14,11 @@ export const AIReportDetailPage = () => {
   const { reportId } = useParams<{ reportId: string }>();
   const selectedPetId = useSelector((s: RootState) => s.selectedPet.id);
 
+  useEffect(() => {
+    document.documentElement.style.overflow = 'auto';
+    document.body.style.overflow = 'auto';
+  }, []);
+
   const { data: reportDetail } = useQuery({
     queryKey: ['reportDetail', reportId],
     queryFn: () => getReport(Number(reportId)),
@@ -21,7 +27,6 @@ export const AIReportDetailPage = () => {
 
   if (!reportDetail) return <div>리포트를 찾을 수 없습니다.</div>;
 
-  console.log(reportDetail);
   return (
     <>
       <TitleHeader title="분석 결과" showBack={true} />

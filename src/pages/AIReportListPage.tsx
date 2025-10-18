@@ -59,7 +59,7 @@ export const AIReportListPage = () => {
           <ListTitle>
             <Nickname>{pet?.name}</Nickname> 루틴 분석 목록
           </ListTitle>
-          {reportList.length > 0 && (
+          {reportList && reportList.length > 0 && (
             <EditButton onClick={deleteList.length > 0 ? handleDeleteSelected : toggleEditMode}>
               {isEditMode ? (deleteList.length > 0 ? '선택 삭제' : '취소') : '편집'}
             </EditButton>
