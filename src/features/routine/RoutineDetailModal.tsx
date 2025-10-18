@@ -142,25 +142,24 @@ const FieldTitle = styled.div`
 const AmountInput = styled.input`
   padding: 10px 12px;
   ${tx.body('reg14')}
-  background: ${({ theme }) => theme.color.main[100]};
-  border: 1px solid ${({ theme }) => theme.color.main[500]};
+  border: 1px solid ${({ theme }) => theme.color.gray[300]};
   border-radius: 8px;
 `;
 
 const MemoInput = styled.textarea`
   height: 100px;
   padding: 12px;
-  font-size: 14px;
-  background: ${({ theme }) => theme.color.main[100]};
-  border: 1px solid ${({ theme }) => theme.color.main[500]};
+  ${tx.body('reg14')}
+  color: ${({ theme }) => theme.color.gray[400]};
+  border: 1px solid ${({ theme }) => theme.color.gray[300]};
   border-radius: 8px;
   resize: none;
 `;
 
 const InputLength = styled.span`
   align-self: flex-end;
-  font-size: 12px;
-  color: #a5a5a5;
+  ${tx.caption('med12')}
+  color: ${({ theme }) => theme.color.gray[400]};
 `;
 
 const SaveButton = styled.button<{ disabled: boolean }>`
@@ -170,9 +169,10 @@ const SaveButton = styled.button<{ disabled: boolean }>`
 
   ${tx.title('semi18')}
 
-  color: ${({ disabled }) => (disabled ? '##A5A5A5' : '#373737')};
-  background: ${({ disabled }) => (disabled ? '#F0F0F0' : '#FFC533')};
-  border: ${({ disabled }) => (disabled ? '#DDDDDD' : '#FFC533')};
+  color: ${({ disabled, theme }) => (disabled ? theme.color.gray[400] : theme.color.gray[700])};
+  background: ${({ disabled, theme }) =>
+    disabled ? theme.color.gray[100] : theme.color.main[500]};
+  border: ${({ disabled, theme }) => (disabled ? theme.color.gray[300] : theme.color.main[500])};
   border-radius: 12px;
   cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
 `;
